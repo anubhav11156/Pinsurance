@@ -2,6 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 
 function Hero() {
+
+    // check session chat :)
+    // damn! live share is awesome  : )
+
+// ok will be back at 5 am, lemme get some hot water, 
     return (
         <Container>
             <Text>
@@ -24,7 +29,11 @@ function Hero() {
                 <div className='car'>
                     <img src='/images/sports-car.png' />
                 </div>
+                <div className='sheild'>
+                    <img src="/images/shield-check.png"/>
+                </div>
             </Image>
+            <div className='bar'></div>
         </Container>
     )
 }
@@ -32,11 +41,23 @@ function Hero() {
 export default Hero
 
 const Container = styled.div`
+    position: relative;
     margin-top: 5rem;
     height: 90vh;
     width: 100%;
     padding-left: 13.2rem;
     display: flex;
+
+    .bar {
+        position: absolute;
+        top: 55rem;
+        left: 44.4%;
+        right: 50%;
+        height: 3px;
+        border-radius: 5px;
+        width: 60px;
+        background-color: #0152b57e;
+    }
 `
 
 const Text = styled.div`
@@ -132,6 +153,20 @@ const Image = styled.div`
         img {
             margin-left: -5rem;
             width: 100%;
+        }
+    }
+
+    .sheild {
+        position: absolute;
+        top: 7.2rem;
+        left: 31em;
+        z-index: 9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        img {
+            width: 34%;
         }
     }
 
