@@ -3,10 +3,6 @@ import styled from 'styled-components'
 
 function Hero() {
 
-    // check session chat :)
-    // damn! live share is awesome  : )
-
-// ok will be back at 5 am, lemme get some hot water, 
     return (
         <Container>
             <Text>
