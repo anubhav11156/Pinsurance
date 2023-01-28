@@ -13,7 +13,7 @@ function Home() {
 export default Home
 
 const Container=styled.div`
-    height: 1500px;
+    height: 2000px;
     display: flex;
     flex-direction: column;
     

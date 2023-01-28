@@ -10,6 +10,12 @@ contract Pinsurance {
     Counters.Counter public userCount;
     Counters.Counter public poolCount;
 
+    address owner; // onwer of the platform will be Pinsrurance.
+
+    constructor() {
+        owner = msg.sender;
+    }
+
     // address[] listOfUsers; // total number of users on pinsurance
     // address[] listOfPools; // total number of pools on pinsurance
 
@@ -26,14 +32,14 @@ contract Pinsurance {
         address[] userAssociatedPools; // list of insurance pool user is associated with
     }
 
-    // user account detail mapping | Note: using string instead of address for simplicity, will optimize the code later on
+    // user account detail mapping
     mapping(address => userAccount) userAddressTouserAccount;
 
-    // Pool data
+    // Pool data  ---> set pool member limit to 2 for demo purpose
     struct poolDetail {
+        string poolID;
         address poolContractAddress;        
         bool active;
-        uint256 limit;
         uint256 currentMemberCount;
         address[] members;
         mapping(address => bool) isMember;
@@ -42,7 +48,7 @@ contract Pinsurance {
     // naonid to pooldetail mapping | nanoid will be a string.
     mapping(string => poolDetail) poolIdToPoolDetail;
 
-    // function to create user account
+    // function to create user account | creation of user will be free and platform will pay the gas fees.
     function createUser(
         string memory _name,
         string memory _profileCid,
@@ -75,11 +81,13 @@ contract Pinsurance {
     // function to create pool
     function createPool(string memory poolId) public {
         require(userAddressTouserAccount[msg.sender].userAccountStatus==true,'Create account first.');
-        address newPool = address(new Pool()); // returns address of the new pool.
 
+        address newPool = address(new Pool()); // returns address of the new pool.
+        poolIdToPoolDetail[poolId].poolID = poolId;
         poolIdToPoolDetail[poolId].active = true;
         userAddressTouserAccount[msg.sender].userAssociatedPools.push(newPool);
         poolIdToPoolDetail[poolId].members.push(msg.sender);
+        poolIdToPoolDetail[poolId].currentMemberCount++;
         poolIdToPoolDetail[poolId].isMember[msg.sender] = true;
         poolCount.increment();
     }
@@ -87,13 +95,37 @@ contract Pinsurance {
     // function to join pool
     function joinPool(string memory poolId) public {
         require(userAddressTouserAccount[msg.sender].userAccountStatus==true,'Create account first.');
-        require(poolIdToPoolDetail[poolId].active==true,'No pool find  with given poolID');
-
+        require(poolIdToPoolDetail[poolId].active==true,'No pool found  with given poolID');
+        uint256 empty = (2 - poolIdToPoolDetail[poolId].members.length);
+        require(empty >= 1,'Not enough slot in the pool.');
         poolIdToPoolDetail[poolId].isMember[msg.sender] = true;
+        poolIdToPoolDetail[poolId].currentMemberCount++;
         userAddressTouserAccount[msg.sender].userAssociatedPools.push(poolIdToPoolDetail[poolId].poolContractAddress);
         poolIdToPoolDetail[poolId].members.push(msg.sender);
     }
 
+    function getPoolMembers(string memory poolId) public view returns(userAccount[] memory){
+        // will return account information of users of given poolId.
+        require(poolIdToPoolDetail[poolId].currentMemberCount>0,'No member in this pool.');
+        uint256 memberCount = poolIdToPoolDetail[poolId].currentMemberCount;
+        uint256 currentIndex = 0;
+
+        // array to store poolMembers account information.
+        userAccount[] memory poolMembers = new userAccount[](memberCount);
+
+        for(uint i=0; i<memberCount; i++) {
+            address userAddress = poolIdToPoolDetail[poolId].members[i];
+            userAccount storage currentUser = userAddressTouserAccount[userAddress];
+            poolMembers[currentIndex] = currentUser;
+            currentIndex++;
+        }
+
+        return poolMembers;
+    }
+
+    // function getUserAllPools() public  {
+
+    // }
 
     // Utils => 
 
