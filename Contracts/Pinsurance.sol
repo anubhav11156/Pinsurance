@@ -85,6 +85,7 @@ contract Pinsurance {
         address newPool = address(new Pool()); // returns address of the new pool.
         poolIdToPoolDetail[poolId].poolID = poolId;
         poolIdToPoolDetail[poolId].active = true;
+        poolIdToPoolDetail[poolId].poolContractAddress = newPool;
         userAddressTouserAccount[msg.sender].userAssociatedPools.push(newPool);
         poolIdToPoolDetail[poolId].members.push(msg.sender);
         poolIdToPoolDetail[poolId].currentMemberCount++;
@@ -96,12 +97,21 @@ contract Pinsurance {
     function joinPool(string memory poolId) public {
         require(userAddressTouserAccount[msg.sender].userAccountStatus==true,'Create account first.');
         require(poolIdToPoolDetail[poolId].active==true,'No pool found  with given poolID');
+
         uint256 empty = (2 - poolIdToPoolDetail[poolId].members.length);
-        require(empty >= 1,'Not enough slot in the pool.');
+
+        require((empty > 1) || (empty == 1),'Not enough slot in the pool.');
+
         poolIdToPoolDetail[poolId].isMember[msg.sender] = true;
         poolIdToPoolDetail[poolId].currentMemberCount++;
         userAddressTouserAccount[msg.sender].userAssociatedPools.push(poolIdToPoolDetail[poolId].poolContractAddress);
         poolIdToPoolDetail[poolId].members.push(msg.sender);
+    }
+
+    function getPoolContractAddress(string memory poolId) public view returns(address) {
+        // check if pool exists
+        require(poolIdToPoolDetail[poolId].active == true,'No pool found with given poolId.');
+        return poolIdToPoolDetail[poolId].poolContractAddress;
     }
 
     function getPoolMembers(string memory poolId) public view returns(userAccount[] memory){

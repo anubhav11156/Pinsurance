@@ -3,6 +3,13 @@ import styled from 'styled-components'
 
 function Hero() {
 
+    const getStartedHandler = () => {
+        window.scroll({
+            top: 910,
+            behavior: 'smooth'
+          });
+    }
+
     return (
         <Container>
             <Text>
@@ -10,8 +17,8 @@ function Hero() {
                     <p>Peer to Peer <span>blockchain based</span> Car Insurance</p>
                 </div>
                 <div className='buttons'>
-                    <div className='plan-pricing'>
-                        <p>Plan</p>
+                    <div className='plan-pricing'onClick={getStartedHandler}>
+                        <p>Get Started</p>
                         <div className='for-arrow'>
                             <img src="/images/long-white.png"/>
                         </div>
@@ -88,7 +95,7 @@ const Text = styled.div`
         .plan-pricing {
             cursor: pointer;
             margin-top: 3rem;
-            width: 10rem;
+            width: 12.2rem;
             height: 3rem;
             background-color: #0153b5;
             display: flex;
@@ -100,6 +107,9 @@ const Text = styled.div`
             transition: opacity 0.15s;
             &:hover {
                 opacity: 0.9;
+            }
+            &:active {
+                opacity: 0.8;
             }
 
             .for-arrow {

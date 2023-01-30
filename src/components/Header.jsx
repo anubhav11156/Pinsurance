@@ -9,6 +9,28 @@ function Header() {
   const { address } = useAccount();
   console.log(address);
 
+
+  window.onscroll = function (e) {
+
+    // setPixelScrolled(window.scrollY);
+    console.log(window.scrollY);
+    
+  }
+
+  const planHandler = () => {
+    window.scroll({
+      top: 910,
+      behavior: 'smooth'
+    });
+  }
+
+  const takeInsuranceHandler = () => {
+    window.scroll({
+      top: 1830,
+      behavior: 'smooth'
+    });
+  }
+
   return (
     <Container>
       <InsideContainer>
@@ -19,14 +41,19 @@ function Header() {
           <div className='name'>Pinsurance</div>
         </Left>
         <Middle>
-
+          <div className='plan' onClick={planHandler}>
+            <p>Plan</p>
+          </div>
+          <div className='insruance' onClick={takeInsuranceHandler}>
+            <p>Take Insurance</p>
+          </div>
         </Middle>
         <Right>
           <div className='address-div'>
-            { isConnected &&
-                 <div className='address'>
-                 <p>{address}</p>
-               </div>
+            {isConnected &&
+              <div className='address'>
+                <p>{address}</p>
+              </div>
             }
           </div>
           <div className='button'>
@@ -110,6 +137,56 @@ const Left = styled.div`
 const Middle = styled.div`
   height: 100%;
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+
+  .plan {
+    width: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1.1rem;
+    margin-right: 2rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    p {
+      margin: 0;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
+  .insruance {
+    width: 8rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 1.1rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    p {
+      margin: 0;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:active {
+      opacity: 0.7;
+    }
+  }
+
 `
 
 const Right = styled.div`
