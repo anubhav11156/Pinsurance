@@ -6,6 +6,8 @@ import Pool from './insurance/Pool';
 import User from './insurance/User';
 import Notification from './insurance/Notification';
 import { useAccount } from 'wagmi'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Insurance() {
 
@@ -26,7 +28,7 @@ function Insurance() {
       setClaimMenu(false);
       setNotificationMenu(false);
       setMeetingMenu(false);
-    }else {
+    } else {
       setUserMenu(true);
     }
   }, [isConnected]);
@@ -104,7 +106,7 @@ function Insurance() {
   }
 
   const connectWalletHandle = () => {
-    toast.info("SignIN to connect wallet", {
+    toast.info("Login to connect wallet", {
       position: toast.POSITION.TOP_CENTER
     });
   }
@@ -117,6 +119,9 @@ function Insurance() {
             <div className='user-menu'>
               <div className='image'>
                 <img src="/images/user.png" onClick={userMenuButton} />
+                <div className='account'>
+                  Account
+                </div>
               </div>
               <div className='bar' style={{
                 backgroundColor: userMenu ? "#ffffffae" : ""
@@ -125,6 +130,9 @@ function Insurance() {
             <div className='join-menu'>
               <div className='image'>
                 <img src="/images/join.png" onClick={joinCreateButton} />
+                <div className='join'>
+                  Join or Create Pool
+                </div>
               </div>
               <div className='bar' style={{
                 backgroundColor: joinMenu ? "#ffffffae" : ""
@@ -133,6 +141,9 @@ function Insurance() {
             <div className='pool-menu'>
               <div className='image'>
                 <img src="/images/details.png" onClick={poolDetail} />
+                <div className='pool'>
+                  Pool Detail
+                </div>
               </div>
               <div className='bar' style={{
                 backgroundColor: poolMenu ? "#ffffffae" : ""
@@ -141,6 +152,9 @@ function Insurance() {
             <div className='claim-menu'>
               <div className='image'>
                 <img src="/images/claim.png" onClick={requestClaim} />
+                <div className='claim'>
+                  Request Claim
+                </div>
               </div>
               <div className='bar' style={{
                 backgroundColor: claimMenu ? "#ffffffae" : ""
@@ -149,6 +163,9 @@ function Insurance() {
             <div className='notification-menu'>
               <div className='image'>
                 <img src="/images/notification.png" onClick={notifications} />
+                <div className='notification'>
+                   Notifications
+                </div>
               </div>
               <div className='bar' style={{
                 backgroundColor: notificationMenu ? "#ffffffae" : ""
@@ -157,6 +174,9 @@ function Insurance() {
             <div className='meeting-menu'>
               <div className='image'>
                 <img src="/images/video.png" onClick={scheduleMeeting} />
+                <div className='meeting'>
+                   Join or Create Meeting
+                </div>
               </div>
               <div className='bar' style={{
                 backgroundColor: meetingMenu ? "#ffffffae" : ""
@@ -200,6 +220,10 @@ function Insurance() {
           }
         </Sections>
       </Main>
+      <ToastContainer
+        autoClose={1000}
+        hideProgressBar={true}
+      />
     </Container>
   )
 }
@@ -214,6 +238,10 @@ const Container = styled.div`
     display: flex;
     justify-content: center;
     margin-top: 10px;
+
+  .Toastify__toast {
+    border: 1px solid #0152b58e;
+  }
 `
 
 const Main = styled.div`
@@ -235,7 +263,7 @@ const Heading = styled.div`
   border-top-right-radius: 10px;
 
   .menu {
-    margin-top: 3px;
+    margin-top: 0px;
     height: 100%;
     width: 100%;
     display: flex;
@@ -255,6 +283,7 @@ const Heading = styled.div`
       align-items: center;
 
       .image {
+        position: relative;
         flex:1;
         width: 15%;
         display: flex;
@@ -263,9 +292,32 @@ const Heading = styled.div`
         cursor: pointer;
         transition: opacity 0.25s;
 
+        .account {
+          position: absolute;
+          height: 1.5rem;
+          width:5rem;
+          top: 2.2rem;
+          background-color: #000000;
+          font-size: 14px;
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 5px;
+          opacity: 0;
+          z-index: 1000;
+          transition: opacity 0.2s;
+        } 
+
+        &:hover .account {
+          opacity: 1;
+        }
+
         &:hover {
           opacity: 0.8;
         }
+
+        
 
         img {
           width: 100%;
@@ -282,6 +334,65 @@ const Heading = styled.div`
         border-radius: 10px;
       }
     }  
+
+    .join-menu {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .image {
+        position: relative;
+        flex:1;
+        width: 15%;
+        display: flex;
+        align-items: end;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.25s;
+
+        .join {
+          position: absolute;
+          height: 1.5rem;
+          width:9.3rem;
+          top: 2.2rem;
+          background-color: #000000;
+          font-size: 14px;
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 5px;
+          opacity: 0;
+          z-index: 1000;
+          transition: opacity 0.2s;
+        } 
+
+        &:hover .join {
+          opacity: 1;
+        }
+
+        &:hover {
+          opacity: 0.8;
+        }
+
+        
+
+        img {
+          width: 100%;
+          opacity: 0.9;
+        }
+
+       
+      }
+
+      .bar {
+        margin-top: 3px;
+        height: 0.2rem;
+        width: 13%;
+        border-radius: 10px;
+      }
+    }
     
     .pool-menu {
       flex: 1;
@@ -298,6 +409,27 @@ const Heading = styled.div`
         justify-content: center;
         cursor: pointer;
         transition: opacity 0.25s;
+
+        .pool {
+          position: absolute;
+          height: 1.5rem;
+          width: 6.2rem;
+          top: 2rem;
+          background-color: #000000;
+          font-size: 14px;
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 5px;
+          opacity: 0;
+          z-index: 1000;
+          transition: opacity 0.2s;
+        } 
+
+        &:hover .pool {
+          opacity: 1;
+        }
 
         &:hover {
           opacity: 0.8;
@@ -335,6 +467,27 @@ const Heading = styled.div`
         cursor: pointer;
         transition: opacity 0.25s;
 
+        .notification {
+          position: absolute;
+          height: 1.5rem;
+          width:7rem;
+          top: 2rem;
+          background-color: #000000;
+          font-size: 14px;
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 5px;
+          opacity: 0;
+          z-index: 1000;
+          transition: opacity 0.2s;
+        } 
+
+        &:hover .notification {
+          opacity: 1;
+        }
+
         &:hover {
           opacity: 0.8;
         }
@@ -371,6 +524,27 @@ const Heading = styled.div`
         cursor: pointer;
         transition: opacity 0.25s;
 
+        .claim {
+          position: absolute;
+          height: 1.5rem;
+          width: 7.5rem;
+          top: 2rem;
+          background-color: #000000;
+          font-size: 14px;
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 5px;
+          opacity: 0;
+          z-index: 1000;
+          transition: opacity 0.2s;
+        } 
+
+        &:hover .claim {
+          opacity: 1;
+        }
+
         &:hover {
           opacity: 0.8;
         }
@@ -406,6 +580,27 @@ const Heading = styled.div`
         justify-content: center;
         cursor: pointer;
         transition: opacity 0.25s;
+
+        .meeting {
+          position: absolute;
+          height: 1.5rem;
+          width:11rem;
+          top: 1.9rem;
+          background-color: #000000;
+          font-size: 14px;
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 5px;
+          opacity: 0;
+          z-index: 1000;
+          transition: opacity 0.2s;
+        } 
+
+        &:hover .meeting {
+          opacity: 1;
+        }
 
         &:hover {
           opacity: 0.8;

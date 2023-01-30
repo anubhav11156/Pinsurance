@@ -1,16 +1,32 @@
-import { React, useState } from 'react'
+import { React, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { ConnectKitButton } from "connectkit";
 import { useAccount } from 'wagmi';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Header() {
 
   const [isConnected, setConnected] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [flag, setFlag] = useState(0);
 
   const { address } = useAccount();
   console.log(address);
 
+  useEffect( () => {
+    if(isConnected && flag==0){
+      toast.success("Logged In", {
+        position: toast.POSITION.TOP_CENTER
+      });
+      setFlag(1);
+    }else if(!isConnected && flag==1 ){
+      toast.success("Logged Out", {
+        position: toast.POSITION.TOP_CENTER
+      });
+      setFlag(0);
+    }
+  },[isConnected]);
 
   window.onscroll = function (e) {
     if(window.scrollY>=910){
@@ -74,7 +90,7 @@ function Header() {
 
                   return (
                     <div className="login" onClick={show}>
-                      {isConnected ? ensName ?? "SignOut" : "SignIn"}
+                      {isConnected ? ensName ?? "Logout" : "Login"}
                     </div>
                   );
                 }
@@ -83,6 +99,10 @@ function Header() {
           </div>
         </Right>
       </InsideContainer>
+      <ToastContainer
+        autoClose={1000}
+        hideProgressBar={true}
+      />
     </Container>
   )
 }
