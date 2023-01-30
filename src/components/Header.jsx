@@ -6,33 +6,38 @@ import { useAccount } from 'wagmi';
 function Header() {
 
   const [isConnected, setConnected] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
   const { address } = useAccount();
   console.log(address);
 
 
   window.onscroll = function (e) {
-
-    // setPixelScrolled(window.scrollY);
-    console.log(window.scrollY);
-    
+    if(window.scrollY>=910){
+      setIsScrolled(true);
+    }else{
+      setIsScrolled(false);
+    }
   }
 
   const planHandler = () => {
     window.scroll({
-      top: 910,
+      top: 926,
       behavior: 'smooth'
     });
   }
 
   const takeInsuranceHandler = () => {
     window.scroll({
-      top: 1830,
+      top: 1846,
       behavior: 'smooth'
     });
   }
 
   return (
-    <Container>
+    <Container style={{
+      borderBottom: isScrolled ? '1px solid #6aa5ec3d' : ''
+    }}>
       <InsideContainer>
         <Left>
           <div className='logo'>
@@ -60,7 +65,7 @@ function Header() {
             <ConnectKitButton.Custom>
               {
                 ({ isConnected, show, ensName }) => {
-                  console.log("testing", isConnected);
+                  console.log("Wallet Connected : ", isConnected);
                   if (isConnected) {
                     setConnected(true);
                   } else {
@@ -89,7 +94,6 @@ const Container = styled.div`
     width: 100%;
     z-index: 10;
     height: 5rem;
-    /* border-bottom: 1px solid #6aa5ec3d; */
     display: flex;
     justify-content: center;
     align-items: center; 

@@ -4,7 +4,9 @@ import styled from 'styled-components'
 function Insurance() {
   return (
     <Container>
-        Take Insurance Policy
+        <Main>
+            This is main
+        </Main>
     </Container>
   )
 }
@@ -12,6 +14,19 @@ function Insurance() {
 export default Insurance
 
 const Container=styled.div`
-    height: 92vh;
-    background-color: lightblue;
+    flex: 1;
+    border-bottom: 1px solid black;
+    padding-left: 13.2rem;
+    padding-right: 12rem;
+    background-color: lightgray;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+`
+
+const Main=styled.div`
+    height:865px;
+    background-color: lightpink;
+    width: 100%;
+    margin-top:40px ;
 `

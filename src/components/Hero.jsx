@@ -5,9 +5,9 @@ function Hero() {
 
     const getStartedHandler = () => {
         window.scroll({
-            top: 910,
+            top: 926,
             behavior: 'smooth'
-          });
+        });
     }
 
     return (
@@ -50,7 +50,6 @@ const Container = styled.div`
     width: 100%;
     padding-left: 13.2rem;
     display: flex;
-
     .bar {
         position: absolute;
         top: 55rem;

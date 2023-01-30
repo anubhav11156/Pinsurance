@@ -12,6 +12,6 @@ function Plan() {
 export default Plan
 
 const Container=styled.div`
-    height: 91vh;
-    background-color: lightcoral;
+    height: 930px;
+    background-color: lightblue;
 `
