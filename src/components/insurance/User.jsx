@@ -1,17 +1,71 @@
 import { React, useState } from 'react'
 import styled from 'styled-components'
+import BarLoader from "react-spinners/BarLoader";
+import ClipLoader from "react-spinners/ClipLoader";
+import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function User() {
 
     const [haveAccount, setHaveAccount] = useState(false);
     const [formActive, setFormActive] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+
+    const [formInput, setFormInput] = useState({
+        name: "",
+        age: "",
+        email: "",
+        profileCID: "",
+    });
+
+    console.log(formInput);
 
     const createHandler = () => {
         setFormActive(true);
     }
 
-    const uploadImageHandler = () => {
-        // IPFS code ---> 
+    /*------IPFS Upload Code-------*/
+
+    const web3ApiKey = process.env.REACT_APP_WEB3_STORAGE;
+
+    const makeStorageClient = () => {
+        return new Web3Storage({token: `${web3ApiKey}`})
+    }
+
+    const uploadImageHandler = async () => {
+        const fileInput = document.getElementById('upload-image');
+        setIsUploading(true);
+        const cid = await uploadToIPFS(fileInput.files);
+
+        if(cid.length){
+            toast.success("Uploaded to IPFS", {
+                position: toast.POSITION.TOP_CENTER
+            });
+        }else {
+            toast.error("IPFS upload failed!", {
+                position: toast.POSITION.TOP_CENTER
+            });
+        }
+        setIsUploading(false);
+        setFormInput({
+            ...formInput,
+            profileCID: `${cid}`
+        })
+    }
+
+    const uploadToIPFS = async (files) => {
+        const client = makeStorageClient()
+        const cid = await client.put(files)
+        return cid;
+    }
+    /*-----------------------------*/
+
+    // form submission, data goes to blockchain
+    const createAccountHandler = () => {
+        setIsCreatingAccount(true);
     }
 
     return (
@@ -41,27 +95,53 @@ function User() {
                             <Form>
                                 <div className='left'>
                                     <div className='name-div'>
-                                        <input type="text" placeholder="Enter Name" />
+                                        <input type="text" placeholder="Enter Name" onChange={(prop) => {
+                                            setFormInput({
+                                                ...formInput,
+                                                name: prop.target.value
+                                            })
+                                        }} />
                                     </div>
                                     <div className='image-div'>
+
                                         <div className='chooseImage'>
-                                            <input className="uploadImage" type="file" id="content" onChange={uploadImageHandler} />
+                                            <div className='up'>
+                                                <input className="uploadImage" type="file" id="upload-image" onChange={uploadImageHandler} />
+                                            </div>
+                                            <div className='down'>
+                                                {isUploading &&
+                                                    <BarLoader color="#0152b5cc" size={13} />
+                                                }
+                                            </div>
                                         </div>
+
                                     </div>
                                     <div className='age-div'>
-                                        <input type="text" placeholder="Enter Age" />
+                                        <input type="text" placeholder="Enter Age" onChange={(prop) => {
+                                            setFormInput({
+                                                ...formInput,
+                                                age: prop.target.value
+                                            })
+                                        }} />
                                     </div>
                                     <div className='email-div'>
-                                        <input type="text" placeholder="Enter Email" />
+                                        <input type="text" placeholder="Enter Email" onChange={(prop) => {
+                                            setFormInput({
+                                                ...formInput,
+                                                email: prop.target.value
+                                            })
+                                        }} />
                                     </div>
                                     <div className='button-div'>
-                                        <div className='createAccount'>
-                                            <p>Create Account</p>
+                                        <div className='createAccount' onClick={createAccountHandler}>
+                                            { !isCreatingAccount &&
+                                                <p>Create Account</p>
+                                            }
+                                            { isCreatingAccount  &&
+                                                <ClipLoader color="#ffffff" size={16} />
+                                            }
                                         </div>
                                     </div>
-                                </div>
-                                <div className='right'>
-                                    right
                                 </div>
                             </Form>
                         }
@@ -180,7 +260,7 @@ const Main = styled.div`
 const Form = styled.div`
     margin-top: 0.5rem;
     height: 40rem;
-    width: 65rem;
+    width: 35rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -212,12 +292,17 @@ const Form = styled.div`
 
         .image-div {
             width: 100%;
-            height: 12rem;
+            height: 14rem;
             display: flex;
             justify-content: center;
             align-items: center;
 
             .chooseImage {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+
                 height: 11rem;
                 background-color: lightblue;
                 width: 97%;
@@ -229,42 +314,58 @@ const Form = styled.div`
                 display: flex;
                 justify-content: center;
                 align-items: center;
-            }
 
-            .uploadImage {
-                width: 220px;
-                height: 35px;
-                border-radius: 2px;
-                color: #0152b5cc;
-                font-size: 15px;
-                border: 1px solid #0152b5cc;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
-            }
+                .up {
+                    display: flex;
+                    justify-content: center;
+                    align-items: end;
+                    flex: 1.2;
+                    .uploadImage {
+                        width: 220px;
+                        height: 35px;
+                        border-radius: 2px;
+                        color: #0152b5cc;
+                        font-size: 15px;
+                        border: 1px solid #0152b5cc;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        white-space: nowrap;
+                    }
 
-            .uploadImage::-webkit-file-upload-button {
-                width: 100px;
-                height: 38px;
-                background: #0152b5cc;
-                backdrop-filter: blur( 4px );
-                -webkit-backdrop-filter: blur( 4px );
-                border: none;
-                cursor: pointer;
-                margin-right: 10px;
+                    .uploadImage::-webkit-file-upload-button {
+                        width: 100px;
+                        height: 38px;
+                        background: #0152b5cc;
+                        backdrop-filter: blur( 4px );
+                        -webkit-backdrop-filter: blur( 4px );
+                        border: none;
+                        cursor: pointer;
+                        margin-right: 10px;
 
-                color: white;
-                transition: opacity 0.15s;
-                font-size: 15px;
+                        color: white;
+                        transition: opacity 0.15s;
+                        font-size: 15px;
 
-                &:hover {
-                    opacity: 0.9;
+                        &:hover {
+                            opacity: 0.9;
+                        }
+
+                        &:active {
+                            opacity: 0.8;
+                        }
+                    }
                 }
 
-                &:active {
-                    opacity: 0.8;
+                .down {
+                    flex: 1;
+                    width: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
             }
+
+            
         }
 
         .age-div {
@@ -288,7 +389,7 @@ const Form = styled.div`
         .email-div {
             margin-top: -0.9rem;
             width: 100%;
-            height: 5rem;
+            height: 6.6rem;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -307,32 +408,34 @@ const Form = styled.div`
 
         .button-div {
             width: 100%;
-            height: 4.5rem;
+            height: 5rem;
             display: flex;
             justify-content: center;
             align-items: start;
 
             .createAccount {
                 width: 97%;
-                height: 2.5rem;
+                height: 2.9rem;
                 background-color: #0152b5cc;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                border-radius: 4px;
+                border-radius: 5px;
                 cursor: pointer;
-                
+                transition: opacity 0.15s;
                 p {
                     color: white
                 }
+
+                &:hover {
+                    opacity: 0.9;
+                }
+
+                &:active {
+                    opacity: 0.8;
+                }
             }
         }
-    }
-
-    .right {
-        flex: 1;
-        height: 100%;
-        background-color: lightpink;
     }
 
 `
