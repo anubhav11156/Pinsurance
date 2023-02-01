@@ -1,11 +1,13 @@
-import { React, useState } from 'react'
+import { React, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import BarLoader from "react-spinners/BarLoader";
 import ClipLoader from "react-spinners/ClipLoader";
 import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { Contract, ethers } from "ethers"
+import { ContractResultDecodeError, useAccount } from 'wagmi'
+import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../../config";
 
 function User() {
 
@@ -13,38 +15,84 @@ function User() {
     const [formActive, setFormActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
+    const [metadatUri, setMetadataUri] = useState("");
+
+    const { isConnected, address } = useAccount();
+
+    const ownerPrivateKey = process.env.REACT_APP_PRIVATE_KEY;
 
     const [formInput, setFormInput] = useState({
         name: "",
         age: "",
         email: "",
-        profileCID: "",
+        profileURI: "",
     });
-
-    console.log(formInput);
 
     const createHandler = () => {
         setFormActive(true);
     }
 
-    /*------IPFS Upload Code-------*/
+    useEffect(() => {
+        getAccountStatus();
+        getAccountDetail();
+    }, [isConnected]);
+
+    const getAccountStatus = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+        const pinsuranceContract = new ethers.Contract(
+            pinsuranceContractAddress,
+            pinsuranceAbi.abi,
+            provider
+        )
+        try {
+            const status = await pinsuranceContract.getUserAccountStatus(address)
+                .then((response) => console.log('have account : ', response))
+                .catch((e) => console.error(e))
+            if (status) {
+                setHaveAccount(true);
+            } else {
+                setHaveAccount(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getAccountDetail = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+        const pinsuranceContract = new ethers.Contract(
+            pinsuranceContractAddress,
+            pinsuranceAbi.abi,
+            provider
+        )
+        try {
+            await pinsuranceContract.getUserDetail(address)
+                .then((response) => console.log(response));
+        } catch (error) {
+            console.log(error);
+        }
+
+
+    }
+    /*--------------------IPFS code to upload metadata-------------------*/
 
     const web3ApiKey = process.env.REACT_APP_WEB3_STORAGE;
 
     const makeStorageClient = () => {
-        return new Web3Storage({token: `${web3ApiKey}`})
+        return new Web3Storage({ token: `${web3ApiKey}` })
     }
 
     const uploadImageHandler = async () => {
         const fileInput = document.getElementById('upload-image');
+        const pathname = fileInput.files[0].name;
         setIsUploading(true);
         const cid = await uploadToIPFS(fileInput.files);
 
-        if(cid.length){
+        if (cid.length) {
             toast.success("Uploaded to IPFS", {
                 position: toast.POSITION.TOP_CENTER
             });
-        }else {
+        } else {
             toast.error("IPFS upload failed!", {
                 position: toast.POSITION.TOP_CENTER
             });
@@ -52,7 +100,7 @@ function User() {
         setIsUploading(false);
         setFormInput({
             ...formInput,
-            profileCID: `${cid}`
+            profileURI: `https://ipfs.io/ipfs/${cid}/${pathname}`
         })
     }
 
@@ -61,12 +109,60 @@ function User() {
         const cid = await client.put(files)
         return cid;
     }
-    /*-----------------------------*/
 
-    // form submission, data goes to blockchain
-    const createAccountHandler = () => {
-        setIsCreatingAccount(true);
+    const metadata = async () => {
+        const { name, age, email, profileURI } = formInput;
+        // if (!name || !age || !email || !profileURI) return;
+        const data = JSON.stringify({ name, age, email, profileURI });
+        const files = [
+            new File([data], 'metadata.json')
+        ]
+        const metadataCID = await uploadToIPFS(files);
+        return `https://ipfs.io/ipfs/${metadataCID}/metadata.json`
     }
+    /*------------------------------------------------------*/
+
+
+
+
+    /*------------------Create account----------------------*/
+
+    const createAccountHandler = async () => {
+        setIsCreatingAccount(true);
+        console.log('nigga1');
+        const metadatURI = await metadata();
+        console.log('uri : ', metadatURI);
+        console.log('nigga2');
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+        const wallet = new ethers.Wallet(ownerPrivateKey);
+        const signer = wallet.connect(provider);
+        const pinsuranceContract = new ethers.Contract(
+            pinsuranceContractAddress,
+            pinsuranceAbi.abi,
+            signer
+        )
+        const create = await pinsuranceContract.createUser(
+            address,
+            metadatURI
+        )
+        await create.wait()
+        .then(()=> {
+        toast.success("Account created!", {
+            position: toast.POSITION.TOP_CENTER
+        });
+        setHaveAccount(true);
+        setIsCreatingAccount(false);
+        getAccountStatus();
+        }).catch((e)=>{
+        toast.error("Failed to create account!", {
+            position: toast.POSITION.TOP_CENTER
+        });
+        console.error(e);
+        setIsCreatingAccount(false);
+        })
+    }
+
+    /*--------------------------------------------------------------------------*/
 
     return (
         <Container>
@@ -134,10 +230,10 @@ function User() {
                                     </div>
                                     <div className='button-div'>
                                         <div className='createAccount' onClick={createAccountHandler}>
-                                            { !isCreatingAccount &&
+                                            {!isCreatingAccount &&
                                                 <p>Create Account</p>
                                             }
-                                            { isCreatingAccount  &&
+                                            {isCreatingAccount &&
                                                 <ClipLoader color="#ffffff" size={16} />
                                             }
                                         </div>
@@ -147,9 +243,9 @@ function User() {
                         }
                     </>
                 }
-                {haveAccount &&
+                { haveAccount &&
                     <div className='haveAccount'>
-
+                        Hello
                     </div>
                 }
             </Main>

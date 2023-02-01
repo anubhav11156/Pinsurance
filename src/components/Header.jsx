@@ -12,7 +12,6 @@ function Header() {
   const [flag, setFlag] = useState(0);
 
   const { address } = useAccount();
-  console.log(address);
 
   useEffect( () => {
     if(isConnected && flag==0){
@@ -81,7 +80,6 @@ function Header() {
             <ConnectKitButton.Custom>
               {
                 ({ isConnected, show, ensName }) => {
-                  console.log("Wallet Connected : ", isConnected);
                   if (isConnected) {
                     setConnected(true);
                   } else {
