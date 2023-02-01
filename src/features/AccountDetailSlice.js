@@ -1,8 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  address:'',
-  balance:''
+  haveAccount:''
 };
 
 export const accountDetailSlice = createSlice({
@@ -11,19 +10,16 @@ export const accountDetailSlice = createSlice({
   reducers: {
     accountAdded: {
       reducer(state, action) {
-        state.address = action.payload.userAdrress;
-        state.balance = action.payload.userBalance;
+        state.haveAccount = action.payload.userHaveAccount;
       },
-      prepare(userAdrress, userBalance) {
+      prepare(userHaveAccount) {
         return {
           payload: {
-            userAdrress,
-            userBalance
+            userHaveAccount
           }
         }
       }
     }
-    
   }
 })
 

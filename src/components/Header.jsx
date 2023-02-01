@@ -4,33 +4,43 @@ import { ConnectKitButton } from "connectkit";
 import { useAccount } from 'wagmi';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ethers } from "ethers"
+import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../config";
+import { useDispatch, useSelector } from 'react-redux';
+import { accountAdded } from '../features/AccountDetailSlice';
 
 function Header() {
 
+  const dispatch = useDispatch();
+  const { address } = useAccount();
+
   const [isConnected, setConnected] = useState(false);
+  const [haveAccount, setHaveAccount] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [flag, setFlag] = useState(0);
 
-  const { address } = useAccount();
 
-  useEffect( () => {
-    if(isConnected && flag==0){
+  useEffect(() => {
+    if (isConnected && flag == 0) {
       toast.success("Logged In", {
         position: toast.POSITION.TOP_CENTER
       });
       setFlag(1);
-    }else if(!isConnected && flag==1 ){
+      getAccountStatus();
+    } else if (!isConnected && flag == 1) {
       toast.success("Logged Out", {
         position: toast.POSITION.TOP_CENTER
       });
       setFlag(0);
     }
-  },[isConnected]);
+  }, [isConnected]);
+
+
 
   window.onscroll = function (e) {
-    if(window.scrollY>=910){
+    if (window.scrollY >= 910) {
       setIsScrolled(true);
-    }else{
+    } else {
       setIsScrolled(false);
     }
   }
@@ -48,6 +58,52 @@ function Header() {
       behavior: 'smooth'
     });
   }
+
+
+  useEffect(()=>{
+    getAccountStatus();
+  },[address]);
+  /*------Check user have accoun on pinsurance or not-------*/
+
+  const getAccountStatus = async () => {
+    const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+    const pinsuranceContract = new ethers.Contract(
+      pinsuranceContractAddress,
+      pinsuranceAbi.abi,
+      provider
+    )
+    try {
+      await pinsuranceContract.getUserAccountStatus(address)
+        .then((response) => {
+          console.log(response);
+          dispatch(
+            accountAdded(response)
+          )
+        })
+        .catch((e) => console.error(e))
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  /*--------------------------------------------------------*/
+
+  /*-----Dispatach user account detail to redux store---------*/
+
+  // useEffect(()=> {
+  //   if(isConnected){
+  //     dispatch(
+  //       accountAdded(address, true)
+  //     )
+  //   }else {
+  //     setHaveAccount(false)
+  //     dispatch(
+  //      accountAdded('', false) 
+  //     )
+  //   }
+  // },[isConnected])
+
+  /*----------------------------------------------------------*/
 
   return (
     <Container style={{

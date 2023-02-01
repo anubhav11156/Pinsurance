@@ -5,22 +5,38 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Contract, ethers } from "ethers"
-import { ContractResultDecodeError, useAccount } from 'wagmi'
+import { ethers } from "ethers"
+import { useAccount } from 'wagmi'
 import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../../config";
+import { useSelector } from 'react-redux';
+import { selectAccount } from '../../features/AccountDetailSlice';
+
 
 function User() {
 
-    const [haveAccount, setHaveAccount] = useState(false);
+    const userAccountDetail = useSelector(selectAccount);
+
     const [formActive, setFormActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
-    const [metadatUri, setMetadataUri] = useState("");
+    const [userHaveAccount, setuserHaveAccouint] = useState(false);
+
+  
 
     const { isConnected, address } = useAccount();
 
     const ownerPrivateKey = process.env.REACT_APP_PRIVATE_KEY;
 
+    useEffect(()=> {
+        if(userAccountDetail.haveAccount){
+            setuserHaveAccouint(true);
+        }else{
+            setuserHaveAccouint(false);
+        }
+    },[userAccountDetail.haveAccount]);
+
+    console.log('haveAccount : ', userHaveAccount);
+    
     const [formInput, setFormInput] = useState({
         name: "",
         age: "",
@@ -33,30 +49,8 @@ function User() {
     }
 
     useEffect(() => {
-        getAccountStatus();
         getAccountDetail();
     }, [isConnected]);
-
-    const getAccountStatus = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
-        const pinsuranceContract = new ethers.Contract(
-            pinsuranceContractAddress,
-            pinsuranceAbi.abi,
-            provider
-        )
-        try {
-            const status = await pinsuranceContract.getUserAccountStatus(address)
-                .then((response) => console.log('have account : ', response))
-                .catch((e) => console.error(e))
-            if (status) {
-                setHaveAccount(true);
-            } else {
-                setHaveAccount(false);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
 
     const getAccountDetail = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
@@ -150,9 +144,9 @@ function User() {
         toast.success("Account created!", {
             position: toast.POSITION.TOP_CENTER
         });
-        setHaveAccount(true);
+        setuserHaveAccouint(true);
         setIsCreatingAccount(false);
-        getAccountStatus();
+        window.location.reload();
         }).catch((e)=>{
         toast.error("Failed to create account!", {
             position: toast.POSITION.TOP_CENTER
@@ -167,7 +161,7 @@ function User() {
     return (
         <Container>
             <Main>
-                {!haveAccount &&
+                {!userHaveAccount&&
                     <>
                         {!formActive &&
                             <div className='noAccount'>
@@ -243,7 +237,7 @@ function User() {
                         }
                     </>
                 }
-                { haveAccount &&
+                { userHaveAccount &&
                     <div className='haveAccount'>
                         Hello
                     </div>
