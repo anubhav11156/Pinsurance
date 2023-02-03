@@ -6,7 +6,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ethers } from "ethers"
 import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../config";
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { accountAdded } from '../features/AccountDetailSlice';
 
 function Header() {
@@ -63,6 +63,8 @@ function Header() {
   useEffect(()=>{
     getAccountStatus();
   },[address]);
+
+
   /*------Check user have accoun on pinsurance or not-------*/
 
   const getAccountStatus = async () => {
@@ -75,7 +77,6 @@ function Header() {
     try {
       await pinsuranceContract.getUserAccountStatus(address)
         .then((response) => {
-          console.log(response);
           dispatch(
             accountAdded(response)
           )
@@ -87,23 +88,6 @@ function Header() {
   }
 
   /*--------------------------------------------------------*/
-
-  /*-----Dispatach user account detail to redux store---------*/
-
-  // useEffect(()=> {
-  //   if(isConnected){
-  //     dispatch(
-  //       accountAdded(address, true)
-  //     )
-  //   }else {
-  //     setHaveAccount(false)
-  //     dispatch(
-  //      accountAdded('', false) 
-  //     )
-  //   }
-  // },[isConnected])
-
-  /*----------------------------------------------------------*/
 
   return (
     <Container style={{

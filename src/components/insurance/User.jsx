@@ -359,7 +359,44 @@ function User() {
                             </div>
                         </div>
                         <div className='down'>
+                            <div className='heading'>
+                                <div className='line-1'></div>
+                                <div className='text'>
+                                    <p>Pools</p>
+                                </div>
+                                <div className='line-2'></div>
+                            </div>
+                            <div className='pool-conatainer'>
+                                <PoolCard>
+                                    <div className='pool-name'>
 
+                                    </div>
+                                    <div className='pool-id'>
+
+                                    </div>
+                                    <div className='pool-address'>
+
+                                    </div>
+                                    <div className='insurance-period'>
+                                        <div className='from-div'></div>
+                                        <div className='to-div'></div>
+                                    </div>
+                                    <div className='vehicle-detail'>
+                                        <div className='vehicle-name'></div>
+                                        <div className='cubic-capacity'></div>
+                                    </div>
+                                    <div className='premium-count'>
+                                        <div className='premium-div'></div>
+                                        <div className='count-div'></div>
+                                    </div>
+                                    <div className='stake-amount'>
+
+                                    </div>
+                                    <div className='status-div'>
+
+                                    </div>
+                                </PoolCard>
+                            </div>
                         </div>
                     </AccountSection>
                 }
@@ -654,20 +691,19 @@ const AccountSection = styled.div`
     flex-direction: column;
     width: 100%;
     align-items: center;
-    gap: 1rem;
 
     .up {
-        height: 20rem;
+        height: 19rem;
         width: 95%;
         display: flex;
         justify-content: center;
         align-items: end;
-        gap: 1rem;
+        gap: 1.2rem;
         overflow: hidden;
 
         .left {
             width: 14rem;
-            height: 80%;
+            height: 84.5%;
             display: flex;
             justify-content: start;
 
@@ -894,8 +930,107 @@ const AccountSection = styled.div`
     }
 
     .down {
+        margin-top: -1rem;
         flex: 1;
         width: 95%;
-        background-color: blue;
+        display: flex;
+        flex-direction: column;
+        justify-content: start;
+
+        .heading {
+            height: 1rem;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            margin-bottom: 5px;
+
+            .line-1 {
+                width: 2.5rem;
+                border-top: 1px solid  #0152b5b6;
+                margin-right: 8px;
+            }
+
+            .text {
+                p {
+                    margin: 0;
+                    color:  #0152b5e0;
+                }
+            }
+
+            .line-2 {
+                flex: 1;
+                margin-left: 8px;
+                border-top: 1px solid  #0152b5b6;
+            }
+        }
+
+        .pool-conatainer{
+            flex: 1;
+            display: flex;
+            display: grid;
+            grid-template-columns: 410.94px  410.94px  410.94px;
+            grid-column-gap: 6rem;
+        }
+    }
+`
+
+const PoolCard=styled.div`
+    margin-top: 0.7rem;
+    width: 100%;
+    height: 92%;
+    display: flex;
+    flex-direction: column;
+    background-color: #0152b534;
+    border-radius: 8px;
+    border: 1px solid #0152b546;
+
+    .pool-name {
+
+    }
+
+    .pool-id {
+
+    }
+
+    .pool-address {
+
+    }
+
+    .insurnace-period {
+        .from-div {
+
+        }
+
+        .to-div {
+
+        }
+    }
+
+    .vehicle-detail {
+        .vehicle-name {
+
+        }
+
+        .cubic-capacity {
+
+        }
+    }
+
+    .premium-count {
+        .premium-div {
+
+        }
+
+        .count-div {
+
+        }
+    }
+
+    .stake-amount {
+
+    }
+
+    .status-div {
+
     }
 `
