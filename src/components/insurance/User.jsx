@@ -5,6 +5,8 @@ import ClipLoader from "react-spinners/ClipLoader";
 import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import copy from 'copy-to-clipboard';
+import axios from "axios";
 import { ethers } from "ethers"
 import { useAccount } from 'wagmi'
 import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../../config";
@@ -20,23 +22,31 @@ function User() {
     const [isUploading, setIsUploading] = useState(false);
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [userHaveAccount, setuserHaveAccouint] = useState(false);
+    const [accountDetail, setAccountDetaiil] = useState({
+        name:"",
+        age:"",
+        address:"",
+        filBal:"",
+        usdcBal:"",
+        email:"",
+        profileURI: ""
+    });
 
-  
 
     const { isConnected, address } = useAccount();
 
     const ownerPrivateKey = process.env.REACT_APP_PRIVATE_KEY;
 
-    useEffect(()=> {
-        if(userAccountDetail.haveAccount){
+    useEffect(() => {
+        if (userAccountDetail.haveAccount) {
             setuserHaveAccouint(true);
-        }else{
+        } else {
             setuserHaveAccouint(false);
         }
-    },[userAccountDetail.haveAccount]);
+    }, [userAccountDetail.haveAccount]);
 
     console.log('haveAccount : ', userHaveAccount);
-    
+
     const [formInput, setFormInput] = useState({
         name: "",
         age: "",
@@ -52,6 +62,8 @@ function User() {
         getAccountDetail();
     }, [isConnected]);
 
+    /*----------------get user account detail----------------------------*/
+
     const getAccountDetail = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
         const pinsuranceContract = new ethers.Contract(
@@ -61,13 +73,29 @@ function User() {
         )
         try {
             await pinsuranceContract.getUserDetail(address)
-                .then((response) => console.log(response));
+                .then((response) => {
+                    fetchUserInfoFromURI(response.userMetadataURI)
+                })
         } catch (error) {
             console.log(error);
         }
-
-
     }
+
+    const fetchUserInfoFromURI = async (uri) => {
+        const uriResponse = await axios.get(uri);
+        console.log('uriResponse : ', uriResponse.data);
+        setAccountDetaiil({
+            ...accountDetail,
+            name: uriResponse.data.name,
+            age: uriResponse.data.age,
+            email: uriResponse.data.email,
+            profileURI: uriResponse.data.profileURI
+        })
+    }
+
+
+    /*-------------------------------------------------------------------*/
+
     /*--------------------IPFS code to upload metadata-------------------*/
 
     const web3ApiKey = process.env.REACT_APP_WEB3_STORAGE;
@@ -140,28 +168,34 @@ function User() {
             metadatURI
         )
         await create.wait()
-        .then(()=> {
-        toast.success("Account created!", {
-            position: toast.POSITION.TOP_CENTER
-        });
-        setuserHaveAccouint(true);
-        setIsCreatingAccount(false);
-        window.location.reload();
-        }).catch((e)=>{
-        toast.error("Failed to create account!", {
-            position: toast.POSITION.TOP_CENTER
-        });
-        console.error(e);
-        setIsCreatingAccount(false);
-        })
+            .then(() => {
+                toast.success("Account created!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                setuserHaveAccouint(true);
+                setIsCreatingAccount(false);
+                window.location.reload();
+            }).catch((e) => {
+                toast.error("Failed to create account!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                console.error(e);
+                setIsCreatingAccount(false);
+            })
     }
 
     /*--------------------------------------------------------------------------*/
 
+    const copyAddress = () => {
+        if (address) {
+            copy(address);
+        }
+    }
+
     return (
         <Container>
             <Main>
-                {!userHaveAccount&&
+                {!userHaveAccount &&
                     <>
                         {!formActive &&
                             <div className='noAccount'>
@@ -237,10 +271,61 @@ function User() {
                         }
                     </>
                 }
-                { userHaveAccount &&
-                    <div className='haveAccount'>
-                        Hello
-                    </div>
+                {userHaveAccount &&
+                    <AccountSection>
+                        <div className='up'>
+                            <div className='left'>
+                                <div className='image'>
+                                    <img src={accountDetail.profileURI} />
+                                </div>
+                            </div>
+                            <div className='right'>
+                                <div className='details'>
+                                    <div className='address-div'>
+                                        <p className='address'>{address}</p>
+                                        <div className='copy' onClick={copyAddress}>
+                                            <img src="/images/copy.png" />
+                                        </div>
+                                    </div>
+                                    <div className='name-div'>
+                                        <div className='name'>
+                                            <p>Hi, {accountDetail.name}</p>
+                                        </div>
+                                        <div className='age'>
+                                            <p>{accountDetail.age}</p>
+                                        </div>
+                                    </div>
+                                    <div className='email-div'>
+                                        <div className='logo'>
+                                            <img src="/images/gmail.png" />
+                                        </div>
+                                        <p className='email'>{accountDetail.email}</p>
+                                    </div>
+                                    <div className='balance-div'>
+                                        <div className='fil-div'>
+                                            <div className='logo'>
+                                                <img src="/images/fil-logo.png" />
+                                            </div>
+                                            <div className='user-balance'>
+                                                <p>123</p>
+                                            </div>
+                                        </div>
+                                        <div className='usdc-div'>
+                                            <div className='logo'>
+                                                <img src="/images/usdc-logo.svg" />
+                                            </div>
+                                            <div className='user-balance'>
+                                                <p>123</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className='down'>
+
+                        </div>
+                    </AccountSection>
                 }
             </Main>
         </Container>
@@ -258,13 +343,13 @@ const Container = styled.div`
 `
 
 const Main = styled.div`
-    width: 80%;
-    height:40rem;
+    width: 100%;
+    height:99%;
     display: flex;
     justify-content: center;
 
     .noAccount {
-        margin-top: 12rem;
+        margin-top: 14rem;
         display: flex;
         flex-direction: column;
         height: 8rem;
@@ -348,7 +433,7 @@ const Main = styled.div`
 `
 
 const Form = styled.div`
-    margin-top: 0.5rem;
+    margin-top: 5.1rem;
     height: 40rem;
     width: 35rem;
     display: flex;
@@ -527,5 +612,251 @@ const Form = styled.div`
             }
         }
     }
+`
+const AccountSection = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    gap: 1rem;
 
+    .up {
+        height: 20rem;
+        width: 95%;
+        display: flex;
+        justify-content: center;
+        align-items: end;
+        gap: 1rem;
+        overflow: hidden;
+
+        .left {
+            width: 14rem;
+            height: 80%;
+            display: flex;
+            justify-content: start;
+
+            .image {
+                margin-top: 5px;
+                width: 13.5rem;
+                height: 13rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid #0152b5cc;
+                overflow: hidden;
+                border-radius: 6px;
+
+                img {
+                    width: 14rem;
+                    height: 14rem;
+                    object-fit: cover;
+                    background-color: #0152b534;
+                }
+            }
+        }
+
+        .right {
+            flex: 1;
+            height: 16rem;
+            display: flex;
+            justify-content: start;
+            align-items: center;
+
+            .details {
+                margin-top: 3.5rem;
+                flex:1;
+                display: flex;
+                flex-direction: column;
+                height: 19rem;
+                gap: 0.7rem;
+
+                .address-div {
+                    width: 100%;
+                    height: 2rem;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+                    background-color: #0152b534;
+                    border-radius: 6px;
+                    overflow: hidden;
+
+                    .address {
+                        flex: 1;
+                        margin: 0;
+                        margin-left: 10px;
+                        margin-top:2px;
+                        font-size: 16px;
+                        letter-spacing: 1px;
+                    }
+
+                    .copy {
+                        width: 2.5rem;
+                        height: 2rem;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        transition: background-color 0.15s, opacity 0.15s;
+
+                        img {
+                            margin-top: 1px;
+                            height: 1.3rem;
+                            width: 1.3rem;
+                            opacity: 0.7;
+                            cursor: pointer;
+                        }
+
+                        &:hover {
+                            background-color: #0152b539;
+                        }
+
+                        &:active {
+                            opacity: 0.7;
+                        }
+
+                    }
+                }
+
+                .name-div {
+                    width: 100%;
+                    height: 5rem;
+                    background-color: #0152b534;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+                    border-radius: 6px;
+
+                    .name {
+                        display: flex;
+                        justify-content: start;
+                        align-items: center;
+                        flex: 1;
+
+                        p {
+                        margin: 0;
+                        margin-left: 10px;
+                        margin-top:2px;
+                        font-size: 50px;
+                        font-weight: 400;
+                        letter-spacing: 1px;
+                    }
+                    }
+
+                    .age {
+                        width: 3rem;
+                        height: 100%;
+                        display: flex;
+                        justify-content: start;
+                        align-items: end;
+
+                        p {
+                            margin: 0;
+                            margin-bottom: 10px;
+                        }
+                    }
+                   
+                }
+
+                .email-div {
+                    
+                    width: 100%;
+                    height: 2rem;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+                    gap: 0.8rem;
+                    background-color: #0152b534;
+                    border-radius: 6px;
+
+                  .logo {
+                    display: flex;
+                    justify-content:center;
+                    align-items: center;
+                    width: 2rem;
+                    height: 2rem;
+
+                    img {
+                        margin-left: 10px;
+                        width: 56%;
+                    }
+                  }
+                    
+                    .email {
+                        flex: 1;
+                        margin: 0;
+                        margin-top:-1px;
+                        margin-left: -3px;
+                        font-size: 17px;
+                        letter-spacing: 1px;
+                    }
+                }
+
+                .balance-div {
+                    width: 100%;
+                    height: 2rem;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+                    gap: 0.8rem;
+                    overflow: hidden;
+
+                    .fil-div {
+                       background-color: #0152b534;
+                       flex: 1;
+                       height: 100%;
+                       display: flex;
+                       justify-content: start;
+                       align-items: center;
+                       border-radius: 6px;
+                       
+                       .logo {
+                            width: 2rem;
+                            height: 2rem;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+
+                            img {
+                                width: 60%;
+                            }
+                       }
+                       .user-balance {
+                            font-size: 16px;
+                       }
+                    }
+
+                    .usdc-div {
+                        background-color: #0152b534;
+                        flex: 1;
+                        height: 100%;
+                        display: flex;
+                        justify-content: start;
+                        align-items: center;
+                        border-radius: 6px;
+
+                        .logo {
+                            width: 2rem;
+                            height: 2rem;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+
+                            img {
+                                width: 65%;
+                            }
+                       }
+                       .user-balance {
+                            font-size: 16px;
+                       }
+
+                    }
+                }
+            }
+        }
+    }
+
+    .down {
+        flex: 1;
+        width: 95%;
+        background-color: blue;
+    }
 `
