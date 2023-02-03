@@ -60,7 +60,7 @@ function User() {
 
     useEffect(() => {
         getAccountDetail();
-    }, [isConnected]);
+    }, [address]);
 
     /*----------------get user account detail----------------------------*/
 
