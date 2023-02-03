@@ -8,10 +8,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import copy from 'copy-to-clipboard';
 import axios from "axios";
 import { ethers } from "ethers"
-import { useAccount } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
 import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../../config";
 import { useSelector } from 'react-redux';
 import { selectAccount } from '../../features/AccountDetailSlice';
+import fromExponential from 'from-exponential';
 
 
 function User() {
@@ -20,20 +21,22 @@ function User() {
 
     const [formActive, setFormActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
+    const [filBalance, setFilBalance] = useState(0);
+    const [usdcBalance, setUsdcBalance] = useState('');
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [userHaveAccount, setuserHaveAccouint] = useState(false);
     const [accountDetail, setAccountDetaiil] = useState({
-        name:"",
-        age:"",
-        address:"",
-        filBal:"",
-        usdcBal:"",
-        email:"",
+        name: "",
+        age: "",
+        address: "",
+        filBal: "",
+        usdcBal: "",
+        email: "",
         profileURI: ""
     });
 
 
-    const { isConnected, address } = useAccount();
+    const { address } = useAccount();
 
     const ownerPrivateKey = process.env.REACT_APP_PRIVATE_KEY;
 
@@ -45,7 +48,6 @@ function User() {
         }
     }, [userAccountDetail.haveAccount]);
 
-    console.log('haveAccount : ', userHaveAccount);
 
     const [formInput, setFormInput] = useState({
         name: "",
@@ -58,9 +60,45 @@ function User() {
         setFormActive(true);
     }
 
+   
+
+    /*--------------------get balances --------------------*/
+
+    const hexToDec = (hex) => parseInt(hex, 16);
+
+    const  balance = useBalance({
+        address: `${address}`,
+    });
+
+    const getUsdcBalance = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+        const usdcContract = new ethers.Contract(
+            mockUsdcContractAddress,
+            mockUsdcAbi.abi,
+            provider
+        )
+        try {
+            await usdcContract.balanceOf(address)
+                .then((response) => {
+                    let bal = hexToDec(response._hex);
+                    setUsdcBalance(
+                        Number(ethers.utils.formatEther(fromExponential(bal))).toFixed(2)
+                        );
+                })
+        } catch (error) {
+            console.log(error);
+        }
+    } 
+
+    /*--------------------------------------------------------*/
+
     useEffect(() => {
         getAccountDetail();
+        const balFIL = Number(balance.data.formatted);
+        setFilBalance(balFIL.toFixed(2));
+        getUsdcBalance();
     }, [address]);
+
 
     /*----------------get user account detail----------------------------*/
 
@@ -151,10 +189,8 @@ function User() {
 
     const createAccountHandler = async () => {
         setIsCreatingAccount(true);
-        console.log('nigga1');
         const metadatURI = await metadata();
         console.log('uri : ', metadatURI);
-        console.log('nigga2');
         const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
         const wallet = new ethers.Wallet(ownerPrivateKey);
         const signer = wallet.connect(provider);
@@ -307,7 +343,7 @@ function User() {
                                                 <img src="/images/fil-logo.png" />
                                             </div>
                                             <div className='user-balance'>
-                                                <p>123</p>
+                                                <p>{filBalance}</p>
                                             </div>
                                         </div>
                                         <div className='usdc-div'>
@@ -315,7 +351,7 @@ function User() {
                                                 <img src="/images/usdc-logo.svg" />
                                             </div>
                                             <div className='user-balance'>
-                                                <p>123</p>
+                                                <p>{usdcBalance}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -637,20 +673,21 @@ const AccountSection = styled.div`
 
             .image {
                 margin-top: 5px;
-                width: 13.5rem;
+                width: 14rem;
                 height: 13rem;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                border: 1px solid #0152b5cc;
+                /* border: 1px solid #0152b5cc; */
                 overflow: hidden;
                 border-radius: 6px;
+                background-color: #0152b534;
 
                 img {
-                    width: 14rem;
-                    height: 14rem;
+                    width: 11rem;
+                    height: 11rem;
                     object-fit: cover;
-                    background-color: #0152b534;
+                    border-radius: 6px;
                 }
             }
         }
@@ -661,6 +698,7 @@ const AccountSection = styled.div`
             display: flex;
             justify-content: start;
             align-items: center;
+            color: #202020f1;
 
             .details {
                 margin-top: 3.5rem;
@@ -814,12 +852,12 @@ const AccountSection = styled.div`
                             display: flex;
                             justify-content: center;
                             align-items: center;
-
                             img {
                                 width: 60%;
                             }
                        }
                        .user-balance {
+                            margin-left: 3px;
                             font-size: 16px;
                        }
                     }
@@ -846,6 +884,7 @@ const AccountSection = styled.div`
                        }
                        .user-balance {
                             font-size: 16px;
+                            margin-left: 3px;
                        }
 
                     }
