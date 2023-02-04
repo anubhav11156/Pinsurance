@@ -1,15 +1,17 @@
 import React from 'react'
 import styled from 'styled-components'
+import copy from 'copy-to-clipboard';
 
 function PoolCard() {
 
     const copyPoolD = () => {
-
+        
+        copy("YDCcRekpBGoul8GaVzOx7");
+    
     }
+
     const copyAddress = () => {
-        // if (address) {
-        //     copy(address);
-        // }
+        copy("0x22b6Dd4D6d818e2Ebce3D2E009A249F8FbF4e965");
     }
 
     return (
@@ -22,7 +24,7 @@ function PoolCard() {
                 <div className='pool-id'>
                     <div className='text'>
                         <p className='pool-text'>
-                            kjfajkfdsjkfkfhshf3ptu
+                            YDCcRekpBGoul8GaVzOx7
                         </p>
                         <div className='copy' onClick={copyPoolD}>
                             <img src="/images/copy -white.png" />
@@ -36,7 +38,7 @@ function PoolCard() {
                 </div>
                 <div className='text'>
                     <p className='address-text'>
-                        kjfajkfdsjkfkfhshf3ptu
+                       0x22b6Dd4D6d818e2Ebce3D2E009A249F8FbF4e965
                     </p>
                     <div className='copy' onClick={copyAddress}>
                         <img src="/images/copy.png" />
@@ -150,7 +152,7 @@ function PoolCard() {
 export default PoolCard
 
 const Container = styled.div`
-     margin-top: 0.7rem;
+    margin-top: 0.7rem;
     width: 100%;
     height: 92%;
     display: flex;
@@ -272,7 +274,7 @@ const Container = styled.div`
                 display: flex;
                 justify-content: start;
                 align-items: center;
-                font-size: 13px;
+                font-size: 11px;
                 margin-left: 10px;
             }
 
