@@ -60,13 +60,13 @@ function User() {
         setFormActive(true);
     }
 
-   
+
 
     /*--------------------get balances --------------------*/
 
     const hexToDec = (hex) => parseInt(hex, 16);
 
-    const  balance = useBalance({
+    const balance = useBalance({
         address: `${address}`,
     });
 
@@ -83,12 +83,12 @@ function User() {
                     let bal = hexToDec(response._hex);
                     setUsdcBalance(
                         Number(ethers.utils.formatEther(fromExponential(bal))).toFixed(2)
-                        );
+                    );
                 })
         } catch (error) {
             console.log(error);
         }
-    } 
+    }
 
     /*--------------------------------------------------------*/
 
@@ -226,6 +226,10 @@ function User() {
         if (address) {
             copy(address);
         }
+    }
+
+    const copyPoolD = () => {
+
     }
 
     return (
@@ -369,13 +373,33 @@ function User() {
                             <div className='pool-conatainer'>
                                 <PoolCard>
                                     <div className='pool-name'>
-
+                                        <p>Spring Flower</p>
                                     </div>
                                     <div className='pool-id'>
-
+                                        <div className='poolId'>
+                                            <p>Pool Id</p>
+                                        </div>
+                                        <div className='text'>
+                                            <p className='pool-text'>
+                                                kjfajkfdsjkfkfhshf3ptu
+                                            </p>
+                                            <div className='copy' onClick={copyPoolD}>
+                                                <img src="/images/copy.png" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className='pool-address'>
-
+                                    <div className='address'>
+                                            <p>Pool Ad</p>
+                                        </div>
+                                        <div className='text'>
+                                            <p className='address-text'>
+                                                kjfajkfdsjkfkfhshf3ptu
+                                            </p>
+                                            <div className='copy' onClick={copyAddress}>
+                                                <img src="/images/copy.png" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className='insurance-period'>
                                         <div className='from-div'></div>
@@ -974,26 +998,156 @@ const AccountSection = styled.div`
     }
 `
 
-const PoolCard=styled.div`
+const PoolCard = styled.div`
     margin-top: 0.7rem;
     width: 100%;
     height: 92%;
     display: flex;
     flex-direction: column;
-    background-color: #0152b534;
+    background-color: #0152b515;
     border-radius: 8px;
     border: 1px solid #0152b546;
-
+    overflow: hidden;
+    color: #202020fb;
+    
     .pool-name {
-
+        height: 2.5rem;
+        width: 100%;
+        background-color: #0152b5b1;
+        display: flex;
+        justify-content: start;
+        align-items: center;
+        
+        p {
+            margin-left:12px;
+            font-weight: 500;
+            color: white;
+        }
     }
 
     .pool-id {
+        margin-top: 0.6rem;
+        display: flex;
+        height: 2rem;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid #0152b546;
 
+        .poolId {
+            width: 4rem;
+            border-right: 1px solid #0152b546;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0152b539;
+
+            p {
+                margin: 0%;
+                font-size: 15px;
+            }
+        }
+
+        .text {
+            flex: 1;
+            display: flex;
+            
+            .pool-text {
+                flex: 1;
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                font-size: 15px;
+                margin-left: 10px;
+            }
+
+            .copy {
+                width: 2.5rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                transition: background-color 0.15s, opacity 0.15s;
+
+                img {
+                    width: 50%;
+                    opacity: 0.7;
+                }
+
+                &:hover {
+                    background-color: #0152b539;
+                }
+
+                &:active {
+                    opacity: 0.7;
+                }
+
+             }
+        }
+        
     }
 
     .pool-address {
+        margin-top: 0.7rem;
+        display: flex;
+        height: 2rem;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+        border-radius: 6px;
+        overflow: hidden;
+        border: 1px solid #0152b546;
 
+        .address {
+            width: 4rem;
+            border-right: 1px solid #0152b546;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0152b539;
+
+            p {
+                margin: 0%;
+                font-size: 15px;
+            }
+        }
+
+        .text {
+            flex: 1;
+            display: flex;
+            
+            .address-text {
+                flex: 1;
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                font-size: 15px;
+                margin-left: 10px;
+            }
+
+            .copy {
+                width: 2.5rem;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                transition: background-color 0.15s, opacity 0.15s;
+
+                img {
+                    width: 50%;
+                    opacity: 0.7;
+                }
+
+                &:hover {
+                    background-color: #0152b539;
+                }
+
+                &:active {
+                    opacity: 0.7;
+                }
+
+             }
+        }
     }
 
     .insurnace-period {
