@@ -1,6 +1,7 @@
-import { React, useState } from 'react'
+import { React, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { nanoid } from 'nanoid';
+import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
 
 
 function JoinCreate() {
@@ -15,9 +16,6 @@ function JoinCreate() {
     cubicCapacity: "",
     insurancePremium: "",
   })
-  // const test = nanoid();
-  // console.log('test : ', test);
-  // vehichle name, cubic capacity and amount, <1000cc = $2000, 1000cc <-> 2000cc => $3500
 
   const createPoolHandler = () => {
     setCreateFormActive(true);
@@ -29,15 +27,67 @@ function JoinCreate() {
     setFormHavePoolActive(true);
   }
 
-  const createHandler = () => {
+
+   /*--------------------IPFS code to upload Pool Metadata-------------------*/
+
+
+   const web3StorageApiKey = process.env.REACT_APP_WEB3_STORAGE;
+
+   const makeStorageClient = () => {
+       return new Web3Storage({ token: `${web3StorageApiKey}` })
+   }
+
+   const uploadToIPFS = async (files) => {
+       const client = makeStorageClient()
+       const cid = await client.put(files)
+       return cid;
+   }
+
+   const metadata = async () => {
+       const { vehicleModel, cubicCapacity, insurancePremium } = formInput;
+       // if (!name || !age || !email || !profileURI) return;
+       const data = JSON.stringify({ vehicleModel, cubicCapacity, insurancePremium });
+       const files = [
+           new File([data], 'poolMetadata.json')
+       ]
+       const metadataCID = await uploadToIPFS(files);
+       console.log(metadataCID);
+       return `https://ipfs.io/ipfs/${metadataCID}/poolMetadata.json`
+   }
+   /*------------------------------------------------------*/
+
+
+  const createHandler = async () => {
     setPoolNanoId(nanoid());
+    // Upload Metadata to IPFS.
+    const uri = await metadata();
+    console.log('Pool Metadata URI is : ', uri);
   }
+
+  useEffect(()=>{
+    if(formInput.cubicCapacity >0 && formInput.cubicCapacity <=1000) {
+      setFormInput({
+        ...formInput,
+        insurancePremium: "2000"
+      })
+    } else if (formInput.cubicCapacity >1000 && formInput.cubicCapacity <=2000) {
+      setFormInput({
+        ...formInput,
+        insurancePremium: "3500"
+      })
+    }else {
+      setFormInput({
+        ...formInput,
+        insurancePremium: ""
+      })
+    }
+  },[formInput.cubicCapacity])
 
   const joinHandler = () => {
 
   }
-  console.log('Pool Id : ', poolNanoId);
   
+  // check if the given pool Id exists or not
   const checkPoolIdHandler = () => {
 
   }
@@ -78,18 +128,6 @@ function JoinCreate() {
                       ...formInput,
                       cubicCapacity: prop.target.value
                     })
-
-                    if(Number(prop.target.value)>=0 && Number(prop.target.value)<=1000){
-                      setFormInput({
-                        ...formInput,
-                        insurancePremium: "2000"
-                      })
-                    } else if (Number(prop.target.value)>1000 && Number(prop.target.value)<=2000) {
-                      setFormInput({
-                        ...formInput,
-                        insurancePremium: "3500"
-                      })
-                    }
                   }} />
                 </div>
                 <div className='premium-div'>
@@ -144,19 +182,6 @@ function JoinCreate() {
                       ...formInput,
                       cubicCapacity: prop.target.value
                     })
-
-                    if(Number(prop.target.value)>=0 && Number(prop.target.value)<=1000){
-                      setFormInput({
-                        ...formInput,
-                        insurancePremium: "2000"
-                      })
-                    } else if (Number(prop.target.value)>1000 && Number(prop.target.value)<=2000) {
-                      setFormInput({
-                        ...formInput,
-                        insurancePremium: "3500"
-                      })
-                    }
-
                   }} />
                 </div>
                 <div className='premium-div'>
