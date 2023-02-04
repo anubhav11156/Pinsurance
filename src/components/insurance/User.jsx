@@ -389,7 +389,7 @@ function User() {
                                         </div>
                                     </div>
                                     <div className='pool-address'>
-                                    <div className='address'>
+                                        <div className='address'>
                                             <p>Pool Ad</p>
                                         </div>
                                         <div className='text'>
@@ -402,12 +402,59 @@ function User() {
                                         </div>
                                     </div>
                                     <div className='insurance-period'>
-                                        <div className='from-div'></div>
-                                        <div className='to-div'></div>
+                                        <div className='text-heading'>
+                                            <p>Period of Insurance</p>
+                                        </div>
+                                        <div className='boxes'>
+                                            <div className='from-div'>
+                                                <div className='from'>
+                                                    <p>From</p>
+                                                </div>
+                                                <div className='text'>
+                                                    <p className='from-text'>
+                                                        January
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className='to-div'>
+                                                <div className='to'>
+                                                    <p>To</p>
+                                                </div>
+                                                <div className='text'>
+                                                    <p className='to-text'>
+                                                        Deceber
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                     <div className='vehicle-detail'>
-                                        <div className='vehicle-name'></div>
-                                        <div className='cubic-capacity'></div>
+                                        <div className='text-heading'>
+                                            <p>Vehicle Detail</p>
+                                        </div>
+                                        <div className='boxes'>
+                                            <div className='vehicle-name-div'>
+                                                <div className='vehicle-name'>
+                                                    <img src="/images/car.png"/>
+                                                </div>
+                                                <div className='text'>
+                                                    <p className='name-text'>
+                                                        Audi S5
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div className='cubic-capacity-div'>
+                                                <div className='cc'>
+                                                    <img src="/images/engine.png"/>
+                                                </div>
+                                                <div className='text'>
+                                                    <p className='cc-text'>
+                                                        1500cc
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className='premium-count'>
                                         <div className='premium-div'></div>
@@ -1150,23 +1197,210 @@ const PoolCard = styled.div`
         }
     }
 
-    .insurnace-period {
-        .from-div {
+    .insurance-period {
+        margin-top: 0.7rem;
+        display: flex;
+        flex-direction: column;
+        height: 3.6rem;
+        width: 100%;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+        gap: 5px;
+        
+        .text-heading {
+            display: flex;
+            height: 1.3rem;
+            margin-right: 0.5rem;
 
+            p {
+                margin:0;
+                font-size:15px;
+            }
         }
 
-        .to-div {
+        .boxes {
+            display: flex;
+            flex: 1;
+            padding-right: 0.5rem;
+            gap: 20px;
 
+            .from-div {
+                flex: 1;
+                display: flex;
+                border-radius: 6px;
+                overflow: hidden;
+                border: 1px solid #0152b546;
+
+                .from {
+                    width: 3.5rem;
+                    height: 100%;
+                    background-color: #0152b539;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+                    border-right: 1px solid #0152b546;
+
+                    p {
+                        margin:0;
+                        margin-left: 10px;
+                        font-size: 15px;
+                    }
+                }
+
+                .text {
+                    flex: 1;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+
+                    p {
+                        margin:0;
+                        margin-left: 10px;
+                        font-size: 15px;
+                    }
+                }
+            }
+
+            .to-div {
+                flex: 1;
+                display: flex;
+                border-radius: 6px;
+                overflow: hidden;
+                border: 1px solid #0152b546;
+                margin-right: 0.6rem;
+
+                .to {
+                    width: 3.5rem;
+                    height: 100%;
+                    background-color: #0152b539;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+                    border-right: 1px solid #0152b546;
+
+                    p {
+                        margin:0;
+                        margin-left: 10px;
+                        font-size: 15px;
+                    }
+                }
+
+                .text {
+                    flex: 1;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+
+                    p {
+                        margin:0;
+                        margin-left: 10px;
+                        font-size: 15px;
+                    }
+                }
+            }
         }
+       
     }
 
     .vehicle-detail {
-        .vehicle-name {
+        margin-top: 0.7rem;
+        display: flex;
+        flex-direction: column;
+        height: 3.6rem;
+        width: 100%;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+        gap: 5px;
+        
+        .text-heading {
+            display: flex;
+            height: 1.3rem;
+            margin-right: 0.5rem;
 
+            p {
+                margin:0;
+                font-size:15px;
+            }
         }
 
-        .cubic-capacity {
+        .boxes {
+            display: flex;
+            flex: 1;
+            padding-right: 0.5rem;
+            gap: 20px;
 
+            .vehicle-name-div {
+                flex: 1;
+                display: flex;
+                border-radius: 6px;
+                overflow: hidden;
+                border: 1px solid #0152b546;
+
+                .vehicle-name {
+                    width: 3.4rem;
+                    height: 100%;
+                    background-color: #0152b539;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border-right: 1px solid #0152b546;
+
+                    img {
+                        width: 55%;
+                        opacity: 0.9;
+                    }
+                }
+
+                .text {
+                    flex: 1;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+
+                    p {
+                        margin:0;
+                        margin-left: 10px;
+                        font-size: 15px;
+                    }
+                }
+            }
+
+            .cubic-capacity-div {
+                flex: 1;
+                display: flex;
+                border-radius: 6px;
+                overflow: hidden;
+                border: 1px solid #0152b546;
+                margin-right: 0.6rem;
+
+                .cc {
+                    width: 3.4rem;
+                    height: 100%;
+                    background-color: #0152b539;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    border-right: 1px solid #0152b546;
+
+                    img {
+                        width: 40%;
+                        opacity: 0.9;
+                    }
+                }
+
+                .text {
+                    flex: 1;
+                    display: flex;
+                    justify-content: start;
+                    align-items: center;
+
+                    p {
+                        margin:0;
+                        margin-left: 10px;
+                        font-size: 15px;
+                    }
+                }
+            }
         }
     }
 
