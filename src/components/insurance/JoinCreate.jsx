@@ -2,11 +2,16 @@ import { React, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { nanoid } from 'nanoid';
 import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
+import ClipLoader from "react-spinners/ClipLoader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function JoinCreate() {
 
   const [formCreateActive, setCreateFormActive] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
   const [formHavePoolActive, setFormHavePoolActive] = useState(false);
   const [poolNanoId, setPoolNanoId] = useState("");
   const [poolId, setPoolId] = useState("");
@@ -28,68 +33,83 @@ function JoinCreate() {
   }
 
 
-   /*--------------------IPFS code to upload Pool Metadata-------------------*/
+  /*--------------------IPFS code to upload Pool Metadata-------------------*/
 
+  const web3StorageApiKey = process.env.REACT_APP_WEB3_STORAGE;
 
-   const web3StorageApiKey = process.env.REACT_APP_WEB3_STORAGE;
-
-   const makeStorageClient = () => {
-       return new Web3Storage({ token: `${web3StorageApiKey}` })
-   }
-
-   const uploadToIPFS = async (files) => {
-       const client = makeStorageClient()
-       const cid = await client.put(files)
-       return cid;
-   }
-
-   const metadata = async () => {
-       const { vehicleModel, cubicCapacity, insurancePremium } = formInput;
-       // if (!name || !age || !email || !profileURI) return;
-       const data = JSON.stringify({ vehicleModel, cubicCapacity, insurancePremium });
-       const files = [
-           new File([data], 'poolMetadata.json')
-       ]
-       const metadataCID = await uploadToIPFS(files);
-       console.log(metadataCID);
-       return `https://ipfs.io/ipfs/${metadataCID}/poolMetadata.json`
-   }
-   /*------------------------------------------------------*/
-
-
-  const createHandler = async () => {
-    setPoolNanoId(nanoid());
-    // Upload Metadata to IPFS.
-    const uri = await metadata();
-    console.log('Pool Metadata URI is : ', uri);
+  const makeStorageClient = () => {
+    return new Web3Storage({ token: `${web3StorageApiKey}` })
   }
 
-  useEffect(()=>{
-    if(formInput.cubicCapacity >0 && formInput.cubicCapacity <=1000) {
+  const uploadToIPFS = async (files) => {
+    const client = makeStorageClient()
+    const cid = await client.put(files)
+    return cid;
+  }
+
+  const metadata = async () => {
+    const { vehicleModel, cubicCapacity, insurancePremium } = formInput;
+    const data = JSON.stringify({ vehicleModel, cubicCapacity, insurancePremium });
+    const files = [
+      new File([data], 'poolMetadata.json')
+    ]
+    const metadataCID = await uploadToIPFS(files);
+    if (metadataCID.length) {
+      toast.success("Pool Metadata Uploaded to IPFS", {
+        position: toast.POSITION.TOP_CENTER
+      });
+    } else {
+      toast.error("Failed to upload Pool Metadata!", {
+        position: toast.POSITION.TOP_CENTER
+      });
+    }
+    return `https://ipfs.io/ipfs/${metadataCID}/poolMetadata.json`
+  }
+
+  /*------------------------------------------------------*/
+
+  useEffect(() => {
+    if (formInput.cubicCapacity > 0 && formInput.cubicCapacity <= 1000) {
       setFormInput({
         ...formInput,
         insurancePremium: "2000"
       })
-    } else if (formInput.cubicCapacity >1000 && formInput.cubicCapacity <=2000) {
+    } else if (formInput.cubicCapacity > 1000 && formInput.cubicCapacity <= 2000) {
       setFormInput({
         ...formInput,
         insurancePremium: "3500"
       })
-    }else {
+    } else {
       setFormInput({
         ...formInput,
         insurancePremium: ""
       })
     }
-  },[formInput.cubicCapacity])
+  }, [formInput.cubicCapacity])
 
-  const joinHandler = () => {
 
+  const createHandler = async () => {
+    setPoolNanoId(nanoid());
+    setIsUploading(true);
+    // Upload Metadata to IPFS.
+    const uri = await metadata();
+    setIsUploading(false);
+    console.log('Pool Metadata URI is : ', uri);
   }
-  
+
+  const joinHandler = async () => {
+    setIsUploading(true);
+    // Upload Metadata to IPFS.
+    const uri = await metadata();
+    setIsUploading(false);
+    console.log('Pool Metadata URI is : ', uri);
+  }
+
   // check if the given pool Id exists or not
   const checkPoolIdHandler = () => {
-
+    setIsChecking(true);
+    // returns true -> pool exists, returns false -> pool don't exists.
+    
   }
 
   return (
@@ -111,7 +131,7 @@ function JoinCreate() {
               <div className='pool-name-div'>
                 <input type="text" placeholder='Pool Name' onChange={(prop) => {
                   setPoolName(prop.target.value)
-                }} />
+                }} required />
               </div>
               <Form>
                 <div className='vehicle-model-div'>
@@ -120,7 +140,7 @@ function JoinCreate() {
                       ...formInput,
                       vehicleModel: prop.target.value
                     })
-                  }} />
+                  }} required />
                 </div>
                 <div className='cc-div'>
                   <input type="text" placeholder='Cubic Capacity' onChange={(prop) => {
@@ -128,7 +148,7 @@ function JoinCreate() {
                       ...formInput,
                       cubicCapacity: prop.target.value
                     })
-                  }} />
+                  }} required />
                 </div>
                 <div className='premium-div'>
                   <div className='premium'>
@@ -141,7 +161,12 @@ function JoinCreate() {
                   </div>
                 </div>
                 <div className='create' onClick={createHandler}>
-                  <p>Create</p>
+                  {!isUploading &&
+                    <p>Create</p>
+                  }
+                  {isUploading &&
+                    <ClipLoader color="#ffffff" size={16} />
+                  }
                 </div>
               </Form>
             </>
@@ -164,7 +189,12 @@ function JoinCreate() {
                   setPoolId(prop.target.value)
                 }} />
                 <div className='ok-button' onClick={checkPoolIdHandler}>
-                  <img src="/images/check.png" />
+                  {!isChecking &&
+                    <img src="/images/check.png" />
+                  }
+                  {isChecking &&
+                    <ClipLoader color="#ffffff" size={16} />
+                  }
                 </div>
               </div>
               <Form>
@@ -197,7 +227,12 @@ function JoinCreate() {
                 <div className='create' onClick={joinHandler} style={{
                   backgroundColor: formHavePoolActive ? '#181717' : '#0153b5'
                 }}>
-                  <p>Join</p>
+                  {!isUploading &&
+                    <p>Join</p>
+                  }
+                  {isUploading &&
+                    <ClipLoader color="#ffffff" size={16} />
+                  }
                 </div>
               </Form>
             </>
@@ -411,7 +446,7 @@ const Container = styled.div`
         }
 
         .ok-button {
-          height: 2.5rem;
+          height: 2.55rem;
           width: 10%;
           border: 1px solid #0152b565;
           border-top-right-radius: 6px;
@@ -466,7 +501,7 @@ const Form = styled.div`
   }
 
   .cc-div {
-    margin-top: 0.5rem;
+    margin-top: 0.7rem;
     width: 100%;
     height: 2.8rem;
     display: flex;
