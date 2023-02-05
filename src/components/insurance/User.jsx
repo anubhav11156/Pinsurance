@@ -19,7 +19,7 @@ import PoolCard from './PoolCard';
 function User() {
 
     const userAccountDetail = useSelector(selectAccount);
-    const [poolAddressArray, setPoolAdressArray] = useState([]);
+    const [poolDetailArray, setPoolDetailArray] = useState([]);
     const [formActive, setFormActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [filBalance, setFilBalance] = useState(0);
@@ -72,7 +72,7 @@ function User() {
     });
 
     const getUsdcBalance = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
         const usdcContract = new ethers.Contract(
             mockUsdcContractAddress,
             mockUsdcAbi.abi,
@@ -105,7 +105,7 @@ function User() {
     /*----------------get user account detail----------------------------*/
 
     const getAccountDetail = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
         const pinsuranceContract = new ethers.Contract(
             pinsuranceContractAddress,
             pinsuranceAbi.abi,
@@ -151,18 +151,31 @@ function User() {
            const items = await Promise.all(
             data.map(async (i) => {
                 let poolAddress = i.poolContractAddress;
+                let memberCount = hexToDec(i.currentMemberCount._hex);
                 let item = {
-                    poolAddress
+                    poolAddress,
+                    memberCount
                 };
                 return item;
             })
            );
-           console.log('Pool Address : ',items);
-           setPoolAdressArray(items);
+           console.log('Pool detail : ',items);
+           setPoolDetailArray(items);
         } catch (error) {
             console.log(error);
         }
     }
+
+    console.log('testing : ', poolDetailArray);
+
+    const PoolCards = poolDetailArray.map(card => {
+        return (
+            <PoolCard 
+                memberCount={card.memberCount}
+                poolAddress={card.poolAddress}
+            />
+        )
+    }) 
     /*-------------------------------------------------------------------*/
 
     /*--------------------IPFS code to upload metadata-------------------*/
@@ -239,7 +252,7 @@ function User() {
                 });
                 setuserHaveAccouint(true);
                 setIsCreatingAccount(false);
-                // window.location.reload();
+                window.location.reload();
             }).catch((e) => {
                 toast.error("Failed to create account!", {
                     position: toast.POSITION.TOP_CENTER
@@ -396,9 +409,7 @@ function User() {
                                 <div className='line-2'></div>
                             </div>
                             <div className='pool-conatainer'>
-                                <PoolCard />
-                                <PoolCard />
-                                <PoolCard />
+                                {PoolCards}
                             </div>
                         </div>
                     </AccountSection>

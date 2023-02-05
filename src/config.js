@@ -284,6 +284,121 @@ export const pinsuranceAbi = {
         }
     ]
 }
+export const poolAbi = {
+    "_format": "hh-sol-artifact-1",
+    "contractName": "Pool",
+    "sourceName": "contracts/Pool.sol",
+    "abi": [
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "poolName",
+                    "type": "string"
+                },
+                {
+                    "internalType": "address",
+                    "name": "pinsuranceAddress",
+                    "type": "address"
+                }
+            ],
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        },
+        {
+            "inputs": [],
+            "name": "getPoolBalance",
+            "outputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "getUserMetadatURI",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "string",
+                    "name": "_userMetadataURI",
+                    "type": "string"
+                }
+            ],
+            "name": "setUserMetadataURI",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "stakePremium",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "",
+                    "type": "address"
+                }
+            ],
+            "name": "userPoolAccountStatus",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "amountStaked",
+                    "type": "string"
+                },
+                {
+                    "internalType": "bool",
+                    "name": "haveStaked",
+                    "type": "bool"
+                },
+                {
+                    "internalType": "string",
+                    "name": "metadataURI",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        }
+    ]
+}
 
 export const mockUsdcAbi = {
     "_format": "hh-sol-artifact-1",

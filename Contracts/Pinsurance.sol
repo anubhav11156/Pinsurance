@@ -1,11 +1,9 @@
 //SPDX-License-Identifier: MIT
+
 pragma solidity 0.8.13;
 
-// import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol";
-
 import "./Pool.sol";
-import "./MockUSDC.sol";
 
 contract Pinsurance {
 
@@ -19,7 +17,7 @@ contract Pinsurance {
         OWNER = msg.sender;
     }
 
-    bytes16 private constant _SYMBOLS = "0123456789abcdef"; // for converting address to string
+    // bytes16 private constant _SYMBOLS = "0123456789abcdef"; // for converting address to string
 
     // User account data
     struct userAccount {
@@ -144,7 +142,7 @@ contract Pinsurance {
 
         uint256 empty = (2 - poolAddressToPoolDetail[poolAddress].members.length);
 
-        require((empty > 1) || (empty == 1),'Not enough slot in the pool.');
+        require((empty == 1),'Not enough slot in the pool.');
 
         userToPoolMembership[userAddress][poolAddressToPoolDetail[poolAddress].poolContractAddress]=true; // for membership
         poolAddressToPoolDetail[poolAddress].currentMemberCount++;

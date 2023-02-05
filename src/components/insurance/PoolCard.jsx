@@ -1,24 +1,146 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import copy from 'copy-to-clipboard';
+import { poolAbi } from "../../config";
+import { useAccount } from 'wagmi'
+import { ethers } from "ethers"
+import axios from "axios";
 
-function PoolCard() {
+function PoolCard(props) {
 
-    const copyPoolD = () => {
-        
-        copy("YDCcRekpBGoul8GaVzOx7");
-    
-    }
+    console.log('testing : ', props);
+
+    const { address } = useAccount();
+
+    const [poolDetail, setPoolDetail] = useState({
+        balance: "",
+        premium: "",
+        memberCount: "",
+        vehicle: "",
+        cubicCapacity: "",
+        name:""
+    })
 
     const copyAddress = () => {
-        copy("0x22b6Dd4D6d818e2Ebce3D2E009A249F8FbF4e965");
+        copy(props.poolAddress);
     }
+
+    useEffect(() => {
+        getMetaData()
+        getPoolBalance()
+        getName()
+        getDetail()
+    },[props.poolAddress])
+
+
+
+    /*--------------------Fetch pool metadata-------------------*/
+
+    const getMetaData = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const poolContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            provider
+        )
+        try {
+            await poolContract.getUserMetadatURI(address)
+                .then((response) => {
+                    fetchInfoFromURI(response)
+                })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const fetchInfoFromURI = async (uri) => {
+        const uriResponse = await axios.get(uri);
+        setPoolDetail({
+            ...poolDetail,
+            premium: uriResponse.data.insurancePremium,
+            vehicle: uriResponse.data.vehicleModel,
+            cubicCapacity: uriResponse.data.cubicCapacity
+        })
+    }
+
+    /*-----------------------------------------------------------*/
+
+    /*---------------------get pool balance----------------------*/
+
+    const getPoolBalance = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const poolContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            provider
+        )
+        try {
+            await poolContract.getBalance()
+                .then((response) => {
+                    console.log('bal : ', response);
+                    setPoolDetail({
+                        ...poolDetail,
+                        balance: response
+                    })
+                })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    /*-----------------------------------------------------------*/
+
+    /*---------------------get pool name------------------------*/
+
+    const getName = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const poolContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            provider
+        )
+        try {
+            await poolContract.getPoolName()
+                .then((response) => {
+                    console.log('name : ', response);
+                    setPoolDetail({
+                        ...poolDetail,
+                        name: response
+                    })
+                })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    /*-----------------------------------------------------------*/
+
+    /*------------------------get Pool detail -------------------*/
+
+    const getDetail = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const poolContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            provider
+        )
+        try {
+            await poolContract.getPoolDetail()
+                .then((response) => {
+                    console.log('pool detail : ', response);
+                })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    /*-----------------------------------------------------------*/
 
     return (
         <Container>
             <div className='pool-name'>
                 <div className='pool-name-div'>
-                    <p>Spring Flower</p>
+                    <p>{poolDetail.name}</p>
                 </div>
 
                 {/* <div className='pool-id'>
@@ -38,7 +160,7 @@ function PoolCard() {
                 </div>
                 <div className='text'>
                     <p className='address-text'>
-                       0x22b6Dd4D6d818e2Ebce3D2E009A249F8FbF4e965
+                        {props.poolAddress}
                     </p>
                     <div className='copy' onClick={copyAddress}>
                         <img src="/images/copy.png" />
@@ -51,7 +173,7 @@ function PoolCard() {
                 </div>
                 <div className='text'>
                     <p className='address-text'>
-                        67890
+                        {poolDetail.balance}
                     </p>
                 </div>
             </div>
@@ -94,7 +216,7 @@ function PoolCard() {
                         </div>
                         <div className='text'>
                             <p className='name-text'>
-                                Audi S5
+                                {poolDetail.vehicle}
                             </p>
                         </div>
                     </div>
@@ -104,7 +226,7 @@ function PoolCard() {
                         </div>
                         <div className='text'>
                             <p className='cc-text'>
-                                1500cc
+                                {poolDetail.cubicCapacity}cc
                             </p>
                         </div>
                     </div>
@@ -118,7 +240,7 @@ function PoolCard() {
                         </div>
                         <div className='text'>
                             <p className='name-text'>
-                                $ 2000
+                                $ {poolDetail.premium}
                             </p>
                         </div>
                     </div>
@@ -128,7 +250,7 @@ function PoolCard() {
                         </div>
                         <div className='text'>
                             <p className='count-text'>
-                                2/3
+                                {props.memberCount}/2
                             </p>
                         </div>
                     </div>
