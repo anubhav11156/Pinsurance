@@ -1,4 +1,4 @@
-export const pinsuranceContractAddress = "0xaE81A43E934Fcec0a4575a1893eBF67D7221D97B";
+export const pinsuranceContractAddress = "0xB8fa5247544ed3DBd24627A0D6Fb2d53a785134a";
 
 export const mockUsdcContractAddress = "0x55a48F9E82FD2C2f579D22a8D7B8e2dE151821e8";
 
@@ -16,11 +16,6 @@ export const pinsuranceAbi = {
             "inputs": [
                 {
                     "internalType": "string",
-                    "name": "poolId",
-                    "type": "string"
-                },
-                {
-                    "internalType": "string",
                     "name": "poolName",
                     "type": "string"
                 },
@@ -36,13 +31,7 @@ export const pinsuranceAbi = {
                 }
             ],
             "name": "createPool",
-            "outputs": [
-                {
-                    "internalType": "address",
-                    "name": "",
-                    "type": "address"
-                }
-            ],
+            "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
         },
@@ -67,28 +56,9 @@ export const pinsuranceAbi = {
         {
             "inputs": [
                 {
-                    "internalType": "string",
-                    "name": "poolId",
-                    "type": "string"
-                }
-            ],
-            "name": "getPoolAddress",
-            "outputs": [
-                {
                     "internalType": "address",
-                    "name": "",
+                    "name": "poolAddress",
                     "type": "address"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "inputs": [
-                {
-                    "internalType": "string",
-                    "name": "poolId",
-                    "type": "string"
                 }
             ],
             "name": "getPoolMembers",
@@ -111,9 +81,9 @@ export const pinsuranceAbi = {
                             "type": "bool"
                         },
                         {
-                            "internalType": "string[]",
+                            "internalType": "address[]",
                             "name": "userAssociatedPools",
-                            "type": "string[]"
+                            "type": "address[]"
                         }
                     ],
                     "internalType": "struct Pinsurance.userAccount[]",
@@ -127,9 +97,9 @@ export const pinsuranceAbi = {
         {
             "inputs": [
                 {
-                    "internalType": "string",
-                    "name": "poolId",
-                    "type": "string"
+                    "internalType": "address",
+                    "name": "poolAddress",
+                    "type": "address"
                 }
             ],
             "name": "getPoolStatus",
@@ -174,11 +144,6 @@ export const pinsuranceAbi = {
             "outputs": [
                 {
                     "components": [
-                        {
-                            "internalType": "string",
-                            "name": "poolID",
-                            "type": "string"
-                        },
                         {
                             "internalType": "address",
                             "name": "poolContractAddress",
@@ -231,9 +196,9 @@ export const pinsuranceAbi = {
                             "type": "bool"
                         },
                         {
-                            "internalType": "string[]",
+                            "internalType": "address[]",
                             "name": "userAssociatedPools",
-                            "type": "string[]"
+                            "type": "address[]"
                         }
                     ],
                     "internalType": "struct Pinsurance.userAccount",
@@ -247,9 +212,9 @@ export const pinsuranceAbi = {
         {
             "inputs": [
                 {
-                    "internalType": "string",
-                    "name": "poolId",
-                    "type": "string"
+                    "internalType": "address",
+                    "name": "poolAddress",
+                    "type": "address"
                 },
                 {
                     "internalType": "address",
@@ -283,9 +248,9 @@ export const pinsuranceAbi = {
         {
             "inputs": [
                 {
-                    "internalType": "string",
-                    "name": "poolId",
-                    "type": "string"
+                    "internalType": "address",
+                    "name": "poolAddress",
+                    "type": "address"
                 },
                 {
                     "internalType": "address",
