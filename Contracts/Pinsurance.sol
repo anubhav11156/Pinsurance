@@ -1,8 +1,11 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.13;
 
-import "@openzeppelin/contracts/utils/Counters.sol";
+// import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/Counters.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol";
+
 import "./Pool.sol";
+import "./MockUSDC.sol";
 
 contract Pinsurance {
 
@@ -10,10 +13,10 @@ contract Pinsurance {
     Counters.Counter public userCount;
     Counters.Counter public poolCount;
 
-    address owner; // onwer of the platform will be Pinsrurance.
+    address OWNER;
 
     constructor() {
-        owner = msg.sender;
+        OWNER = msg.sender;
     }
 
     // address[] listOfUsers; // total number of users on pinsurance
@@ -23,13 +26,10 @@ contract Pinsurance {
 
     // User account data
     struct userAccount {
-        string userName;
-        string userImageCID;
         address userAddress;
-        uint256 userAge;
-        string userEmailID;
-        bool userAccountStatus; // true => user Exist, false => user doesn't exist
-        address[] userAssociatedPools; // list of insurance pool user is associated with
+        string userMetadataURI; // -> name, profileImage, age, emailId
+        bool userAccountStatus; 
+        string[] userAssociatedPools;
     }
 
     // user account detail mapping
@@ -39,81 +39,108 @@ contract Pinsurance {
     struct poolDetail {
         string poolID;
         address poolContractAddress;        
-        bool active;
         uint256 currentMemberCount;
         address[] members;
-        mapping(address => bool) isMember;
+        bool poolExists;
     }
 
-    // naonid to pooldetail mapping | nanoid will be a string.
+    // user address -> pool address => is member or not
+    mapping(address => mapping(address => bool)) userToPoolMembership;
+
+    // naonid to pooldetail mapping | nanoid will be a string. | paid
     mapping(string => poolDetail) poolIdToPoolDetail;
+
+    // function getUsdcBalance() public view returns(uint256) {
+    //     FakeUSDC usdc = FakeUSDC(FUSDC_CONTRACT_ADDRESS);
+    //     return usdc.balanceOf(msg.sender);
+    // }
+
+    // function getOwnerBalance() public view returns(uint256) {
+    //     FakeUSDC usdc = FakeUSDC(FUSDC_CONTRACT_ADDRESS);
+    //     require(msg.sender == OWNER, 'You are not the onwer.');
+    //     return usdc.balanceOf(OWNER);
+    // }
 
     // function to create user account | creation of user will be free and platform will pay the gas fees.
     function createUser(
-        string memory _name,
-        string memory _profileCid,
-        uint256 _age,
-        string memory _userEmail
+        address _userAddress,
+        string memory _userMetadataURI
     ) public {
-        // creates a pointer to userAccount type
-        userAccount storage currentUser = userAddressTouserAccount[msg.sender];
-        currentUser.userName = _name;
-        currentUser.userImageCID = _profileCid;
-        currentUser.userAddress = msg.sender;  
-        currentUser.userAge = _age;
-        currentUser.userEmailID = _userEmail;
+        userAccount storage currentUser = userAddressTouserAccount[_userAddress];
+        currentUser.userAddress = _userAddress;  
+        currentUser.userMetadataURI = _userMetadataURI;
         currentUser.userAccountStatus = true;
         userCount.increment();
     }
 
-    function getUserAccountStatus() public view returns(bool){
-        // creates a pointer 
-        return userAddressTouserAccount[msg.sender].userAccountStatus;
+    function getUserAccountStatus(address userAddress) public view returns(bool){
+        return userAddressTouserAccount[userAddress].userAccountStatus;
     }
 
     // function to get user account detail 
-    function getUserDetail() public view returns(userAccount memory) {
-        return userAddressTouserAccount[msg.sender];
+    function getUserDetail(address userAddress) public view returns(userAccount memory) {
+        return userAddressTouserAccount[userAddress];
     }
 
 
 
-    // function to create pool
-    function createPool(string memory poolId) public {
-        require(userAddressTouserAccount[msg.sender].userAccountStatus==true,'Create account first.');
+    // function to create pool | Fee: $100 
+    function createPool(string memory poolId, string memory poolName, string memory metadataURI, address userAddress) public returns(address){
+        require(userAddressTouserAccount[userAddress].userAccountStatus==true,'Create account first.');
 
-        address newPool = address(new Pool()); // returns address of the new pool.
+        address newPool = address(new Pool(poolId, poolName, address(this))); // returns address of the new pool.
+
         poolIdToPoolDetail[poolId].poolID = poolId;
-        poolIdToPoolDetail[poolId].active = true;
+        poolIdToPoolDetail[poolId].poolExists = true;
         poolIdToPoolDetail[poolId].poolContractAddress = newPool;
-        userAddressTouserAccount[msg.sender].userAssociatedPools.push(newPool);
-        poolIdToPoolDetail[poolId].members.push(msg.sender);
+        userAddressTouserAccount[userAddress].userAssociatedPools.push(poolId);
+        poolIdToPoolDetail[poolId].members.push(userAddress);
         poolIdToPoolDetail[poolId].currentMemberCount++;
-        poolIdToPoolDetail[poolId].isMember[msg.sender] = true;
+        
+        userToPoolMembership[userAddress][newPool]=true; // for membership
+
+        Pool poolContract = Pool(newPool);
+        poolContract.setUserMetadataURI(userAddress, metadataURI);
+
         poolCount.increment();
+        
+        return newPool;
     }
 
-    // function to join pool
-    function joinPool(string memory poolId) public {
-        require(userAddressTouserAccount[msg.sender].userAccountStatus==true,'Create account first.');
-        require(poolIdToPoolDetail[poolId].active==true,'No pool found  with given poolID');
+    // function to join pool | Fee: $100 
+    function joinPool(string memory poolId, address userAddress, string memory metadataURI) public {
+        require(userAddressTouserAccount[userAddress].userAccountStatus==true,'Create account first.');
+        require(poolIdToPoolDetail[poolId].poolExists==true,'No pool found  with given poolID');
 
         uint256 empty = (2 - poolIdToPoolDetail[poolId].members.length);
 
         require((empty > 1) || (empty == 1),'Not enough slot in the pool.');
 
-        poolIdToPoolDetail[poolId].isMember[msg.sender] = true;
+        userToPoolMembership[userAddress][poolIdToPoolDetail[poolId].poolContractAddress]=true; // for membership
         poolIdToPoolDetail[poolId].currentMemberCount++;
-        userAddressTouserAccount[msg.sender].userAssociatedPools.push(poolIdToPoolDetail[poolId].poolContractAddress);
-        poolIdToPoolDetail[poolId].members.push(msg.sender);
+        userAddressTouserAccount[userAddress].userAssociatedPools.push(poolId);
+        poolIdToPoolDetail[poolId].members.push(userAddress);
+
+        Pool poolContract = Pool(poolIdToPoolDetail[poolId].poolContractAddress);
+        poolContract.setUserMetadataURI(userAddress, metadataURI);
+    }
+
+    function testingConcept(string memory poolId, address _userAddress) public view returns(string memory) {
+        Pool poolContract = Pool(poolIdToPoolDetail[poolId].poolContractAddress);
+        return poolContract.getUserMetadatURI(_userAddress);
+    }
+
+    function getPoolStatus(string memory poolId) public view returns(bool){
+        return poolIdToPoolDetail[poolId].poolExists;
     }
 
     function getPoolContractAddress(string memory poolId) public view returns(address) {
         // check if pool exists
-        require(poolIdToPoolDetail[poolId].active == true,'No pool found with given poolId.');
+        require(poolIdToPoolDetail[poolId].poolExists == true,'No pool found with given poolId.');
         return poolIdToPoolDetail[poolId].poolContractAddress;
     }
 
+    // fetches user account details of given poolId.
     function getPoolMembers(string memory poolId) public view returns(userAccount[] memory){
         // will return account information of users of given poolId.
         require(poolIdToPoolDetail[poolId].currentMemberCount>0,'No member in this pool.');
@@ -133,9 +160,21 @@ contract Pinsurance {
         return poolMembers;
     }
 
-    // function getUserAllPools() public  {
+    function getUserAllPools(address userAddress) public view returns(poolDetail[] memory){
+        uint256 numberOfPools = userAddressTouserAccount[userAddress].userAssociatedPools.length;
+        uint256 currentIndex = 0;
 
-    // }
+        poolDetail[] memory userPools = new poolDetail[](numberOfPools);
+
+        for(uint i=0; i<numberOfPools; i++) {
+            string memory poolId = userAddressTouserAccount[userAddress].userAssociatedPools[i];
+            poolDetail storage currentPool = poolIdToPoolDetail[poolId];
+            userPools[currentIndex] = currentPool;
+            currentIndex++;
+        }
+        
+        return userPools;
+    }
 
     // Utils => 
 

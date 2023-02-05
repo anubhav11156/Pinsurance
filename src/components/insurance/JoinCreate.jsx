@@ -19,6 +19,7 @@ function JoinCreate() {
   const [poolNanoId, setPoolNanoId] = useState("");
   const [poolId, setPoolId] = useState("");
   const [poolName, setPoolName] = useState("");
+  const [checked, setChecked] = useState(false);
   const [formInput, setFormInput] = useState({
     vehicleModel: "",
     cubicCapacity: "",
@@ -162,7 +163,8 @@ function JoinCreate() {
   console.log('pool nanoid: ', poolNanoId);
 
   const joinHandler = async () => {
-    setIsUploading(true);
+    if(checked){
+      setIsUploading(true);
     // Upload Metadata to IPFS.
     const uri = await metadata();
     console.log('URI : ', uri);
@@ -190,28 +192,47 @@ function JoinCreate() {
 
     await transaction.wait()
       .then(() => {
-        joinInsurnacePool(signer, uri)
+        joinInsurnacePool(uri)
       })
       .catch((error) => {
         console.log(error);
       })
-
+    } else {
+      toast.error("Check Pool Id first!", {
+        position: toast.POSITION.TOP_CENTER
+      });
+    }
   }
 
-  const joinInsurnacePool = async (_signer, _uri) => {
+  const joinInsurnacePool = async (_uri) => {
+
+    const modal = new web3modal({
+      cacheProvider: true,
+    });
+
+    const connection = await modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    console.log('tst: ',
+    signer.estimateGas.joinPool(
+      poolNanoId,
+      address,
+      _uri,
+    )
+    )
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
       pinsuranceAbi.abi,
-      _signer
+      signer
     )
 
-    const create = await pinsuranceContract.joinPool(
+    const join = await pinsuranceContract.joinPool(
       poolNanoId,
       address,
       _uri,
     )
 
-    await create.wait()
+    await join.wait()
       .then(() => {
         setIsUploading(false);
         toast.success("Pool Joined", {
@@ -229,7 +250,6 @@ function JoinCreate() {
   // check if the given pool Id exists or not
   const checkPoolIdHandler = async () => {
     setIsChecking(true);
-    // returns true -> pool exists, returns false -> pool don't exists.
     const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
@@ -244,17 +264,20 @@ function JoinCreate() {
             toast.success("Pool Found!", {
               position: toast.POSITION.TOP_CENTER
             });
+            setIsChecking(false);
+            return response
           } else {
             toast.error("Pool not found!", {
               position: toast.POSITION.TOP_CENTER
             });
+            setIsChecking(false);
+            return response
           }
-          setIsChecking(false);
         })
     } catch (error) {
       console.log(error);
     }
-
+    setChecked(true);
   }
 
   return (

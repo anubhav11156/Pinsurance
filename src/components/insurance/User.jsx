@@ -113,6 +113,7 @@ function User() {
         try {
             await pinsuranceContract.getUserDetail(address)
                 .then((response) => {
+                    console.log('account : ', response);
                     fetchUserInfoFromURI(response.userMetadataURI)
                 })
         } catch (error) {
