@@ -5,7 +5,10 @@ import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
 import ClipLoader from "react-spinners/ClipLoader";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../../config";
+import web3modal from "web3modal"
+import { ethers } from "ethers"
+import { useAccount } from 'wagmi'
 
 function JoinCreate() {
 
@@ -21,6 +24,9 @@ function JoinCreate() {
     cubicCapacity: "",
     insurancePremium: "",
   })
+
+  const { address } = useAccount();
+  const ownerAddress = "0x22b6Dd4D6d818e2Ebce3D2E009A249F8FbF4e965";
 
   const createPoolHandler = () => {
     setCreateFormActive(true);
@@ -54,15 +60,15 @@ function JoinCreate() {
       new File([data], 'poolMetadata.json')
     ]
     const metadataCID = await uploadToIPFS(files);
-    if (metadataCID.length) {
-      toast.success("Pool Metadata Uploaded to IPFS", {
-        position: toast.POSITION.TOP_CENTER
-      });
-    } else {
-      toast.error("Failed to upload Pool Metadata!", {
-        position: toast.POSITION.TOP_CENTER
-      });
-    }
+    // if (metadataCID.length) {
+    //   toast.success("Pool Metadata Uploaded to IPFS", {
+    //     position: toast.POSITION.TOP_CENTER
+    //   });
+    // } else {
+    //   toast.error("Failed to upload Pool Metadata!", {
+    //     position: toast.POSITION.TOP_CENTER
+    //   });
+    // }
     return `https://ipfs.io/ipfs/${metadataCID}/poolMetadata.json`
   }
 
@@ -87,29 +93,168 @@ function JoinCreate() {
     }
   }, [formInput.cubicCapacity])
 
-
+  // Will create insurance pool
   const createHandler = async () => {
     setPoolNanoId(nanoid());
     setIsUploading(true);
     // Upload Metadata to IPFS.
     const uri = await metadata();
-    setIsUploading(false);
-    console.log('Pool Metadata URI is : ', uri);
+    console.log('URI : ', uri);
+    const modal = new web3modal({
+      cacheProvider: true,
+    });
+
+    const connection = await modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    const usdcContract = new ethers.Contract(
+      mockUsdcContractAddress,
+      mockUsdcAbi.abi,
+      signer
+    )
+    const value = 1; // platform fee : 100 USDC
+    const usdcValue = ethers.utils.parseEther(value.toString());
+
+    const transaction = await usdcContract.transfer(
+      ownerAddress,
+      usdcValue
+    )
+
+    await transaction.wait()
+      .then(() => {
+        createInsurancePool(signer, uri)
+      })
+      .catch((error) => {
+        console.log(error);
+      })
   }
+
+  const createInsurancePool = async (_signer, _uri) => {
+    const pinsuranceContract = new ethers.Contract(
+      pinsuranceContractAddress,
+      pinsuranceAbi.abi,
+      _signer
+    )
+
+    const create = await pinsuranceContract.createPool(
+      poolNanoId,
+      poolName,
+      _uri,
+      address
+    )
+
+    await create.wait()
+      .then(() => {
+        setIsUploading(false);
+        toast.success("Pool Created", {
+          position: toast.POSITION.TOP_CENTER
+        });
+      }).catch((error) => {
+        setIsUploading(false);
+        toast.error("Failed to create pool.", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        console.error(error);
+      })
+  }
+
+  console.log('pool nanoid: ', poolNanoId);
 
   const joinHandler = async () => {
     setIsUploading(true);
     // Upload Metadata to IPFS.
     const uri = await metadata();
-    setIsUploading(false);
-    console.log('Pool Metadata URI is : ', uri);
+    console.log('URI : ', uri);
+
+    const modal = new web3modal({
+      cacheProvider: true,
+    });
+
+    const connection = await modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+
+    const usdcContract = new ethers.Contract(
+      mockUsdcContractAddress,
+      mockUsdcAbi.abi,
+      signer
+    )
+    const value = 1; // platform fee : 100 USDC
+    const usdcValue = ethers.utils.parseEther(value.toString());
+
+    const transaction = await usdcContract.transfer(
+      ownerAddress,
+      usdcValue
+    )
+
+    await transaction.wait()
+      .then(() => {
+        joinInsurnacePool(signer, uri)
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+
+  }
+
+  const joinInsurnacePool = async (_signer, _uri) => {
+    const pinsuranceContract = new ethers.Contract(
+      pinsuranceContractAddress,
+      pinsuranceAbi.abi,
+      _signer
+    )
+
+    const create = await pinsuranceContract.joinPool(
+      poolNanoId,
+      address,
+      _uri,
+    )
+
+    await create.wait()
+      .then(() => {
+        setIsUploading(false);
+        toast.success("Pool Joined", {
+          position: toast.POSITION.TOP_CENTER
+        });
+      }).catch((error) => {
+        setIsUploading(false);
+        toast.error("Failed to join pool.", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        console.error(error);
+      })
   }
 
   // check if the given pool Id exists or not
-  const checkPoolIdHandler = () => {
+  const checkPoolIdHandler = async () => {
     setIsChecking(true);
     // returns true -> pool exists, returns false -> pool don't exists.
-    
+    const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+    const pinsuranceContract = new ethers.Contract(
+      pinsuranceContractAddress,
+      pinsuranceAbi.abi,
+      provider
+    )
+    try {
+      await pinsuranceContract.getPoolStatus(poolId)
+        .then((response) => {
+          console.log("pool status : ", response);
+          if(response){
+            toast.success("Pool Found!", {
+              position: toast.POSITION.TOP_CENTER
+            });
+          } else {
+            toast.error("Pool not found!", {
+              position: toast.POSITION.TOP_CENTER
+            });
+          }
+          setIsChecking(false);
+        })
+    } catch (error) {
+      console.log(error);
+    }
+
   }
 
   return (
@@ -160,6 +305,7 @@ function JoinCreate() {
                     </p>
                   </div>
                 </div>
+                <div className='fee'>Fee: $100</div>
                 <div className='create' onClick={createHandler}>
                   {!isUploading &&
                     <p>Create</p>
@@ -224,6 +370,7 @@ function JoinCreate() {
                     </p>
                   </div>
                 </div>
+                <div className='fee'>Fee: $100</div>
                 <div className='create' onClick={joinHandler} style={{
                   backgroundColor: formHavePoolActive ? '#181717' : '#0153b5'
                 }}>
@@ -557,8 +704,14 @@ const Form = styled.div`
     }       
   }
 
+  .fee {
+    margin-top: 0.5rem;
+    font-size: 13px;
+    margin-left: 3px;
+  }
+
   .create {
-    margin-top: 0.7rem;
+    margin-top: 0.4rem;
     height: 2.5rem;
     width: 100%;
     border-radius: 6px;

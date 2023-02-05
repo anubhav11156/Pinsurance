@@ -137,10 +137,10 @@ function User() {
 
     /*--------------------IPFS code to upload metadata-------------------*/
 
-    const web3ApiKey = process.env.REACT_APP_WEB3_STORAGE;
+    const web3StorageApiKey = process.env.REACT_APP_WEB3_STORAGE;
 
     const makeStorageClient = () => {
-        return new Web3Storage({ token: `${web3ApiKey}` })
+        return new Web3Storage({ token: `${web3StorageApiKey}` })
     }
 
     const uploadImageHandler = async () => {
@@ -182,8 +182,6 @@ function User() {
         return `https://ipfs.io/ipfs/${metadataCID}/metadata.json`
     }
     /*------------------------------------------------------*/
-
-
 
 
     /*------------------Create account----------------------*/
@@ -228,7 +226,6 @@ function User() {
             copy(address);
         }
     }
-
 
     return (
         <Container>

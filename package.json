@@ -24,7 +24,8 @@
     "styled-components": "^5.3.6",
     "wagmi": "^0.10.15",
     "web-vitals": "^2.1.4",
-    "web3.storage": "^4.4.0"
+    "web3.storage": "^4.4.0",
+    "web3modal": "^1.9.12"
   },
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
