@@ -19,7 +19,7 @@ import PoolCard from './PoolCard';
 function User() {
 
     const userAccountDetail = useSelector(selectAccount);
-
+    const [poolAddressArray, setPoolAdressArray] = useState([]);
     const [formActive, setFormActive] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const [filBalance, setFilBalance] = useState(0);
@@ -147,10 +147,18 @@ function User() {
             provider
         )
         try {
-            await pinsuranceContract.getUserAllPools(address)
-                .then((response) => {
-                    console.log('pools : ', response);
-                })
+           const data =  await pinsuranceContract.getUserAllPools(address)
+           const items = await Promise.all(
+            data.map(async (i) => {
+                let poolAddress = i.poolContractAddress;
+                let item = {
+                    poolAddress
+                };
+                return item;
+            })
+           );
+           console.log('Pool Address : ',items);
+           setPoolAdressArray(items);
         } catch (error) {
             console.log(error);
         }

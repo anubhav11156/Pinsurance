@@ -1,6 +1,5 @@
 import { React, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { nanoid } from 'nanoid';
 import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
 import ClipLoader from "react-spinners/ClipLoader";
 import { ToastContainer, toast } from 'react-toastify';
@@ -16,8 +15,7 @@ function JoinCreate() {
   const [isUploading, setIsUploading] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
   const [formHavePoolActive, setFormHavePoolActive] = useState(false);
-  const [poolNanoId, setPoolNanoId] = useState("");
-  const [poolId, setPoolId] = useState("");
+  const [poolAddress, setPoolAddress] = useState("");
   const [poolName, setPoolName] = useState("");
   const [checked, setChecked] = useState(false);
   const [formInput, setFormInput] = useState({
@@ -96,7 +94,6 @@ function JoinCreate() {
 
   // Will create insurance pool
   const createHandler = async () => {
-    setPoolNanoId(nanoid());
     setIsUploading(true);
     // Upload Metadata to IPFS.
     const uri = await metadata();
@@ -139,7 +136,6 @@ function JoinCreate() {
     )
 
     const create = await pinsuranceContract.createPool(
-      poolNanoId,
       poolName,
       _uri,
       address
@@ -160,7 +156,6 @@ function JoinCreate() {
       })
   }
 
-  console.log('pool nanoid: ', poolNanoId);
 
   const joinHandler = async () => {
     if(checked){
@@ -213,13 +208,7 @@ function JoinCreate() {
     const connection = await modal.connect();
     const provider = new ethers.providers.Web3Provider(connection);
     const signer = provider.getSigner();
-    console.log('tst: ',
-    signer.estimateGas.joinPool(
-      poolNanoId,
-      address,
-      _uri,
-    )
-    )
+
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
       pinsuranceAbi.abi,
@@ -227,7 +216,7 @@ function JoinCreate() {
     )
 
     const join = await pinsuranceContract.joinPool(
-      poolNanoId,
+      poolAddress,
       address,
       _uri,
     )
@@ -257,7 +246,7 @@ function JoinCreate() {
       provider
     )
     try {
-      await pinsuranceContract.getPoolStatus(poolId)
+      await pinsuranceContract.getPoolStatus(poolAddress)
         .then((response) => {
           console.log("pool status : ", response);
           if(response){
@@ -276,6 +265,7 @@ function JoinCreate() {
         })
     } catch (error) {
       console.log(error);
+      setIsChecking(false);
     }
     setChecked(true);
   }
@@ -355,7 +345,7 @@ function JoinCreate() {
             <>
               <div className='pool-name-div'>
                 <input type="text" placeholder='Pool Id' id="Pid" onChange={(prop) => {
-                  setPoolId(prop.target.value)
+                  setPoolAddress(prop.target.value)
                 }} />
                 <div className='ok-button' onClick={checkPoolIdHandler}>
                   {!isChecking &&

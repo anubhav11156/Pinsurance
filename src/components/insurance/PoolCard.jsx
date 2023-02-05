@@ -21,7 +21,7 @@ function PoolCard() {
                     <p>Spring Flower</p>
                 </div>
 
-                <div className='pool-id'>
+                {/* <div className='pool-id'>
                     <div className='text'>
                         <p className='pool-text'>
                             YDCcRekpBGoul8GaVzOx7
@@ -30,7 +30,7 @@ function PoolCard() {
                             <img src="/images/copy -white.png" />
                         </div>
                     </div>
-                </div>
+                </div> */}
             </div>
             <div className='pool-address'>
                 <div className='address'>
