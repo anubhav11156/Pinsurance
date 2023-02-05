@@ -24,7 +24,7 @@ const hyperspace = {
     symbol: 'tFIL',
   },
   rpcUrls: {
-    default: "https://filecoin-hyperspace.chainstacklabs.com/rpc/v0",
+    default: "https://filecoin-hyperspace.chainstacklabs.com/rpc/v1",
   },
 }
 
@@ -34,7 +34,7 @@ const { chains, provider} = configureChains(
   [
     jsonRpcProvider({
       rpc: (chain) => ({
-        http: `https://filecoin-hyperspace.chainstacklabs.com/rpc/v0`,
+        http: `https://filecoin-hyperspace.chainstacklabs.com/rpc/v1`,
       }),
     }),
   ],

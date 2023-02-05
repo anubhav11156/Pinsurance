@@ -95,6 +95,7 @@ function User() {
 
     useEffect(() => {
         getAccountDetail();
+        getPools();
         const balFIL = Number(balance.data.formatted);
         setFilBalance(balFIL.toFixed(2));
         getUsdcBalance();
@@ -134,6 +135,26 @@ function User() {
     }
 
 
+    /*-------------------------------------------------------------------*/
+
+    /*------------------------ get user pools----------------------------*/
+
+    const getPools = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const pinsuranceContract = new ethers.Contract(
+            pinsuranceContractAddress,
+            pinsuranceAbi.abi,
+            provider
+        )
+        try {
+            await pinsuranceContract.getUserAllPools(address)
+                .then((response) => {
+                    console.log('pools : ', response);
+                })
+        } catch (error) {
+            console.log(error);
+        }
+    }
     /*-------------------------------------------------------------------*/
 
     /*--------------------IPFS code to upload metadata-------------------*/
@@ -210,7 +231,7 @@ function User() {
                 });
                 setuserHaveAccouint(true);
                 setIsCreatingAccount(false);
-                window.location.reload();
+                // window.location.reload();
             }).catch((e) => {
                 toast.error("Failed to create account!", {
                     position: toast.POSITION.TOP_CENTER

@@ -250,7 +250,7 @@ function JoinCreate() {
   // check if the given pool Id exists or not
   const checkPoolIdHandler = async () => {
     setIsChecking(true);
-    const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+    const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
       pinsuranceAbi.abi,
