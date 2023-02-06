@@ -1,16 +1,55 @@
-import {React, useState, useEffect } from 'react'
+import { React, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import ClipLoader from "react-spinners/ClipLoader";
+import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
 
 
 function Claim() {
 
-  const [isRequesing, setIsRequesing] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
+  const [poolAddress, setPoolAddress] = useState();
+  const [documentURI, setDocumentURI] = useState();
+  const [amount, setAmount] = useState();
 
-
-  const requesHandler = () => {
-
+  const requestHandler = () => {
+    setIsRequesting(true);
   }
+
+
+  /*-------------------IPFS code to upload support document -------------*/
+
+  const web3StorageApiKey = process.env.REACT_APP_WEB3_STORAGE;
+
+  const makeStorageClient = async () => {
+    return new Web3Storage({ token: `${web3StorageApiKey}` })
+  }
+
+  const uploadHandler = async () => {
+    const fileInput = document.getElementById('docs');
+    const pathname = fileInput.files[0].name;
+    const cid = await toIPFS(fileInput.files);
+
+    if (cid.length) {
+      toast.success("Uploaded to IPFS", {
+        position: toast.POSITION.TOP_CENTER
+      });
+    } else {
+      toast.error("IPFS upload failed!", {
+        position: toast.POSITION.TOP_CENTER
+      });
+    }
+    let uri = `https://ipfs.io/ipfs/${cid}/${pathname}`;
+    console.log('doc uri : ', uri);
+    setDocumentURI(uri);
+  }
+
+  const toIPFS = async (files) => {
+    const client = makeStorageClient()
+    const cID = await client.put(files)
+    return cID;
+  }
+
+  /*-----------------------------------------------------------------------*/
 
   return (
     <Container>
@@ -20,18 +59,29 @@ function Claim() {
             <p>Request for Claim</p>
           </div>
           <div className='pool-address'>
-            <input type="text" placeholder='Pool Address'/>
+            <input type="text" placeholder='Pool Address' onChange={(props) => {
+              let pool = props.target.value
+              setPoolAddress(pool)
+            }} />
           </div>
           <div className="upload-amount">
             <div className='amount-div'>
-              <input type="text" placeholder='Claim amount'/>
+              <input type="text" placeholder='Claim amount' onChange={(props) => {
+                let x = props.target.value;
+                setAmount(x);
+              }} />
             </div>
             <div className='upload-div'>
-              <p>Upload support document</p>
+             <input type="file" id="docs" onChange={uploadHandler} />
             </div>
           </div>
-          <div className='button' onClick={requesHandler}>
-            <p>Request</p>
+          <div className='button' onClick={requestHandler}>
+            {!isRequesting &&
+              <p>Request</p>
+            }
+            {isRequesting &&
+              <ClipLoader color="#ffffff" size={16} />
+            }
           </div>
         </div>
       </div>
@@ -59,7 +109,7 @@ const Container = styled.div`
 
       .main-container {
         margin-top: 6rem;
-        height: 34%;
+        height: 70%;
         width: 70%;
         background-color: #0152b515;
         display: flex;
@@ -77,6 +127,7 @@ const Container = styled.div`
 
           p {
             margin: 0;
+            margin-top: 10px;
             color: #0a458d;
           }
         }
@@ -104,7 +155,7 @@ const Container = styled.div`
         .upload-amount {
           height: 2.5rem;
           width: 92%;
-          margin-top: 1rem;
+          margin-top: 1.2rem;
           display: flex;
           justify-content: center;
           align-items: center;
@@ -140,27 +191,20 @@ const Container = styled.div`
             justify-content: center;
             align-items: center;
             transition: opacity 0.15s;
-            cursor: pointer;
 
-            &:hover {
-              opacity: 0.9;
-            }
-
-            &:active {
-              opacity: 0.8;
-            }
-
-            p {
-              margin: 0;
+            input {
+              width: 80%;
               color: white;
-              font-size: 14px;
+              background-color: #e3dddd2d;
+              border-radius: 2px;
+              cursor: pointer;
             }
           }
 
         }
 
         .button {
-          margin-top: 1rem;
+          margin-top: 1.2rem;
           height: 2.5rem;
           width: 92%;
           border-radius: 6px;

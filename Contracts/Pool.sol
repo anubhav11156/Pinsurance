@@ -15,10 +15,12 @@ contract Pool {
     }
 
     using Counters for Counters.Counter;
+    Counters.Counter public claimCount;
 
 
     address[] poolMembers;
 
+    address[] membersWhoClaimed;
 
     struct userPoolAccount {
         string amountStaked;
@@ -35,7 +37,20 @@ contract Pool {
 
     poolDetail poolData; // single variable to store pool information, simply returns this
 
-    mapping(address => userPoolAccount) public userPoolAccountStatus;
+    mapping(address => userPoolAccount) userPoolAccountStatus;
+
+
+    struct claim {
+        address userAddress;
+        address poolAddress;
+        string claimAmount;
+        string docURI;
+        bool claimStatus;
+    }
+
+    mapping(address => claim ) userClaimRequests;
+
+    mapping(address => bool) userClaimStatus;
 
     function getBalance() public view returns(uint256) {
         return address(this).balance;
@@ -49,6 +64,10 @@ contract Pool {
     function setUserMetadataURI(address userAddress, string memory _userMetadataURI) external {
         userPoolAccountStatus[userAddress].metadataURI = _userMetadataURI;
         poolMembers.push(userAddress);
+
+        if(poolMembers.length==1){
+           poolData.name = POOL_NAME;
+        }
     }
 
     function getUserMetadatURI(address userAddress) public view returns(string memory) {
@@ -58,10 +77,6 @@ contract Pool {
     function stake(address userAddress, string memory amount) public {
         userPoolAccountStatus[userAddress].haveStaked = true;
         userPoolAccountStatus[userAddress].amountStaked = amount;
-
-        if(poolMembers.length==1){
-            poolData.name = POOL_NAME;
-        }
 
         if(poolMembers.length==2){ // means all user have staked their amount
             poolData.isActive=true;
@@ -73,5 +88,43 @@ contract Pool {
     function getPoolDetail() public view returns(poolDetail memory) {
         return poolData;
     }
+
+    function createClaimRequest(address _userAddress, string memory docUri, string memory amount) public {
+        userClaimRequests[_userAddress].userAddress = _userAddress;
+        userClaimRequests[_userAddress].docURI = docUri;
+        userClaimRequests[_userAddress].claimAmount = amount;
+        membersWhoClaimed.push(_userAddress);
+        claimCount.increment();
+    }
+
+    function approveClaim(address claimerAddress) public {
+        require(claimerAddress != msg.sender,'Only other members can approve claim.');
+        userClaimStatus[claimerAddress] = true;
+    }
+
+    function fetchMyClaims(address userAddress) public view returns(claim memory){
+        return userClaimRequests[userAddress];
+    }
+
+    function fetchAllClaims() public view returns(claim[] memory) {
+        // returns all claim as array
+        uint cCount = claimCount.current();
+        uint currentIndex = 0;
+
+        claim[] memory allClaims = new claim[](cCount);
+
+        for(uint i=0; i<cCount; i++){
+            claim storage currentClaim = userClaimRequests[membersWhoClaimed[i]];
+            allClaims[currentIndex] = currentClaim;
+            currentIndex++;
+        }
+
+        return allClaims;
+
+    }
+
+    receive() external payable {}
+
+    fallback() external payable {}
 
 }
