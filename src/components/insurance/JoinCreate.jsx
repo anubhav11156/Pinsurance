@@ -111,7 +111,7 @@ function JoinCreate() {
       mockUsdcAbi.abi,
       signer
     )
-    const value = 1; // platform fee : 100 USDC
+    const value = 100; // platform fee : 100 USDC
     const usdcValue = ethers.utils.parseEther(value.toString());
 
     const transaction = await usdcContract.transfer(
@@ -177,7 +177,7 @@ function JoinCreate() {
       mockUsdcAbi.abi,
       signer
     )
-    const value = 1; // platform fee : 100 USDC
+    const value = 100; // platform fee : 100 USDC
     const usdcValue = ethers.utils.parseEther(value.toString());
 
     const transaction = await usdcContract.transfer(

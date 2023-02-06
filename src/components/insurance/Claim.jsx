@@ -2,19 +2,22 @@ import { React, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import ClipLoader from "react-spinners/ClipLoader";
 import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
+import { useAccount } from 'wagmi'
+import { ethers } from "ethers"
+import axios from "axios";
+import web3modal from "web3modal"
+import { poolAbi } from "../../config";
 
 
 function Claim() {
 
   const [isRequesting, setIsRequesting] = useState(false);
   const [poolAddress, setPoolAddress] = useState();
-  const [documentURI, setDocumentURI] = useState();
+  const [documentURI, setDocumentURI] = useState("");
   const [amount, setAmount] = useState();
 
-  const requestHandler = () => {
-    setIsRequesting(true);
-  }
 
+  const { address } = useAccount();
 
   /*-------------------IPFS code to upload support document -------------*/
 
@@ -51,6 +54,49 @@ function Claim() {
 
   /*-----------------------------------------------------------------------*/
 
+  console.log('uri : ', documentURI);
+
+  /*-----------------------Ceate claim request ----------------------------*/
+
+  const requestHandler = async () => {
+    setIsRequesting(true);
+    const modal = new web3modal({
+      cacheProvider: true,
+    });
+
+    const connection = await modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    const poolContract = new ethers.Contract(
+      poolAddress,
+      poolAbi.abi,
+      signer
+    )
+
+    const create = await poolContract.createClaimRequest(
+      address,
+      documentURI,
+      amount
+    )
+
+    await create.wait()
+      .then(() => {
+        setIsRequesting(false);
+        toast.success("Claim requested.", {
+          position: toast.POSITION.TOP_CENTER
+        });
+      }).catch((error) => {
+        setIsStaking(false);
+        toast.error("Failed to request claim.", {
+          position: toast.POSITION.TOP_CENTER
+        });
+        console.error(error);
+      })
+
+  }
+
+  /*-----------------------------------------------------------------------*/
+
   return (
     <Container>
       <div className='left'>
@@ -72,7 +118,7 @@ function Claim() {
               }} />
             </div>
             <div className='upload-div'>
-             <input type="file" id="docs" onChange={uploadHandler} />
+              <input type="file" id="docs" onChange={uploadHandler} />
             </div>
           </div>
           <div className='button' onClick={requestHandler}>
@@ -85,7 +131,32 @@ function Claim() {
           </div>
         </div>
       </div>
-      <div className='right'></div>
+      <div className='right'>
+        <div className="main-container">
+          <div className='heading'>
+            <p>My Claims</p>
+          </div>
+          <div className='claims-container'>
+             <ClaimCard>
+                <div className='upper'>
+                  <div className='a-div'>
+                    <p>
+                    Amount:
+                    </p>
+                  </div>
+                  <div className='ap-div'>
+                    <p>
+                    Approved: 
+                    </p>
+                  </div>
+                </div>
+                <div className='lower'>
+                  <p>Claim</p>
+                </div>
+             </ClaimCard>
+          </div>
+        </div>
+      </div>
     </Container>
   )
 }
@@ -233,6 +304,109 @@ const Container = styled.div`
     .right {
       flex: 1;
       height: 100%;
-      background-color: lightpink;
+      display: flex;
+      justify-content: center;
+
+      .main-container {
+        margin-top: 6rem;
+        height: 70%;
+        width: 70%;
+        background-color: #0152b515;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+        border-radius: 8px;
+
+        .heading {
+          width: 99%;
+          height: 2.3rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          p {
+            margin: 0;
+            margin-top: 10px;
+            color: #0a458d;
+          }
+        }
+
+        .claims-container {
+          margin-top: 3rem;
+          height: 100%;
+          width: 99%;
+          display: flex;
+          justify-content: center;
+        }
+
+      }
     }
+`
+
+const ClaimCard= styled.div`
+  width: 90%;
+  height: 5rem;
+  background-color: #0a458d3a;
+  border-radius: 6px;
+  border: 1px solid #0a458d3d;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+
+  .upper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    width: 100%;
+
+    .a-div {
+      flex: 1;
+      font-size: 14px;
+
+      p {
+        margin: 0;
+        margin-left: 10px;
+      }
+    }
+
+    .ap-div {
+      flex: 1;
+      font-size: 14px;
+
+      p{
+        margin: 0;
+        margin-left: 5px;
+      }
+
+    }
+  }
+
+  .lower {
+    flex: 1;
+    width: 95%;
+    background-color: #0a458da4;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    
+    p {
+      color: white;
+      margin: 0;
+    }
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:active {
+      opacity: 0.8;
+    }
+  }
 `

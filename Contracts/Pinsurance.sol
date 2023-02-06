@@ -116,7 +116,7 @@ contract Pinsurance {
     function createPool(string memory poolName, string memory metadataURI, address userAddress) public {
         require(userAddressTouserAccount[userAddress].userAccountStatus==true,'Create account first.');
 
-        address newPool = address(new Pool(poolName, address(this))); // returns address of the new pool.
+        address payable newPool = payable(new Pool(poolName, address(this))); // returns address of the new pool.
 
         // poolAddressToPoolDetail[newPool].poolAddress = poolAddress;
         poolAddressToStatus[newPool] = true;
@@ -128,7 +128,7 @@ contract Pinsurance {
 
         userToPoolMembership[userAddress][newPool]=true; // for membership
 
-        Pool poolContract = Pool(newPool);
+        Pool  poolContract = Pool(newPool);
         poolContract.setUserMetadataURI(userAddress, metadataURI);
 
         poolCount.increment();
@@ -149,48 +149,8 @@ contract Pinsurance {
         userAddressTouserAccount[userAddress].userAssociatedPools.push(poolAddress);
         poolAddressToPoolDetail[poolAddress].members.push(userAddress);
 
-        Pool poolContract = Pool(poolAddress);
+        Pool poolContract = Pool(payable(poolAddress));
         poolContract.setUserMetadataURI(userAddress, metadataURI);
     }
-
-    function testingConcept(address poolAddress, address _userAddress) public view returns(string memory) {
-        Pool poolContract = Pool(poolAddressToPoolDetail[poolAddress].poolContractAddress);
-        return poolContract.getUserMetadatURI(_userAddress);
-    }
-
-
-   
-
-    // Utils => 
-
-    /* 
-    function toHexString(uint256 value, uint256 length) private pure returns (string memory) {
-        bytes memory buffer = new bytes(2 * length + 2);
-        buffer[0] = "0";
-        buffer[1] = "x";
-        for (uint256 i = 2 * length + 1; i > 1; --i) {
-            buffer[i] = _SYMBOLS[value & 0xf];
-            value >>= 4;
-        }
-        require(value == 0, "Strings: hex length insufficient");
-        return string(buffer);
-    }
-
-    function addressToHexString(address addr) private pure returns (string memory) {
-        return toHexString(uint256(uint160(addr)), 20);
-    }
-
-    function stringToBytes32(string memory source) public pure returns (bytes32 result) {
-        bytes memory tempEmptyStringTest = bytes(source);
-        if (tempEmptyStringTest.length == 0) {
-            return 0x0;
-        }
-
-        assembly {
-            result := mload(add(source, 32))
-        }
-    }
-    */ 
-
 
 }

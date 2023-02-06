@@ -148,7 +148,7 @@ function PoolCard(props) {
             mockUsdcAbi.abi,
             signer
         )
-        const value = 10; // platform fee : 100 USDC
+        const value = poolDetail.premium; 
         const usdcValue = ethers.utils.parseEther(value.toString());
 
         const transaction = await usdcContract.transfer(
@@ -323,7 +323,7 @@ function PoolCard(props) {
             <div className='stake-amount'>
                 <div className='inner' onClick={stakeHandler}>
                     {!isStaking &&
-                        <p>Stake $ 2000</p>
+                        <p>Stake $ {poolDetail.premium}</p>
                     }
                     {isStaking &&
                         <ClipLoader color="#ffffff" size={16} />
@@ -333,7 +333,7 @@ function PoolCard(props) {
             </div>
             <div className='status-div'>
                 <div className='inner'>
-                    <p>Pool Active</p>
+                    <p>Pool Status</p>
                 </div>
             </div>
         </Container>
@@ -848,7 +848,15 @@ const Container = styled.div`
         margin-right: 0.5rem;
         background-color: #008000d5;
         border-radius: 6px;
+        cursor: pointer;
+        transform: opacity 0.15s;
+        &:hover {
+            opacity: 0.9;
+        }
 
+        &:active {
+            opacity: 0.8;
+        }
         display: flex;
         justify-content: center;
         align-items: center;
