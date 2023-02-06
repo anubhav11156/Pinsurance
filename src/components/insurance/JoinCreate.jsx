@@ -336,7 +336,7 @@ function JoinCreate() {
         <div className='up'>
           <div className='have-pool' onClick={havePoolHandler}>
             <div className='text'>
-              <p>Have a Pool Id ?</p>
+              <p>Have Pool Address ?</p>
             </div>
           </div>
         </div>
@@ -344,7 +344,7 @@ function JoinCreate() {
           {formHavePoolActive &&
             <>
               <div className='pool-name-div'>
-                <input type="text" placeholder='Pool Id' id="Pid" onChange={(prop) => {
+                <input type="text" placeholder='Pool Address' id="Pid" onChange={(prop) => {
                   setPoolAddress(prop.target.value)
                 }} />
                 <div className='ok-button' onClick={checkPoolIdHandler}>
@@ -532,7 +532,7 @@ const Container = styled.div`
 
 
         .have-pool {
-          width: 9.4rem;
+          width: 10.9rem;
           height: 2.1rem;
           display: flex;
           align-items: center;

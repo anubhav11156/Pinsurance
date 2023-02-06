@@ -1,4 +1,4 @@
-export const pinsuranceContractAddress = "0xB8fa5247544ed3DBd24627A0D6Fb2d53a785134a";
+export const pinsuranceContractAddress = "0xBe1816d893C54A62558065eA9E73D779730128c1";
 
 export const mockUsdcContractAddress = "0x55a48F9E82FD2C2f579D22a8D7B8e2dE151821e8";
 
@@ -246,30 +246,6 @@ export const pinsuranceAbi = {
             "type": "function"
         },
         {
-            "inputs": [
-                {
-                    "internalType": "address",
-                    "name": "poolAddress",
-                    "type": "address"
-                },
-                {
-                    "internalType": "address",
-                    "name": "_userAddress",
-                    "type": "address"
-                }
-            ],
-            "name": "testingConcept",
-            "outputs": [
-                {
-                    "internalType": "string",
-                    "name": "",
-                    "type": "string"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
             "inputs": [],
             "name": "userCount",
             "outputs": [
@@ -285,9 +261,6 @@ export const pinsuranceAbi = {
     ]
 }
 export const poolAbi = {
-    "_format": "hh-sol-artifact-1",
-    "contractName": "Pool",
-    "sourceName": "contracts/Pool.sol",
     "abi": [
         {
             "inputs": [
@@ -306,13 +279,71 @@ export const poolAbi = {
             "type": "constructor"
         },
         {
+            "stateMutability": "payable",
+            "type": "fallback"
+        },
+        {
             "inputs": [],
-            "name": "getPoolBalance",
+            "name": "getBalance",
             "outputs": [
                 {
                     "internalType": "uint256",
                     "name": "",
                     "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getPoolDetail",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "uint256",
+                            "name": "from",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "to",
+                            "type": "uint256"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "isActive",
+                            "type": "bool"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "name",
+                            "type": "string"
+                        }
+                    ],
+                    "internalType": "struct Pool.poolDetail",
+                    "name": "",
+                    "type": "tuple"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "getStakeStatus",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
                 }
             ],
             "stateMutability": "view",
@@ -361,9 +392,14 @@ export const poolAbi = {
                     "internalType": "address",
                     "name": "userAddress",
                     "type": "address"
+                },
+                {
+                    "internalType": "string",
+                    "name": "amount",
+                    "type": "string"
                 }
             ],
-            "name": "stakePremium",
+            "name": "stake",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
@@ -396,6 +432,10 @@ export const poolAbi = {
             ],
             "stateMutability": "view",
             "type": "function"
+        },
+        {
+            "stateMutability": "payable",
+            "type": "receive"
         }
     ]
 }

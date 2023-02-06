@@ -1,36 +1,47 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import copy from 'copy-to-clipboard';
-import { poolAbi } from "../../config";
+import { poolAbi, mockUsdcContractAddress, mockUsdcAbi } from "../../config";
+import { ToastContainer, toast } from 'react-toastify';
 import { useAccount } from 'wagmi'
 import { ethers } from "ethers"
 import axios from "axios";
+import ClipLoader from "react-spinners/ClipLoader";
+import web3modal from "web3modal"
+import fromExponential from 'from-exponential';
+
 
 function PoolCard(props) {
+
+    const timestamp = require('unix-timestamp');
 
     console.log('testing : ', props);
 
     const { address } = useAccount();
 
+    const [isStaking, setIsStaking] = useState(false);
+    const [poolBalance, setPoolBalance] = useState();
+    const [poolName, setPoolName] = useState("");
+    const [from, setFrom] = useState();
+    const [to, setTo] = useState();
     const [poolDetail, setPoolDetail] = useState({
-        balance: "",
         premium: "",
         memberCount: "",
         vehicle: "",
         cubicCapacity: "",
-        name:""
     })
 
     const copyAddress = () => {
         copy(props.poolAddress);
     }
 
+    const hexToDec = (hex) => parseInt(hex, 16);
+
     useEffect(() => {
         getMetaData()
         getPoolBalance()
-        getName()
         getDetail()
-    },[props.poolAddress])
+    }, [props.poolAddress])
 
 
 
@@ -69,44 +80,18 @@ function PoolCard(props) {
 
     const getPoolBalance = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
-        const poolContract = new ethers.Contract(
-            props.poolAddress,
-            poolAbi.abi,
+        const usdcContract = new ethers.Contract(
+            mockUsdcContractAddress,
+            mockUsdcAbi.abi,
             provider
         )
         try {
-            await poolContract.getBalance()
+            await usdcContract.balanceOf(props.poolAddress)
                 .then((response) => {
-                    console.log('bal : ', response);
-                    setPoolDetail({
-                        ...poolDetail,
-                        balance: response
-                    })
-                })
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
-    /*-----------------------------------------------------------*/
-
-    /*---------------------get pool name------------------------*/
-
-    const getName = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
-        const poolContract = new ethers.Contract(
-            props.poolAddress,
-            poolAbi.abi,
-            provider
-        )
-        try {
-            await poolContract.getPoolName()
-                .then((response) => {
-                    console.log('name : ', response);
-                    setPoolDetail({
-                        ...poolDetail,
-                        name: response
-                    })
+                    let bal = hexToDec(response._hex);
+                    setPoolBalance(
+                        Number(ethers.utils.formatEther(fromExponential(bal))).toFixed(2)
+                    );
                 })
         } catch (error) {
             console.log(error);
@@ -127,7 +112,19 @@ function PoolCard(props) {
         try {
             await poolContract.getPoolDetail()
                 .then((response) => {
-                    console.log('pool detail : ', response);
+                    console.log('response : ', response);
+                    let f = hexToDec(response.from._hex);
+                    let fromTime = timestamp.toDate(f);
+                    let fromString = fromTime.toString();
+                    let finalFrom = fromString.slice(0,16)
+                    
+                    let t = hexToDec(response.to._hex)
+                    let toTime = timestamp.toDate(t);
+                    let toString = toTime.toString();
+                    let finalTo = toString.slice(0,16)
+                    setFrom(finalFrom);
+                    setTo(finalTo);
+                    setPoolName(response.name);
                 })
         } catch (error) {
             console.log(error);
@@ -136,11 +133,78 @@ function PoolCard(props) {
 
     /*-----------------------------------------------------------*/
 
+    const stakeHandler = async () => {
+        setIsStaking(true);
+        const modal = new web3modal({
+            cacheProvider: true,
+        });
+
+        const connection = await modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
+        const usdcContract = new ethers.Contract(
+            mockUsdcContractAddress,
+            mockUsdcAbi.abi,
+            signer
+        )
+        const value = 10; // platform fee : 100 USDC
+        const usdcValue = ethers.utils.parseEther(value.toString());
+
+        const transaction = await usdcContract.transfer(
+            props.poolAddress,
+            usdcValue
+        )
+
+        await transaction.wait()
+            .then(() => {
+                stakeAmount()
+            })
+            .catch((error) => {
+                console.log(error);
+            })
+    }
+
+    const stakeAmount = async () => {
+        const modal = new web3modal({
+            cacheProvider: true,
+        });
+
+        const connection = await modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const poolContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            signer
+        )
+
+        const create = await poolContract.stake(
+            address,
+            poolDetail.premium,
+        )
+
+        await create.wait()
+            .then(() => {
+                setIsStaking(false);
+                toast.success("Stake Successfull.", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+            }).catch((error) => {
+                setIsStaking(false);
+                toast.error("Failed to stake!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+                console.error(error);
+            })
+    }
+
+    console.log('pool : ', poolDetail);
     return (
         <Container>
             <div className='pool-name'>
                 <div className='pool-name-div'>
-                    <p>{poolDetail.name}</p>
+                    <p>{poolName}</p>
                 </div>
 
                 {/* <div className='pool-id'>
@@ -173,7 +237,7 @@ function PoolCard(props) {
                 </div>
                 <div className='text'>
                     <p className='address-text'>
-                        {poolDetail.balance}
+                        {poolBalance}
                     </p>
                 </div>
             </div>
@@ -188,7 +252,7 @@ function PoolCard(props) {
                         </div>
                         <div className='text'>
                             <p className='from-text'>
-                                January
+                                {from}
                             </p>
                         </div>
                     </div>
@@ -198,7 +262,7 @@ function PoolCard(props) {
                         </div>
                         <div className='text'>
                             <p className='to-text'>
-                                Deceber
+                                {to}
                             </p>
                         </div>
                     </div>
@@ -257,8 +321,13 @@ function PoolCard(props) {
                 </div>
             </div>
             <div className='stake-amount'>
-                <div className='inner'>
-                    <p>Stake $ 2000</p>
+                <div className='inner' onClick={stakeHandler}>
+                    {!isStaking &&
+                        <p>Stake $ 2000</p>
+                    }
+                    {isStaking &&
+                        <ClipLoader color="#ffffff" size={16} />
+                    }
                 </div>
 
             </div>
@@ -494,7 +563,7 @@ const Container = styled.div`
                     p {
                         margin:0;
                         margin-left: 10px;
-                        font-size: 15px;
+                        font-size: 13px;
                     }
                 }
             }
@@ -532,7 +601,7 @@ const Container = styled.div`
                     p {
                         margin:0;
                         margin-left: 10px;
-                        font-size: 15px;
+                        font-size: 13px;
                     }
                 }
             }
@@ -755,11 +824,17 @@ const Container = styled.div`
             align-items: center;
             background-color: #0152b5c3;
             display: flex;
+            cursor: pointer;
+            transition: opacity 0.15s;
 
             p {
                 margin: 0;
                 font-size: 15px;
                 color: white;
+            }
+
+            &:hover {
+                opacity: 0.9;
             }
         }
 

@@ -13103,6 +13103,11 @@
   "resolved" "https://registry.npmjs.org/universalify/-/universalify-2.0.0.tgz"
   "version" "2.0.0"
 
+"unix-timestamp@^1.0.2":
+  "integrity" "sha512-y4ilfqtBKxDeMeRl2cD0O8iZRt0oTMCZcCAu1JFodqdXpu++AtDkb+XRszCH79gh2V0eWijIvBtWAN5fkvUXVQ=="
+  "resolved" "https://registry.npmjs.org/unix-timestamp/-/unix-timestamp-1.0.2.tgz"
+  "version" "1.0.2"
+
 "unpipe@~1.0.0", "unpipe@1.0.0":
   "integrity" "sha512-pjy2bYhSsufwWlKwPc+l3cN7+wuJlK6uz0YdJEOlQDbl6jo/YlPi4mb8agUkVC8BF7V8NuzeyPNqRksA3hztKQ=="
   "resolved" "https://registry.npmjs.org/unpipe/-/unpipe-1.0.0.tgz"
