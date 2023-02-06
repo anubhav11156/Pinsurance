@@ -232,7 +232,6 @@ export default Insurance
 
 const Container = styled.div`
     flex: 1;
-    border-bottom: 1px solid black;
     padding-left: 13.2rem;
     padding-right: 12rem;
     display: flex;

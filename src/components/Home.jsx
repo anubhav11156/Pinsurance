@@ -8,7 +8,7 @@ function Home() {
   return (
     <Container>
       <Hero />
-      <Plan />
+      {/* <Plan /> */}
       <Insurance />
     </Container>
   )
@@ -17,7 +17,7 @@ function Home() {
 export default Home
 
 const Container=styled.div`
-    height: 2900px;
+    height: 2000px;
     display: flex;
     flex-direction: column;
     

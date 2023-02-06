@@ -54,7 +54,7 @@ function Header() {
 
   const takeInsuranceHandler = () => {
     window.scroll({
-      top: 1846,
+      top: 926,
       behavior: 'smooth'
     });
   }
@@ -101,9 +101,9 @@ function Header() {
           <div className='name'>Pinsurance</div>
         </Left>
         <Middle>
-          <div className='plan' onClick={planHandler}>
+          {/* <div className='plan' onClick={planHandler}>
             <p>Plan</p>
-          </div>
+          </div> */}
           <div className='insruance' onClick={takeInsuranceHandler}>
             <p>Take Insurance</p>
           </div>
