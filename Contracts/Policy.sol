@@ -9,10 +9,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract Policy is ERC721URIStorage {
 
-    bool trnasferAllowed;
+    bool transferAllowed; // no | false
 
     constructor() ERC721("Policy NFT", "POL") {
-        trnasferAllowed = false;
+        transferAllowed = false;
     }
 
     struct policyNFT {
@@ -23,7 +23,7 @@ contract Policy is ERC721URIStorage {
     mapping(uint256 => policyNFT) idToPolicy;
 
     using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;   // _tokenIds is how many no. of tokens are created
+    Counters.Counter private _tokenIds;
 
     function createPolicyToken(string memory policyDataURI) public returns(uint256) {
 
@@ -49,6 +49,28 @@ contract Policy is ERC721URIStorage {
     // }
 
     // fetches user all Policy NFTs
+    function fetchMyPolicies(address onwerAddress) public view returns(policyNFT[] memory) {
+        uint256 totalNFTsCount = _tokenIds.current();
+        uint256 nftCount = 0;
+        uint256 currentIndex = 0;
 
-    
+        // first find total no. of nfts owned by the user
+        for(uint i=0; i<totalNFTsCount; i++){
+            if(idToPolicy[i+1].owner==onwerAddress){
+                nftCount++;
+            }
+        }
+
+        policyNFT[] memory myNFTs = new policyNFT[](nftCount);
+
+        for(uint i=0; i<totalNFTsCount; i++){
+            if(idToPolicy[i+1].owner==onwerAddress){
+                uint currentId = i+1;
+                policyNFT storage currentNFT = idToPolicy[currentId];
+                myNFTs[currentIndex] = currentNFT;
+                currentIndex++;
+            }
+        }
+        return myNFTs;
+    }
 }
