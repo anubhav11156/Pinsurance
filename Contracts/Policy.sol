@@ -9,10 +9,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract Policy is ERC721URIStorage {
 
-    bool transferAllowed; // no | false
+    bool transferLocked; // yea | true
 
     constructor() ERC721("Policy NFT", "POL") {
-        transferAllowed = false;
+        transferLocked = true;
     }
 
     struct policyNFT {
@@ -24,6 +24,9 @@ contract Policy is ERC721URIStorage {
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+
+
+    /*--------------------------------------Mint Policy NFT-------------------------------------*/
 
     function createPolicyToken(string memory policyDataURI) public returns(uint256) {
 
@@ -39,14 +42,13 @@ contract Policy is ERC721URIStorage {
 
     }
 
-    function createPolicyNFT(uint256 tokenId) public {
+    function createPolicyNFT(uint256 tokenId) internal {
         idToPolicy[tokenId].tokenID = tokenId;
         idToPolicy[tokenId].owner = msg.sender;
     }
 
-    // function _beforeTokenTransfer() {
+    /*------------------------------------------------------------------------------------------*/
 
-    // }
 
     // fetches user all Policy NFTs
     function fetchMyPolicies(address onwerAddress) public view returns(policyNFT[] memory) {
@@ -73,4 +75,15 @@ contract Policy is ERC721URIStorage {
         }
         return myNFTs;
     }
+
+    // Lock transfer of Policy once it is minted.
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId,
+        uint256 batchSize
+    ) internal virtual override {
+        require( (!_exists(tokenId) && transferLocked), "ERROR: Transfer of Policy is not allowed!");
+    }
+
 }
