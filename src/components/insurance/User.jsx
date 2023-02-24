@@ -72,7 +72,7 @@ function User() {
     });
 
     const getUsdcBalance = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
         const usdcContract = new ethers.Contract(
             mockUsdcContractAddress,
             mockUsdcAbi.abi,
@@ -105,7 +105,7 @@ function User() {
     /*----------------get user account detail----------------------------*/
 
     const getAccountDetail = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
         const pinsuranceContract = new ethers.Contract(
             pinsuranceContractAddress,
             pinsuranceAbi.abi,
@@ -140,7 +140,7 @@ function User() {
     /*------------------------ get user pools----------------------------*/
 
     const getPools = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
         const pinsuranceContract = new ethers.Contract(
             pinsuranceContractAddress,
             pinsuranceAbi.abi,
@@ -233,7 +233,7 @@ function User() {
         setIsCreatingAccount(true);
         const metadatURI = await metadata();
         console.log('uri : ', metadatURI);
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
         const wallet = new ethers.Wallet(ownerPrivateKey);
         const signer = wallet.connect(provider);
         const pinsuranceContract = new ethers.Contract(
@@ -382,7 +382,7 @@ function User() {
                                     <div className='balance-div'>
                                         <div className='fil-div'>
                                             <div className='logo'>
-                                                <img src="/images/fil-logo.png" />
+                                                <img src="/images/ftm-logo.png" />
                                             </div>
                                             <div className='user-balance'>
                                                 <p>{filBalance}</p>

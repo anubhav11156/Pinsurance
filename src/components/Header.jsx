@@ -68,7 +68,7 @@ function Header() {
   /*------Check user have accoun on pinsurance or not-------*/
 
   const getAccountStatus = async () => {
-    const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v0');
+    const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
       pinsuranceAbi.abi,

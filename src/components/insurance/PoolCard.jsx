@@ -48,7 +48,7 @@ function PoolCard(props) {
     /*--------------------Fetch pool metadata-------------------*/
 
     const getMetaData = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
         const poolContract = new ethers.Contract(
             props.poolAddress,
             poolAbi.abi,
@@ -79,7 +79,7 @@ function PoolCard(props) {
     /*---------------------get pool balance----------------------*/
 
     const getPoolBalance = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
         const usdcContract = new ethers.Contract(
             mockUsdcContractAddress,
             mockUsdcAbi.abi,
@@ -103,7 +103,7 @@ function PoolCard(props) {
     /*------------------------get Pool detail -------------------*/
 
     const getDetail = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
         const poolContract = new ethers.Contract(
             props.poolAddress,
             poolAbi.abi,

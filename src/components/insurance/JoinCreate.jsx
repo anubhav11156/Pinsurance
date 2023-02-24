@@ -111,7 +111,7 @@ function JoinCreate() {
       mockUsdcAbi.abi,
       signer
     )
-    const value = 100; // platform fee : 100 USDC
+    const value = 1; // platform fee : 100 USDC
     const usdcValue = ethers.utils.parseEther(value.toString());
 
     const transaction = await usdcContract.transfer(
@@ -177,7 +177,7 @@ function JoinCreate() {
       mockUsdcAbi.abi,
       signer
     )
-    const value = 100; // platform fee : 100 USDC
+    const value = 1; // platform fee : 100 USDC
     const usdcValue = ethers.utils.parseEther(value.toString());
 
     const transaction = await usdcContract.transfer(
@@ -239,7 +239,7 @@ function JoinCreate() {
   // check if the given pool Id exists or not
   const checkPoolIdHandler = async () => {
     setIsChecking(true);
-    const provider = new ethers.providers.JsonRpcProvider('https://filecoin-hyperspace.chainstacklabs.com/rpc/v1');
+    const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
       pinsuranceAbi.abi,

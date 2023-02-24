@@ -12,29 +12,16 @@ import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { ConnectKitProvider } from 'connectkit';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+import { fantomTestnet} from 'wagmi/chains'
 
-
-const hyperspace = {
-  id: 3_141,
-  name: 'Hyperspace',
-  network: 'Hyperspace',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'Filecoin',
-    symbol: 'tFIL',
-  },
-  rpcUrls: {
-    default: "https://filecoin-hyperspace.chainstacklabs.com/rpc/v1",
-  },
-}
 
 
 const { chains, provider} = configureChains(
-  [hyperspace],
+  [fantomTestnet],
   [
     jsonRpcProvider({
       rpc: (chain) => ({
-        http: `https://filecoin-hyperspace.chainstacklabs.com/rpc/v1`,
+        http: `https://rpc.testnet.fantom.network/`,
       }),
     }),
   ],
