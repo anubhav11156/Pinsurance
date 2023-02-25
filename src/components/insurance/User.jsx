@@ -204,7 +204,7 @@ function User() {
         setIsUploading(false);
         setFormInput({
             ...formInput,
-            profileURI: `https://ipfs.io/ipfs/${cid}/${pathname}`
+            profileURI: `https://${cid}.ipfs.w3s.link/${pathname}`
         })
     }
 
@@ -223,6 +223,7 @@ function User() {
         ]
         const metadataCID = await uploadToIPFS(files);
         return `https://ipfs.io/ipfs/${metadataCID}/metadata.json`
+        // return `https://${metadataCID}.ipfs.w3s.link/${pathname}`
     }
     /*------------------------------------------------------*/
 

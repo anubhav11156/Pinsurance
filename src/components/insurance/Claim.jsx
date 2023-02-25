@@ -1,7 +1,10 @@
 import { React, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import ClipLoader from "react-spinners/ClipLoader";
-import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
+// import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
+import { Web3Storage } from 'web3.storage';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useAccount } from 'wagmi'
 import { ethers } from "ethers"
 import axios from "axios";
@@ -21,40 +24,35 @@ function Claim() {
 
   /*-------------------IPFS code to upload support document -------------*/
 
-  const web3StorageApiKey = process.env.REACT_APP_WEB3_STORAGE;
+  const storageKey = process.env.REACT_APP_WEB3_STORAGE;
 
-  const makeStorageClient = async () => {
-    return new Web3Storage({ token: `${web3StorageApiKey}` })
+  const storageClient = () => {
+    return new Web3Storage({ token: `${storageKey}` })
   }
 
-  const uploadHandler = async () => {
+  const uploadDoc = async () => {
     const fileInput = document.getElementById('docs');
     const pathname = fileInput.files[0].name;
-    const cid = await toIPFS(fileInput.files);
 
+    const client = storageClient();
+    const cid = await client.put(fileInput.files);
     if (cid.length) {
       toast.success("Uploaded to IPFS", {
         position: toast.POSITION.TOP_CENTER
       });
+      const uri = `https://${cid}.ipfs.w3s.link/${pathname}`
+      setDocumentURI(uri);
     } else {
       toast.error("IPFS upload failed!", {
         position: toast.POSITION.TOP_CENTER
       });
     }
-    let uri = `https://ipfs.io/ipfs/${cid}/${pathname}`;
-    console.log('doc uri : ', uri);
-    setDocumentURI(uri);
   }
 
-  const toIPFS = async (files) => {
-    const client = makeStorageClient()
-    const cID = await client.put(files)
-    return cID;
-  }
-
+  console.log('document uri is : ', documentURI)
   /*-----------------------------------------------------------------------*/
 
-  console.log('uri : ', documentURI);
+
 
   /*-----------------------Ceate claim request ----------------------------*/
 
@@ -118,7 +116,7 @@ function Claim() {
               }} />
             </div>
             <div className='upload-div'>
-              <input type="file" id="docs" onChange={uploadHandler} />
+              <input type="file" id="docs" onChange={uploadDoc} />
             </div>
           </div>
           <div className='button' onClick={requestHandler}>
@@ -137,23 +135,23 @@ function Claim() {
             <p>My Claims</p>
           </div>
           <div className='claims-container'>
-             <ClaimCard>
-                <div className='upper'>
-                  <div className='a-div'>
-                    <p>
+            <ClaimCard>
+              <div className='upper'>
+                <div className='a-div'>
+                  <p>
                     Amount:
-                    </p>
-                  </div>
-                  <div className='ap-div'>
-                    <p>
-                    Approved: 
-                    </p>
-                  </div>
+                  </p>
                 </div>
-                <div className='lower'>
-                  <p>Claim</p>
+                <div className='ap-div'>
+                  <p>
+                    Approved:
+                  </p>
                 </div>
-             </ClaimCard>
+              </div>
+              <div className='lower'>
+                <p>Claim</p>
+              </div>
+            </ClaimCard>
           </div>
         </div>
       </div>
@@ -344,7 +342,7 @@ const Container = styled.div`
     }
 `
 
-const ClaimCard= styled.div`
+const ClaimCard = styled.div`
   width: 90%;
   height: 5rem;
   background-color: #0a458d3a;
