@@ -17,8 +17,6 @@ contract Pinsurance {
         OWNER = msg.sender;
     }
 
-    // bytes16 private constant _SYMBOLS = "0123456789abcdef"; // for converting address to string
-
     // User account data
     struct userAccount {
         address userAddress;
@@ -42,6 +40,8 @@ contract Pinsurance {
         address poolAddress;
         string supportDocumentCID;
         string poolName;
+        bool approved;
+        uint claimAmount;
     }
 
     userClaim[] public claims; // array of all claim requests.
@@ -118,6 +118,23 @@ contract Pinsurance {
         return userPools;
     }
 
+    // get claim-requests if part of any pool.
+    function getClaimRequests(address userAddress) public view returns(userClaim[] memory) {
+ 
+        uint currentIndex = 0;
+        userClaim[] memory userClaims = new userClaim[](userAddressTouserAccount[userAddress].userAssociatedPools.length);
+
+        for(uint i=0; i<claims.length; i++) {
+            if(userToPoolMembership[userAddress][claims[i].poolAddress] == true) {
+                userClaims[currentIndex] = claims[i];
+                currentIndex++; 
+            }
+        }
+
+        return userClaims;
+    }
+
+
     /// 
     
     
@@ -162,15 +179,16 @@ contract Pinsurance {
         poolContract.setUserMetadataURI(userAddress, metadataURI);
     }
 
-    function createClaim(address userAddress, address _poolAddress, string memory docURI, string memory _poolName) public {
+    // create claim request
+    function createClaim(address claimerAddress, address _poolAddress, string memory docURI, string memory _poolName, uint amount) external {
 
         userClaim memory newClaim;
 
-        newClaim.userDetail = userAddressTouserAccount[userAddress];
+        newClaim.userDetail = userAddressTouserAccount[claimerAddress];
         newClaim.poolAddress = _poolAddress;
         newClaim.supportDocumentCID = docURI;
         newClaim.poolName = _poolName;
-
+        newClaim.claimAmount = amount;
         claims.push(newClaim);
     }
 

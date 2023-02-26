@@ -100,10 +100,8 @@ contract Pool {
             claimCount.increment();
 
             // now call the pinsurance contract to create a new claim request.
-
             Pinsurance  pinsuranceContract = Pinsurance(PINSURANCE_ADRESS);
-            pinsuranceContract.createClaim(_userAddress, address(this), docUri, POOL_NAME);
-            
+            pinsuranceContract.createClaim(_userAddress, address(this), docUri, POOL_NAME);   
         }
        
     }
