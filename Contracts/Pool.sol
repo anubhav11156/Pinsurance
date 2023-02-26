@@ -21,8 +21,6 @@ contract Pool {
 
     address[] poolMembers;
 
-    address[] membersWhoClaimed;
-
     struct userPoolAccount {
         string amountStaked;
         bool haveStaked;
@@ -36,22 +34,20 @@ contract Pool {
         string name;
     }
 
-    poolDetail poolData; // single variable to store pool information, simply returns this
+    poolDetail poolData; 
+
+    struct userClaim {
+        address userAddress;
+        uint claimAmount;
+        bool isApproved; // false
+        uint voteCount; // 0
+        mapping(address => bool) poolMembersApprovalStatus;
+        bool claimed; // false
+    }
 
     mapping(address => userPoolAccount) userPoolAccountStatus;
 
-
-    struct claim {
-        address userAddress;
-        address poolAddress;
-        string claimAmount;
-        string docURI;
-        bool claimStatus;
-    }
-
-    mapping(address => claim ) userClaimRequests;
-
-    mapping(address => bool) userClaimStatus;
+    mapping(address => userClaim ) userClaimDetails;
 
     function getBalance() public view returns(uint256) {
         return address(this).balance;
@@ -90,48 +86,61 @@ contract Pool {
         return poolData;
     }
 
-    function createClaimRequest(address _userAddress, string memory docUri, string memory amount) public {
+    function createClaimRequest(address _userAddress, string memory docUri, uint amount) public {
 
         if (isUserMember(_userAddress)) {
-            userClaimRequests[_userAddress].userAddress = _userAddress;
-            userClaimRequests[_userAddress].docURI = docUri;
-            userClaimRequests[_userAddress].claimAmount = amount;
-            membersWhoClaimed.push(_userAddress);
+           
             claimCount.increment();
-
+            
+            userClaimDetails[_userAddress].claimAmount = amount;
+    
             // now call the pinsurance contract to create a new claim request.
             Pinsurance  pinsuranceContract = Pinsurance(PINSURANCE_ADRESS);
-            pinsuranceContract.createClaim(_userAddress, address(this), docUri, POOL_NAME);   
+            pinsuranceContract.createClaim(_userAddress, address(this), docUri, POOL_NAME, amount);
+
         }
        
     }
 
     function approveClaim(address claimerAddress) public {
-        require(claimerAddress != msg.sender,'Only other members can approve claim.');
-        userClaimStatus[claimerAddress] = true;
-    }
+        // require(claimerAddress != msg.sender,'Only other members can approve claim.');
 
-    function fetchAllClaims() public view returns(claim[] memory) {
-        // returns all claim as array
-        uint cCount = claimCount.current();
-        uint currentIndex = 0;
+        userClaim storage currentClaim = userClaimDetails[claimerAddress];
 
-        claim[] memory allClaims = new claim[](cCount);
+        currentClaim.poolMembersApprovalStatus[msg.sender] = true;
+        currentClaim.voteCount++;
 
-        for(uint i=0; i<cCount; i++){
-            claim storage currentClaim = userClaimRequests[membersWhoClaimed[i]];
-            allClaims[currentIndex] = currentClaim;
-            currentIndex++;
+        if (currentClaim.voteCount > (poolMembers.length)/2 ) {
+            currentClaim.isApproved = true;
         }
 
-        return allClaims;
-
     }
 
+    function declineClaim(address claimerAddress) public {
+        userClaimDetails[claimerAddress].isApproved = false;
+        userClaimDetails[claimerAddress].poolMembersApprovalStatus[msg.sender] = false;
+    }
+
+    function getClaimStatus() public view returns(bool) {
+        return userClaimDetails[msg.sender].isApproved;
+    }
+
+   
     // check if user is member of given pool or not.
     function isUserMember(address userAddress) public view returns(bool) {
         require((poolData.isActive && userPoolAccountStatus[userAddress].haveStaked),'Premium not staked!');
         return userPoolAccountStatus[userAddress].haveStaked;
+    }
+
+    function claimFund() public {
+        require(userClaimDetails[msg.sender].isApproved,'Claim not approved yet!');
+        require(!userClaimDetails[msg.sender].claimed,'Already claimed!');
+        payable(msg.sender).transfer(userClaimDetails[msg.sender].claimAmount);
+        userClaimDetails[msg.sender].claimed = true;
+    }
+
+    function getMemberApprovalStatus(address claimerAddress) public view returns(bool) {
+        return userClaimDetails[claimerAddress].poolMembersApprovalStatus[msg.sender];
     }
 
     receive() external payable {}

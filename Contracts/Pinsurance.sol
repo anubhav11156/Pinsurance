@@ -35,12 +35,12 @@ contract Pinsurance {
         address[] members;
     }
 
+    // structure for claim notification
     struct userClaim {
         userAccount userDetail;
         address poolAddress;
         string supportDocumentCID;
         string poolName;
-        bool approved;
         uint claimAmount;
     }
 
@@ -134,10 +134,9 @@ contract Pinsurance {
         return userClaims;
     }
 
-
     /// 
     
-    
+
     // Fee: $100 
     function createPool(string memory poolName, string memory metadataURI, address userAddress) public {
         require(userAddressTouserAccount[userAddress].userAccountStatus==true,'Create account first.');
