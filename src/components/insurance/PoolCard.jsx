@@ -148,7 +148,8 @@ function PoolCard(props) {
             mockUsdcAbi.abi,
             signer
         )
-        const value = poolDetail.premium; 
+        // const value = poolDetail.premium; 
+        const value = 1
         const usdcValue = ethers.utils.parseEther(value.toString());
 
         const transaction = await usdcContract.transfer(

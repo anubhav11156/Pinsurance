@@ -3,6 +3,7 @@
 pragma solidity 0.8.13; 
 
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "./Pinsurance.sol";
 
 contract Pool {
     
@@ -90,20 +91,26 @@ contract Pool {
     }
 
     function createClaimRequest(address _userAddress, string memory docUri, string memory amount) public {
-        userClaimRequests[_userAddress].userAddress = _userAddress;
-        userClaimRequests[_userAddress].docURI = docUri;
-        userClaimRequests[_userAddress].claimAmount = amount;
-        membersWhoClaimed.push(_userAddress);
-        claimCount.increment();
+
+        if (isUserMember(_userAddress)) {
+            userClaimRequests[_userAddress].userAddress = _userAddress;
+            userClaimRequests[_userAddress].docURI = docUri;
+            userClaimRequests[_userAddress].claimAmount = amount;
+            membersWhoClaimed.push(_userAddress);
+            claimCount.increment();
+
+            // now call the pinsurance contract to create a new claim request.
+
+            Pinsurance  pinsuranceContract = Pinsurance(PINSURANCE_ADRESS);
+            pinsuranceContract.createClaim(_userAddress, address(this), docUri, POOL_NAME);
+            
+        }
+       
     }
 
     function approveClaim(address claimerAddress) public {
         require(claimerAddress != msg.sender,'Only other members can approve claim.');
         userClaimStatus[claimerAddress] = true;
-    }
-
-    function fetchMyClaims(address userAddress) public view returns(claim memory){
-        return userClaimRequests[userAddress];
     }
 
     function fetchAllClaims() public view returns(claim[] memory) {
@@ -121,6 +128,12 @@ contract Pool {
 
         return allClaims;
 
+    }
+
+    // check if user is member of given pool or not.
+    function isUserMember(address userAddress) public view returns(bool) {
+        require((poolData.isActive && userPoolAccountStatus[userAddress].haveStaked),'Premium not staked!');
+        return userPoolAccountStatus[userAddress].haveStaked;
     }
 
     receive() external payable {}

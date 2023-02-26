@@ -37,6 +37,15 @@ contract Pinsurance {
         address[] members;
     }
 
+    struct userClaim {
+        userAccount userDetail;
+        address poolAddress;
+        string supportDocumentCID;
+        string poolName;
+    }
+
+    userClaim[] public claims; // array of all claim requests.
+
     // user address -> pool address => is member or not
     mapping(address => mapping(address => bool)) userToPoolMembership;
 
@@ -151,6 +160,18 @@ contract Pinsurance {
 
         Pool poolContract = Pool(payable(poolAddress));
         poolContract.setUserMetadataURI(userAddress, metadataURI);
+    }
+
+    function createClaim(address userAddress, address _poolAddress, string memory docURI, string memory _poolName) public {
+
+        userClaim memory newClaim;
+
+        newClaim.userDetail = userAddressTouserAccount[userAddress];
+        newClaim.poolAddress = _poolAddress;
+        newClaim.supportDocumentCID = docURI;
+        newClaim.poolName = _poolName;
+
+        claims.push(newClaim);
     }
 
 }
