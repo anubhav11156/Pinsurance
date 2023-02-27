@@ -21,7 +21,7 @@ const { chains, provider} = configureChains(
   [
     jsonRpcProvider({
       rpc: (chain) => ({
-        http: `https://rpc.testnet.fantom.network/`,
+        http: `https://endpoints.omniatech.io/v1/fantom/testnet/public`,
       }),
     }),
   ],

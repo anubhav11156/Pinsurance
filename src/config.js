@@ -1,4 +1,4 @@
-export const pinsuranceContractAddress = "0xb8Fa03986D897781E828Fa1Fa3Cc71Fdc9d19026";
+export const pinsuranceContractAddress = "0xb1998837fc7F525bB348Ef6d32B42022B5D407bb";
 
 export const mockUsdcContractAddress = "0xF8E9F063228eb47137101eb863BF3976466AA31F";
 
@@ -11,6 +11,100 @@ export const pinsuranceAbi = {
             "inputs": [],
             "stateMutability": "nonpayable",
             "type": "constructor"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "name": "claims",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "internalType": "address",
+                            "name": "userAddress",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "userMetadataURI",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "bool",
+                            "name": "userAccountStatus",
+                            "type": "bool"
+                        },
+                        {
+                            "internalType": "address[]",
+                            "name": "userAssociatedPools",
+                            "type": "address[]"
+                        }
+                    ],
+                    "internalType": "struct Pinsurance.userAccount",
+                    "name": "userDetail",
+                    "type": "tuple"
+                },
+                {
+                    "internalType": "address",
+                    "name": "poolAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "string",
+                    "name": "supportDocumentCID",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "poolName",
+                    "type": "string"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "claimAmount",
+                    "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "claimerAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "address",
+                    "name": "_poolAddress",
+                    "type": "address"
+                },
+                {
+                    "internalType": "string",
+                    "name": "docURI",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "_poolName",
+                    "type": "string"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
+            "name": "createClaim",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
         },
         {
             "inputs": [
@@ -51,6 +145,74 @@ export const pinsuranceAbi = {
             "name": "createUser",
             "outputs": [],
             "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "getClaimRequests",
+            "outputs": [
+                {
+                    "components": [
+                        {
+                            "components": [
+                                {
+                                    "internalType": "address",
+                                    "name": "userAddress",
+                                    "type": "address"
+                                },
+                                {
+                                    "internalType": "string",
+                                    "name": "userMetadataURI",
+                                    "type": "string"
+                                },
+                                {
+                                    "internalType": "bool",
+                                    "name": "userAccountStatus",
+                                    "type": "bool"
+                                },
+                                {
+                                    "internalType": "address[]",
+                                    "name": "userAssociatedPools",
+                                    "type": "address[]"
+                                }
+                            ],
+                            "internalType": "struct Pinsurance.userAccount",
+                            "name": "userDetail",
+                            "type": "tuple"
+                        },
+                        {
+                            "internalType": "address",
+                            "name": "poolAddress",
+                            "type": "address"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "supportDocumentCID",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "string",
+                            "name": "poolName",
+                            "type": "string"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "claimAmount",
+                            "type": "uint256"
+                        }
+                    ],
+                    "internalType": "struct Pinsurance.userClaim[]",
+                    "name": "",
+                    "type": "tuple[]"
+                }
+            ],
+            "stateMutability": "view",
             "type": "function"
         },
         {
@@ -309,6 +471,13 @@ export const poolAbi = {
             "type": "function"
         },
         {
+            "inputs": [],
+            "name": "claimFund",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "address",
@@ -321,9 +490,9 @@ export const poolAbi = {
                     "type": "string"
                 },
                 {
-                    "internalType": "string",
+                    "internalType": "uint256",
                     "name": "amount",
-                    "type": "string"
+                    "type": "uint256"
                 }
             ],
             "name": "createClaimRequest",
@@ -332,89 +501,16 @@ export const poolAbi = {
             "type": "function"
         },
         {
-            "inputs": [],
-            "name": "fetchAllClaims",
-            "outputs": [
-                {
-                    "components": [
-                        {
-                            "internalType": "address",
-                            "name": "userAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "poolAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "string",
-                            "name": "claimAmount",
-                            "type": "string"
-                        },
-                        {
-                            "internalType": "string",
-                            "name": "docURI",
-                            "type": "string"
-                        },
-                        {
-                            "internalType": "bool",
-                            "name": "claimStatus",
-                            "type": "bool"
-                        }
-                    ],
-                    "internalType": "struct Pool.claim[]",
-                    "name": "",
-                    "type": "tuple[]"
-                }
-            ],
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
             "inputs": [
                 {
                     "internalType": "address",
-                    "name": "userAddress",
+                    "name": "claimerAddress",
                     "type": "address"
                 }
             ],
-            "name": "fetchMyClaims",
-            "outputs": [
-                {
-                    "components": [
-                        {
-                            "internalType": "address",
-                            "name": "userAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "address",
-                            "name": "poolAddress",
-                            "type": "address"
-                        },
-                        {
-                            "internalType": "string",
-                            "name": "claimAmount",
-                            "type": "string"
-                        },
-                        {
-                            "internalType": "string",
-                            "name": "docURI",
-                            "type": "string"
-                        },
-                        {
-                            "internalType": "bool",
-                            "name": "claimStatus",
-                            "type": "bool"
-                        }
-                    ],
-                    "internalType": "struct Pool.claim",
-                    "name": "",
-                    "type": "tuple"
-                }
-            ],
-            "stateMutability": "view",
+            "name": "declineClaim",
+            "outputs": [],
+            "stateMutability": "nonpayable",
             "type": "function"
         },
         {
@@ -425,6 +521,38 @@ export const poolAbi = {
                     "internalType": "uint256",
                     "name": "",
                     "type": "uint256"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "name": "getClaimStatus",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "claimerAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "getMemberApprovalStatus",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
                 }
             ],
             "stateMutability": "view",
@@ -498,6 +626,25 @@ export const poolAbi = {
                     "internalType": "string",
                     "name": "",
                     "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "isUserMember",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
                 }
             ],
             "stateMutability": "view",

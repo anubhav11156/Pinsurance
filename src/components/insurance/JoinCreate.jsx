@@ -59,16 +59,8 @@ function JoinCreate() {
       new File([data], 'poolMetadata.json')
     ]
     const metadataCID = await uploadToIPFS(files);
-    // if (metadataCID.length) {
-    //   toast.success("Pool Metadata Uploaded to IPFS", {
-    //     position: toast.POSITION.TOP_CENTER
-    //   });
-    // } else {
-    //   toast.error("Failed to upload Pool Metadata!", {
-    //     position: toast.POSITION.TOP_CENTER
-    //   });
-    // }
-    return `https://ipfs.io/ipfs/${metadataCID}/poolMetadata.json`
+
+    return `https://${metadataCID}.ipfs.w3s.link/poolMetadata.json`
   }
 
   /*------------------------------------------------------*/
@@ -239,7 +231,7 @@ function JoinCreate() {
   // check if the given pool Id exists or not
   const checkPoolIdHandler = async () => {
     setIsChecking(true);
-    const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
+    const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
       pinsuranceAbi.abi,

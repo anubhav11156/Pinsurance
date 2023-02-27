@@ -72,7 +72,7 @@ function User() {
     });
 
     const getUsdcBalance = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
+        const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
         const usdcContract = new ethers.Contract(
             mockUsdcContractAddress,
             mockUsdcAbi.abi,
@@ -105,7 +105,7 @@ function User() {
     /*----------------get user account detail----------------------------*/
 
     const getAccountDetail = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
+        const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
         const pinsuranceContract = new ethers.Contract(
             pinsuranceContractAddress,
             pinsuranceAbi.abi,
@@ -140,7 +140,7 @@ function User() {
     /*------------------------ get user pools----------------------------*/
 
     const getPools = async () => {
-        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
+        const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
         const pinsuranceContract = new ethers.Contract(
             pinsuranceContractAddress,
             pinsuranceAbi.abi,
@@ -222,8 +222,7 @@ function User() {
             new File([data], 'metadata.json')
         ]
         const metadataCID = await uploadToIPFS(files);
-        return `https://ipfs.io/ipfs/${metadataCID}/metadata.json`
-        // return `https://${metadataCID}.ipfs.w3s.link/${pathname}`
+        return `https://${metadataCID}.ipfs.w3s.link/metadata.json`
     }
     /*------------------------------------------------------*/
 
@@ -234,7 +233,7 @@ function User() {
         setIsCreatingAccount(true);
         const metadatURI = await metadata();
         console.log('uri : ', metadatURI);
-        const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
+        const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
         const wallet = new ethers.Wallet(ownerPrivateKey);
         const signer = wallet.connect(provider);
         const pinsuranceContract = new ethers.Contract(

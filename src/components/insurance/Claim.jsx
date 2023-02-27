@@ -101,25 +101,7 @@ function Claim() {
 
   /*----------------------------Fetch user claim---------------------------*/
 
-  const userClaims = async () => {
-    console.log('here')
-    const provider = new ethers.providers.JsonRpcProvider('https://rpc.testnet.fantom.network/');
-    const poolContract = new ethers.Contract(
-      poolAddress,
-      poolAbi.abi,
-      provider
-    )
-
-    try {
-      await poolContract.fetchMyClaims(address)
-        .then((response) => {
-          console.log('response : ', response);
-
-        })
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  
 
   /*-----------------------------------------------------------------------*/
 
