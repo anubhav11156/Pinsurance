@@ -18,9 +18,6 @@ function Claim() {
   const [documentURI, setDocumentURI] = useState("");
   const [amount, setAmount] = useState();
 
-  // console.log('type of amount : ', typeof(amount))
-  // console.log('type of amount : ', typeof(parseInt(amount)))
-
   console.log('poolAddress : ', poolAddress)
   const { address } = useAccount();
 

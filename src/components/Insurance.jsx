@@ -237,7 +237,7 @@ const Container = styled.div`
     display: flex;
     justify-content: center;
     margin-top: 10px;
-
+  overflow: hidden;
   .Toastify__toast {
     border: 1px solid #0152b58e;
   }
