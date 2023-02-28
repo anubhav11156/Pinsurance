@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
+import { Web3Storage, File } from 'web3.storage';
 import ClipLoader from "react-spinners/ClipLoader";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';

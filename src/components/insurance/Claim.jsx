@@ -19,11 +19,14 @@ function Claim() {
   const [documentURI, setDocumentURI] = useState("");
   const [amount, setAmount] = useState();
 
+  // console.log('type of amount : ', typeof(amount))
+  // console.log('type of amount : ', typeof(parseInt(amount)))
+
   console.log('poolAddress : ', poolAddress)
   const { address } = useAccount();
 
   useEffect(() => {
-    userClaims()
+    // userClaims()
   },[])
 
   /*-------------------IPFS code to upload support document -------------*/
@@ -56,8 +59,6 @@ function Claim() {
   console.log('document uri is : ', documentURI)
   /*-----------------------------------------------------------------------*/
 
-
-
   /*-----------------------Ceate claim request ----------------------------*/
 
   const requestHandler = async () => {
@@ -75,10 +76,11 @@ function Claim() {
       signer
     )
 
+    const requestedClaimAmount = ethers.utils.parseEther(amount);
     const create = await poolContract.createClaimRequest(
       address,
       documentURI,
-      amount
+      requestedClaimAmount
     )
 
     await create.wait()

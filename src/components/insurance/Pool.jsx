@@ -11,7 +11,7 @@ function Pool() {
     fetchPoolMembers();
   }, [])
 
-  const poolAddress = "0xD36E1eaeFe3005845eb13B3FBFd5423C446bF53F";
+  const poolAddress = "0x9d211d45e432c43b4F8b6Eb86c841A11cFc5AD90";
 
   const fetchPoolMembers = async () => {
     const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');

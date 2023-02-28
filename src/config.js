@@ -1,4 +1,4 @@
-export const pinsuranceContractAddress = "0xb1998837fc7F525bB348Ef6d32B42022B5D407bb";
+export const pinsuranceContractAddress = "0xB41d1EBce4567909ab4f38220F9252fA6Dde7EC2";
 
 export const mockUsdcContractAddress = "0xF8E9F063228eb47137101eb863BF3976466AA31F";
 

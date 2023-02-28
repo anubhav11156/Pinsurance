@@ -2,7 +2,7 @@ import { React, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import BarLoader from "react-spinners/BarLoader";
 import ClipLoader from "react-spinners/ClipLoader";
-import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
+import { Web3Storage, File } from 'web3.storage';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import copy from 'copy-to-clipboard';
@@ -124,7 +124,6 @@ function User() {
 
     const fetchUserInfoFromURI = async (uri) => {
         const uriResponse = await axios.get(uri);
-        console.log('uriResponse : ', uriResponse.data);
         setAccountDetaiil({
             ...accountDetail,
             name: uriResponse.data.name,
