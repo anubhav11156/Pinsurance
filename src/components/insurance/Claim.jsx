@@ -1,7 +1,6 @@
 import { React, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import ClipLoader from "react-spinners/ClipLoader";
-// import { Web3Storage, File } from 'web3.storage/dist/bundle.esm.min.js';
 import { Web3Storage } from 'web3.storage';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -27,7 +26,7 @@ function Claim() {
 
   useEffect(() => {
     // userClaims()
-  },[])
+  }, [])
 
   /*-------------------IPFS code to upload support document -------------*/
 
@@ -75,27 +74,34 @@ function Claim() {
       poolAbi.abi,
       signer
     )
+    try {
+      const requestedClaimAmount = ethers.utils.parseEther(amount);
+      const create = await poolContract.createClaimRequest(
+        address,
+        documentURI,
+        requestedClaimAmount
+      )
 
-    const requestedClaimAmount = ethers.utils.parseEther(amount);
-    const create = await poolContract.createClaimRequest(
-      address,
-      documentURI,
-      requestedClaimAmount
-    )
+      await create.wait()
+        .then(() => {
+          setIsRequesting(false);
+          toast.success("Claim requested.", {
+            position: toast.POSITION.TOP_CENTER
+          });
+        }).catch((error) => {
+          setIsRequesting(false);
+          toast.error("Failed to request claim.", {
+            position: toast.POSITION.TOP_CENTER
+          });
+          console.error(error);
+        })
+    } catch (e) {
+      setIsRequesting(false);
+      toast.error("Revert: Premium not staked!", {
+        position: toast.POSITION.TOP_CENTER
+      });
+    }
 
-    await create.wait()
-      .then(() => {
-        setIsRequesting(false);
-        toast.success("Claim requested.", {
-          position: toast.POSITION.TOP_CENTER
-        });
-      }).catch((error) => {
-        setIsStaking(false);
-        toast.error("Failed to request claim.", {
-          position: toast.POSITION.TOP_CENTER
-        });
-        console.error(error);
-      })
 
   }
 
@@ -103,7 +109,7 @@ function Claim() {
 
   /*----------------------------Fetch user claim---------------------------*/
 
-  
+
 
   /*-----------------------------------------------------------------------*/
 

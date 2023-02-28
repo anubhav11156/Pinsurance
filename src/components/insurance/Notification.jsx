@@ -4,12 +4,16 @@ import axios from "axios";
 import { ethers } from "ethers"
 import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../../config";
 import { useAccount } from 'wagmi'
+import fromExponential from 'from-exponential';
 
 
 
 function Notification() {
 
   const { address } = useAccount();
+
+  const hexToDec = (hex) => parseInt(hex, 16);
+
 
   useEffect(() => {
     fetchAllClaims();
@@ -26,21 +30,22 @@ function Notification() {
       const data = await pinsuranceContract.getClaimRequests(address)
       const items = await Promise.all(
         data.map(async (i) => {
-          let _claimAmount = i.claimAmount;
-          let _poolAddress = i.poolAddress;
-          let _poolName = i.poolName;
-          let _docURI = i.supportDocumentCID;
-          let _userDetail = {
+          let bal = hexToDec(i.claimAmount._hex);
+          let claimAmount =  Number(ethers.utils.formatEther(fromExponential(bal))).toFixed(2);
+          let poolAddress = i.poolAddress;
+          let poolName = i.poolName;
+          let docURI = i.supportDocumentCID;
+          let userDetail = {
             userAddress: `${i.userDetail.userAddress}`,
             userMetaData: `${i.userDetail.userMetadataURI}`,
           }
 
           let item = {
-            _claimAmount,
-            _poolAddress,
-            _poolName,
-            _docURI,
-            _userDetail
+            claimAmount,
+            poolAddress,
+            poolName,
+            docURI,
+            userDetail
           };
           return item;
         })
