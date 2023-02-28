@@ -121,6 +121,16 @@ function Pool() {
   console.log('pool active : ', isPoolActive);
   console.log('name : ', poolName);
 
+  const memberCards = members.map(card => {
+    return (
+      <MemberCard 
+          poolAddress={poolAddress}
+          userAddress={card.userAddress}
+          userURI={card.userURI}
+      />
+  )
+  })
+  
   return (
     <Container>
       <div className='up'>
@@ -139,7 +149,7 @@ function Pool() {
         </div>
       </div>
 
-      {!isDataFetched &&
+      {isDataFetched &&
         <div className='down'>
           <div className='pool-detail'>
             <div className='upper'>
@@ -188,15 +198,7 @@ function Pool() {
                 <p>Pool members </p>
             </div>
             <div className='main'>
-              <div className='member-box'>
-                <MemberCard />
-              </div>
-              <div className='member-box'>
-                <MemberCard />
-              </div>
-              <div className='member-box'>
-                <MemberCard />
-              </div>
+                  {memberCards}
             </div>
             
           </div>
