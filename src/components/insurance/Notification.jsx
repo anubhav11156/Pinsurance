@@ -1,8 +1,7 @@
 import { React, useEffect, useState } from 'react'
 import styled from 'styled-components'
-import axios from "axios";
 import { ethers } from "ethers"
-import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../../config";
+import { pinsuranceContractAddress, pinsuranceAbi } from "../../config";
 import { useAccount } from 'wagmi'
 import fromExponential from 'from-exponential';
 import RequestCard from './RequestCard';
@@ -12,6 +11,8 @@ import RequestCard from './RequestCard';
 function Notification() {
 
   const { address } = useAccount();
+  const [notifications, setNotifications] = useState([]);
+  const [isFetching, setIsFetching] = useState(false);
 
   const hexToDec = (hex) => parseInt(hex, 16);
 
@@ -21,6 +22,7 @@ function Notification() {
   }, [address])
 
   const fetchAllClaims = async () => {
+    setIsFetching(true);
     const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
@@ -48,14 +50,29 @@ function Notification() {
             docURI,
             userDetail
           };
+          setIsFetching(false);
           return item;
         })
       );
-      console.log('claim notifications : ', items);
+      setNotifications(items)
     } catch (error) {
       console.log(error);
+      setIsFetching(false);
     }
   }
+
+  const requestCards = notifications.map(card => {
+    return (
+      <RequestCard
+        claimAmount={card.claimAmount}
+        docURI={card.docURI}
+        poolAddress={card.poolAddress}
+        poolName={card.poolName}
+        userAddress={card.userDetail.userAddress}
+        userMetaURI={card.userDetail.userMetaData}
+      />
+    )
+  })
 
   return (
     <Container>
@@ -66,24 +83,16 @@ function Notification() {
         </div>
         <div className='line-2'></div>
       </div>
-      <div className='claim-container'>
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-        <RequestCard />
-      </div>
+      { isFetching &&
+        <div className='palceholder'>
+          <p>Fetching claim requests......</p>
+        </div>
+      }
+      { !isFetching &&
+           <div className='claim-container'>
+           {requestCards}
+         </div>
+      }
     </Container>
   )
 }
@@ -137,5 +146,23 @@ const Container = styled.div`
     padding-bottom: 10px;
     padding-left: 5px;
     padding-right: 5px;
+  }
+
+  .palceholder {
+    height: 43.2rem;
+    width: 97%;
+    margin-top: 1.5rem;
+    padding-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+
+    p {
+      margin: 0;
+      margin-top: 10rem;
+      font-size: 20px;
+    }
   }
 `

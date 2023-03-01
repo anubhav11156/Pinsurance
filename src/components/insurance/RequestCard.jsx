@@ -1,22 +1,42 @@
-import React from 'react'
+import {useState, useEffect, React} from 'react'
 import styled from 'styled-components';
+import { ethers } from 'ethers';
+import axios from "axios";
 
+function RequestCard(props) {
 
-function RequestCard() {
+    const[userMetaData, setUserMetaData] = useState({
+        name:"",
+        profileURI:""
+    });
+
+    useEffect(() => {
+        fetchUserMetaData()
+    },[props.userAddress]);
+
+    const fetchUserMetaData = async () => {
+        const uriResponse = await axios.get(props.userMetaURI);
+        setUserMetaData({
+            ...userMetaData,
+            name:uriResponse.data.name,
+            profileURI:uriResponse.data.profileURI
+        })
+    }
+
     return (
         <Container>
             <div className='left'>
                 <div className='profile-image'>
-                    <img src="https://bafybeifzpfapxzucdrfbr3n4ogml72vxyrxf2kkk7l5mh2aumxkmk7qtoi.ipfs.w3s.link/thelvedem.jpg" />
+                    <img src={userMetaData.profileURI} />
                 </div>
             </div>
             <div className='right'>
                 <div className='detail-container'>
                     <div className='name-div'>
-                        <p>Anubhav Kuamr</p>
+                        <p>{userMetaData.name}</p>
                         <div className='stake-div'>
                             <div className='staked'>
-                                <p>0xc624FB0383527EEd390792Ddf343B3ef49719FF5</p>
+                                <p>{props.userAddress}</p>
                             </div>
                         </div>
                     </div>
@@ -25,10 +45,10 @@ function RequestCard() {
                             <p>Pool</p>
                         </div>
                         <div className='pool-name'>
-                            <p>Spring Flower</p>
+                            <p>{props.poolName}</p>
                         </div>
                         <div className='pool-address'>
-                            <p>0xc624FB0383527EEd390792Ddf343B3ef49719FF5</p>
+                            <p>{props.poolAddress}</p>
                         </div>
                     </div>
                     <div className='meta-div'>
@@ -37,10 +57,10 @@ function RequestCard() {
                                 <img src='/images/usdc-logo.svg' />
                             </div>
                             <div className='email'>
-                                <p>35000</p>
+                                <p>{props.claimAmount}</p>
                             </div>
                         </div>
-                        <a href="https://bafybeifzpfapxzucdrfbr3n4ogml72vxyrxf2kkk7l5mh2aumxkmk7qtoi.ipfs.w3s.link/thelvedem.jpg" target="_blank" className='doc-div'>
+                        <a href={props.docURI} target="_blank" className='doc-div'>
                            <p>Show support document</p>
                            <div className='logo-div'>
                                 <img src="images/link.png"/>
