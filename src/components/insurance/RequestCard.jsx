@@ -16,24 +16,22 @@ function RequestCard() {
                         <p>Anubhav Kuamr</p>
                         <div className='stake-div'>
                             <div className='staked'>
-                                <p>0x2408957324890fkjowefhfhfkr20r7kjdfh7r09yrhfd</p>
+                                <p>0xc624FB0383527EEd390792Ddf343B3ef49719FF5</p>
                             </div>
                         </div>
                     </div>
-                    <div className='address-div'>
-                        <div className='address'>
-                            <p>0x2408957324890fkjowefhfhfkr20r7kjdfh7r09yrhfd</p>
+                    <div className='pool-div'>
+                        <div className='pool-label'>
+                            <p>Pool</p>
+                        </div>
+                        <div className='pool-name'>
+                            <p>Spring Flower</p>
+                        </div>
+                        <div className='pool-address'>
+                            <p>0xc624FB0383527EEd390792Ddf343B3ef49719FF5</p>
                         </div>
                     </div>
                     <div className='meta-div'>
-                        <div className='email-div'>
-                            <div className='logo-div'>
-                                <img src='/images/gmail.png' />
-                            </div>
-                            <div className='email'>
-                                <p>anubahv11697@gmail.com</p>
-                            </div>
-                        </div>
                         <div className='premium-div'>
                             <div className='logo-div'>
                                 <img src='/images/usdc-logo.svg' />
@@ -42,21 +40,19 @@ function RequestCard() {
                                 <p>35000</p>
                             </div>
                         </div>
-                        <div className='vehicle-div'>
-                            <div className='logo-div'>
-                                <img src='/images/car.png' />
-                            </div>
-                            <div className='email'>
-                                <p>GTR</p>
-                            </div>
-                        </div>
-                        <div className='cc-div'>
-                            <div className='logo-div'>
-                                <img src='/images/engine.png' />
-                            </div>
-                            <div className='email'>
-                                <p>1000</p>
-                            </div>
+                        <a href="https://bafybeifzpfapxzucdrfbr3n4ogml72vxyrxf2kkk7l5mh2aumxkmk7qtoi.ipfs.w3s.link/thelvedem.jpg" target="_blank" className='doc-div'>
+                           <p>Show support document</p>
+                           <div className='logo-div'>
+                                <img src="images/link.png"/>
+                           </div>
+                        </a>
+                        <div className='buttons-div'>
+                           <div className='approve-div'>
+                                <p>Approve</p>
+                           </div>
+                           <div className='decline-div'>
+                                <p>Decline</p>
+                           </div>
                         </div>
 
                     </div>
@@ -69,7 +65,7 @@ function RequestCard() {
 export default RequestCard
 
 const Container = styled.div`
-    height: 8.5rem;
+    height: 9rem;
     width: 100%;
     margin-bottom: 2rem;
  
@@ -84,7 +80,7 @@ const Container = styled.div`
     align-items: center;
 
     .left {
-        width: 7rem;
+        width: 9rem;
         height: 100%;
         display: flex;
         justify-content: center;
@@ -94,8 +90,8 @@ const Container = styled.div`
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 5rem;
-            height: 5rem;
+            width: 6.5rem;
+            height: 6.5rem;
             border-radius: 3px;
             border: 1px solid black;
             overflow: hidden;
@@ -119,21 +115,54 @@ const Container = styled.div`
         width: 100%;
         height: 7rem;
         gap: 7px;
-        .address-div {
-            height: 1.5rem;
+
+        .pool-div {
+            height: 1.8rem;
             width: 98.5%;
             display: flex;
             align-items: center;
             border: 1px solid white;
             background-color: #ffffff83;
             border-radius: 3px;
+            overflow: hidden;
 
-            .address {
-                flex: 1;
+            .pool-label {
                 height: 100%;
+                width: 3rem;
+                /* border: 1px solid #0152b546; */
+                /* border-right: 2px solid white; */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color:  #0152b546;
+
+                p {
+                    margin: 0;
+                }
+            }
+
+            .pool-name {
+                height: 100%;
+                width: 53.5rem;
                 display: flex;
                 justify-content: start;
                 align-items: center;
+
+                p {
+                    margin: 0;
+                    margin-left: 10px;
+                }
+            }
+
+            .pool-address {
+                flex: 1;
+                height: 90%;
+                display: flex;
+                justify-content: start;
+                align-items: center;
+                background-color: #0152b546 ;
+                margin-right: 15px;
+                border-radius: 3px;
 
                 p {
                     margin: 0;
@@ -188,16 +217,13 @@ const Container = styled.div`
         }
 
         .meta-div {
-            height: 1.5rem;
+            height: 1.8rem;
             width: 98.5%;
             display: flex;
             align-items: center;
             gap: 7px;
 
-            .email-div,
-            .premium-div,
-            .vehicle-div,
-            .cc-div {
+            .premium-div {
                 /* margin-left: 10px; */
                 flex:1;
                 height: 100%;
@@ -210,15 +236,17 @@ const Container = styled.div`
                 border: 1px solid white;
 
                 .logo-div {
-                    width: 2rem;
+                    width: 3rem;
                     height: 100%;
                     display: flex;
                     justify-content: center;
                     align-items: center;
                     border-right: 2px solid white;
+                    background-color:  #0152b546;
+
 
                     img {
-                        width: 50%;
+                        width: 40%;
                     }
                 }
 
@@ -230,6 +258,115 @@ const Container = styled.div`
                         margin: 0;
                         font-size: 15px;
                         margin-left: 8px;
+                    }
+                }
+            }
+
+            .doc-div {
+                flex:1;
+                height: 100%;
+                border-radius: 4px;
+                display: flex;
+                justify-content:center;
+                align-items: center;
+                overflow: hidden;
+                text-decoration: none;
+                background-color: #0152b5cc;
+                transition: opacity 0.15s;
+
+                cursor: pointer;
+
+                &:hover {
+                    opacity: 0.9;
+                }
+
+                &:active {
+                    opacity: 0.8;
+                }
+
+
+                p {
+                    margin: 0;
+                    color: white;
+                    font-size: 15px;
+                }
+
+                .logo-div {
+                    margin-left: 5px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 2.4rem;
+                    width: 2.4rem;
+
+                    img {
+                        width: 50%;
+                    }
+                }
+               
+            }
+
+            .buttons-div {
+                flex:1;
+                height: 100%;
+                border-radius: 3px;
+                display: flex;
+                justify-content:center;
+                align-items: center;
+                gap: 1rem;
+                overflow: hidden;
+                background-color: #ffffff83;
+                border: 1px solid white;
+
+                .approve-div {
+                    margin-left: 10px;
+                    width: 11.5rem;
+                    height: 89%;
+                    border-radius: 3px;
+                    background-color: green;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                    transition: opacity 0.15s;
+
+                    &:hover {
+                        opacity: 0.9;
+                    }
+
+                    &:active {
+                        opacity: 0.8;
+                    }
+
+                    p {
+                        margin: 0;
+                        color: white;
+                        font-size: 15px;
+                    }
+                }
+
+                .decline-div {
+                    width: 11.5rem;
+                    height: 89%;
+                    border-radius: 3px;
+                    background-color: #b40e0ee4;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    cursor: pointer;
+                    transition: opacity 0.15s;
+
+                    &:hover {
+                        opacity: 0.9;
+                    }
+
+                    &:active {
+                        opacity: 0.8;
+                    }
+                    p {
+                        margin: 0;
+                        color: white;
+                        font-size: 15px;
                     }
                 }
             }
