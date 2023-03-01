@@ -103,10 +103,9 @@ contract Pool {
     }
 
     function approveClaim(address claimerAddress) public {
-        // require(claimerAddress != msg.sender,'Only other members can approve claim.');
 
         userClaim storage currentClaim = userClaimDetails[claimerAddress];
-
+        require(!currentClaim.poolMembersApprovalStatus[msg.sender],'Already approved!');
         currentClaim.poolMembersApprovalStatus[msg.sender] = true;
         currentClaim.voteCount++;
 
@@ -117,12 +116,11 @@ contract Pool {
     }
 
     function declineClaim(address claimerAddress) public {
-        userClaimDetails[claimerAddress].isApproved = false;
         userClaimDetails[claimerAddress].poolMembersApprovalStatus[msg.sender] = false;
     }
 
-    function getClaimStatus() public view returns(bool) {
-        return userClaimDetails[msg.sender].isApproved;
+    function getClaimStatus(address userAddress) public view returns(bool) {
+        return userClaimDetails[userAddress].isApproved;
     }
 
    
@@ -132,6 +130,7 @@ contract Pool {
         return userPoolAccountStatus[userAddress].haveStaked;
     }
 
+    // this one gonna be challenging!
     function claimFund() public {
         require(userClaimDetails[msg.sender].isApproved,'Claim not approved yet!');
         require(!userClaimDetails[msg.sender].claimed,'Already claimed!');

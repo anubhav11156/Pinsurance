@@ -28,11 +28,12 @@ contract Pinsurance {
     // user account detail mapping
     mapping(address => userAccount) userAddressTouserAccount;
 
-    // Pool data  ---> set pool member limit to 2 for demo purpose
+    // Pool data  ---> set pool member limit to 3 for demo purpose
     struct poolDetail {
         address poolContractAddress;        
         uint256 currentMemberCount;
         address[] members;
+        uint claimCounter;
     }
 
     // structure for claim notification
@@ -51,7 +52,7 @@ contract Pinsurance {
 
     mapping(address => poolDetail) poolAddressToPoolDetail;
 
-    // mapping(string => address) poolAddressToPoolAddress;
+    // mapping(string => address) poolAddressToPoolStatus;
     mapping(address => bool) poolAddressToStatus;   // true -> pool exists, false -> dosen't exists.
 
 
@@ -73,7 +74,6 @@ contract Pinsurance {
         return userAddressTouserAccount[userAddress].userAccountStatus;
     }
 
-    // function to get user account detail 
     function getUserDetail(address userAddress) public view returns(userAccount memory) {
         return userAddressTouserAccount[userAddress];
     }
@@ -122,16 +122,22 @@ contract Pinsurance {
     function getClaimRequests(address userAddress) public view returns(userClaim[] memory) {
  
         uint currentIndex = 0;
-        userClaim[] memory userClaims = new userClaim[](userAddressTouserAccount[userAddress].userAssociatedPools.length);
+        uint userAsscociatedClaimCounter=0;
+
+        for(uint i=0; i<userAddressTouserAccount[userAddress].userAssociatedPools.length; i++) {
+            userAsscociatedClaimCounter += poolAddressToPoolDetail[userAddressTouserAccount[userAddress].userAssociatedPools[i]].claimCounter;
+        }
+
+        userClaim[] memory claimArray = new userClaim[](userAsscociatedClaimCounter); 
 
         for(uint i=0; i<claims.length; i++) {
             if(userToPoolMembership[userAddress][claims[i].poolAddress] == true) {
-                userClaims[currentIndex] = claims[i];
+                claimArray[currentIndex] = claims[i];
                 currentIndex++; 
             }
         }
 
-        return userClaims;
+        return claimArray;
     }
 
     /// 
@@ -165,9 +171,9 @@ contract Pinsurance {
         require(userAddressTouserAccount[userAddress].userAccountStatus==true,'Create account first.');
         require(poolAddressToStatus[poolAddress] == true,'No pool found  with given poolAddress');
 
-        uint256 empty = (2 - poolAddressToPoolDetail[poolAddress].members.length);
+        uint256 empty = (3 - poolAddressToPoolDetail[poolAddress].members.length);
 
-        require((empty == 1),'Not enough slot in the pool.');
+        require((empty >= 1),'Not enough slot in the pool.');
 
         userToPoolMembership[userAddress][poolAddressToPoolDetail[poolAddress].poolContractAddress]=true; // for membership
         poolAddressToPoolDetail[poolAddress].currentMemberCount++;
@@ -189,6 +195,9 @@ contract Pinsurance {
         newClaim.poolName = _poolName;
         newClaim.claimAmount = amount;
         claims.push(newClaim);
+
+        poolAddressToPoolDetail[_poolAddress].claimCounter++;
+
     }
 
 }

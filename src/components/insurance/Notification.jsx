@@ -61,6 +61,8 @@ function Notification() {
     }
   }
 
+  console.log('requests : ', notifications);
+
   const requestCards = notifications.map(card => {
     return (
       <RequestCard
