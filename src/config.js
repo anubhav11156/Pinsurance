@@ -1,4 +1,4 @@
-export const pinsuranceContractAddress = "0xB41d1EBce4567909ab4f38220F9252fA6Dde7EC2";
+export const pinsuranceContractAddress = "0xCBf60376A5547207A3B7408f41c99313fd0f3b7c";
 
 export const mockUsdcContractAddress = "0xF8E9F063228eb47137101eb863BF3976466AA31F";
 
@@ -320,6 +320,11 @@ export const pinsuranceAbi = {
                             "internalType": "address[]",
                             "name": "members",
                             "type": "address[]"
+                        },
+                        {
+                            "internalType": "uint256",
+                            "name": "claimCounter",
+                            "type": "uint256"
                         }
                     ],
                     "internalType": "struct Pinsurance.poolDetail[]",
@@ -527,7 +532,13 @@ export const poolAbi = {
             "type": "function"
         },
         {
-            "inputs": [],
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                }
+            ],
             "name": "getClaimStatus",
             "outputs": [
                 {

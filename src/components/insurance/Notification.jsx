@@ -5,7 +5,8 @@ import { pinsuranceContractAddress, pinsuranceAbi } from "../../config";
 import { useAccount } from 'wagmi'
 import fromExponential from 'from-exponential';
 import RequestCard from './RequestCard';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function Notification() {
@@ -50,11 +51,14 @@ function Notification() {
             docURI,
             userDetail
           };
-          setIsFetching(false);
           return item;
         })
       );
       setNotifications(items)
+      setIsFetching(false);
+      toast.success(`${items.length} request found.`, {
+        position: toast.POSITION.TOP_CENTER
+      });
     } catch (error) {
       console.log(error);
       setIsFetching(false);
@@ -85,15 +89,15 @@ function Notification() {
         </div>
         <div className='line-2'></div>
       </div>
-      { isFetching &&
+      {isFetching &&
         <div className='palceholder'>
           <p>Fetching claim requests......</p>
         </div>
       }
-      { !isFetching &&
-           <div className='claim-container'>
-           {requestCards}
-         </div>
+      {!isFetching &&
+        <div className='claim-container'>
+          {requestCards}
+        </div>
       }
     </Container>
   )

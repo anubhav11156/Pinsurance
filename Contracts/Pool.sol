@@ -75,7 +75,7 @@ contract Pool {
         userPoolAccountStatus[userAddress].haveStaked = true;
         userPoolAccountStatus[userAddress].amountStaked = amount;
 
-        if(poolMembers.length==2){ // means all user have staked their amount
+        if(poolMembers.length==3){ // means all user have staked their amount
             poolData.isActive=true;
             poolData.from = block.timestamp;
             poolData.to = poolData.from + 31536000; // after one year

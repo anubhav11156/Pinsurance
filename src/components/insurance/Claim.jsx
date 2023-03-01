@@ -76,7 +76,9 @@ function Claim() {
       const create = await poolContract.createClaimRequest(
         address,
         documentURI,
-        requestedClaimAmount
+        requestedClaimAmount, {
+          gasLimit: 900000,
+        }
       )
 
       await create.wait()

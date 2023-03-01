@@ -26,6 +26,7 @@ function User() {
     const [usdcBalance, setUsdcBalance] = useState('');
     const [isCreatingAccount, setIsCreatingAccount] = useState(false);
     const [userHaveAccount, setuserHaveAccouint] = useState(false);
+    const [isFetchingPool, setIsFetchingPool] = useState(false);
     const [accountDetail, setAccountDetaiil] = useState({
         name: "",
         age: "",
@@ -139,6 +140,7 @@ function User() {
     /*------------------------ get user pools----------------------------*/
 
     const getPools = async () => {
+        setIsFetchingPool(true);
         const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
         const pinsuranceContract = new ethers.Contract(
             pinsuranceContractAddress,
@@ -146,22 +148,29 @@ function User() {
             provider
         )
         try {
-           const data =  await pinsuranceContract.getUserAllPools(address)
-           const items = await Promise.all(
-            data.map(async (i) => {
-                let poolAddress = i.poolContractAddress;
-                let memberCount = hexToDec(i.currentMemberCount._hex);
-                let item = {
-                    poolAddress,
-                    memberCount
-                };
-                return item;
+            const data = await pinsuranceContract.getUserAllPools(address)
+            const items = await Promise.all(
+                data.map(async (i) => {
+                    let poolAddress = i.poolContractAddress;
+                    let memberCount = hexToDec(i.currentMemberCount._hex);
+                    let item = {
+                        poolAddress,
+                        memberCount
+                    };
+                    return item;
+                })
+               
+            );
+            setIsFetchingPool(false);
+            setPoolDetailArray(items);
+            toast.success(`${items.length} pool found.`, {
+                position: toast.POSITION.TOP_CENTER
             })
-           );
-           console.log('Pool detail : ',items);
-           setPoolDetailArray(items);
         } catch (error) {
-            console.log(error);
+            setIsFetchingPool(false);
+            toast.error("ERROR: Failed to fetch pools!", {
+                position: toast.POSITION.TOP_CENTER
+            });
         }
     }
 
@@ -169,12 +178,12 @@ function User() {
 
     const PoolCards = poolDetailArray.map(card => {
         return (
-            <PoolCard 
+            <PoolCard
                 memberCount={card.memberCount}
                 poolAddress={card.poolAddress}
             />
         )
-    }) 
+    })
     /*-------------------------------------------------------------------*/
 
     /*--------------------IPFS code to upload metadata-------------------*/
@@ -407,9 +416,16 @@ function User() {
                                 </div>
                                 <div className='line-2'></div>
                             </div>
-                            <div className='pool-conatainer'>
-                                {PoolCards}
-                            </div>
+                            {isFetchingPool &&
+                                <div className='pool-placeholder'>
+                                    <p>Fetching pools....</p>
+                                </div>
+                            }
+                            {!isFetchingPool &&
+                                <div className='pool-conatainer'>
+                                    {PoolCards}
+                                </div>
+                            }
                         </div>
                     </AccountSection>
                 }
@@ -983,6 +999,18 @@ const AccountSection = styled.div`
             display: grid;
             grid-template-columns: 410.94px  410.94px  410.94px;
             grid-column-gap: 6rem;
+        }
+
+        .pool-placeholder {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: start;
+
+            p {
+                margin-top: 10rem;
+                font-size: 20px;
+            }
         }
     }
 `
