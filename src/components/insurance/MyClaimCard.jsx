@@ -14,7 +14,7 @@ function MyClaimCard(props) {
 
     useEffect(() => {
         getClaimStatus();
-    }, [])
+    },[])
 
     const getClaimStatus = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
@@ -25,7 +25,6 @@ function MyClaimCard(props) {
         )
         try {
             const status = await pinsuranceContract.getClaimStatus(props.userAddress);
-            console.log('status : ', status);
             setClaimStatus(status);
         } catch (error) {
             console.log(error);
@@ -59,7 +58,7 @@ function MyClaimCard(props) {
                 }
                 {!claimStatus &&
                     <div className='declined'>
-                        <p>Declined</p>
+                        <p>Not approved yet</p>
                     </div>
                 }
 
@@ -202,7 +201,8 @@ const Container = styled.div`
             flex: 1;
             height: 100%;
             border-radius: 3px;
-            background-color: #b40e0ee4;
+            /* background-color: #b40e0ee4; */
+            background-color: #e89b0d;
             box-sizing: border-box;
             display: flex;
             justify-content: center;

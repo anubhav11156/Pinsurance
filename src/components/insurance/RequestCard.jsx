@@ -1,25 +1,121 @@
-import {useState, useEffect, React} from 'react'
+import { useState, useEffect, React } from 'react'
 import styled from 'styled-components';
 import { ethers } from 'ethers';
 import axios from "axios";
+import { poolAbi } from "../../config";
+import web3modal from "web3modal"
+import ClipLoader from "react-spinners/ClipLoader";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function RequestCard(props) {
 
-    const[userMetaData, setUserMetaData] = useState({
-        name:"",
-        profileURI:""
+    const [userMetaData, setUserMetaData] = useState({
+        name: "",
+        profileURI: ""
     });
+    const [isApproving, setIsApproving] = useState(false);
+
+
+    const approve = async () => {
+        setIsApproving(true);
+        const modal = new web3modal({
+            cacheProvider: true,
+        });
+
+        const connection = await modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
+        try {
+            const poolContract = new ethers.Contract(
+                props.poolAddress,
+                poolAbi.abi,
+                signer
+            )
+
+            const transaction = await poolContract.approveClaim(
+                props.userAddress,
+            )
+
+            await transaction.wait()
+                .then(() => {
+                    toast.success("Claim approved.", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                    setIsApproving(false);
+                }).catch((error) => {
+                    setIsApproving(false);
+                    toast.error("Error: Transaction failed!", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                    console.error(error);
+                })
+
+        } catch (error) {
+            console.log(error);
+            setIsApproving(false);
+            toast.error("Revert: Already approved!", {
+                position: toast.POSITION.TOP_CENTER
+            });
+        }
+    }
+
+    const decline = async () => {
+        setIsApproving(true);
+        const modal = new web3modal({
+            cacheProvider: true,
+        });
+
+        const connection = await modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+
+        try {
+            const poolContract = new ethers.Contract(
+                props.poolAddress,
+                poolAbi.abi,
+                signer
+            )
+
+            const transaction = await poolContract.declineClaim(
+                props.userAddress,
+            )
+
+            await transaction.wait()
+                .then(() => {
+                    toast.success("Claim declined.", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                    setIsApproving(false);
+                }).catch((error) => {
+                    setIsApproving(false);
+                    toast.error("Error: Transaction failed!", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                    console.error(error);
+                })
+
+        } catch (error) {
+            console.log(error);
+            setIsApproving(false);
+            toast.error("Transaction failed!", {
+                position: toast.POSITION.TOP_CENTER
+            });
+        }
+    }
 
     useEffect(() => {
         fetchUserMetaData()
-    },[props.userAddress]);
+    }, [props.userAddress]);
 
     const fetchUserMetaData = async () => {
         const uriResponse = await axios.get(props.userMetaURI);
         setUserMetaData({
             ...userMetaData,
-            name:uriResponse.data.name,
-            profileURI:uriResponse.data.profileURI
+            name: uriResponse.data.name,
+            profileURI: uriResponse.data.profileURI
         })
     }
 
@@ -61,18 +157,23 @@ function RequestCard(props) {
                             </div>
                         </div>
                         <a href={props.docURI} target="_blank" className='doc-div'>
-                           <p>Show support document</p>
-                           <div className='logo-div'>
-                                <img src="images/link.png"/>
-                           </div>
+                            <p>Show support document</p>
+                            <div className='logo-div'>
+                                <img src="images/link.png" />
+                            </div>
                         </a>
                         <div className='buttons-div'>
-                           <div className='approve-div'>
-                                <p>Approve</p>
-                           </div>
-                           <div className='decline-div'>
+                            <div className='approve-div' onClick={approve}>
+                                {!isApproving &&
+                                    <p>Approve</p>
+                                }
+                                {isApproving &&
+                                    <ClipLoader color="#ffffff" size={13} />
+                                }
+                            </div>
+                            <div className='decline-div'>
                                 <p>Decline</p>
-                           </div>
+                            </div>
                         </div>
 
                     </div>
