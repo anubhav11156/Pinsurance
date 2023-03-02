@@ -15,8 +15,6 @@ function PoolCard(props) {
 
     const timestamp = require('unix-timestamp');
 
-    console.log('testing : ', props);
-
     const { address } = useAccount();
 
     const [isStaking, setIsStaking] = useState(false);
@@ -44,9 +42,6 @@ function PoolCard(props) {
     }, [props.poolAddress])
 
 
-
-    /*--------------------Fetch pool metadata-------------------*/
-
     const getMetaData = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
         const poolContract = new ethers.Contract(
@@ -73,8 +68,6 @@ function PoolCard(props) {
             cubicCapacity: uriResponse.data.cubicCapacity
         })
     }
-
-    /*-----------------------------------------------------------*/
 
     /*---------------------get pool balance----------------------*/
 
@@ -112,7 +105,6 @@ function PoolCard(props) {
         try {
             await poolContract.getPoolDetail()
                 .then((response) => {
-                    console.log('response : ', response);
                     let f = hexToDec(response.from._hex);
                     let fromTime = timestamp.toDate(f);
                     let fromString = fromTime.toString();
@@ -148,7 +140,7 @@ function PoolCard(props) {
             mockUsdcAbi.abi,
             signer
         )
-        // const value = poolDetail.premium; 
+
         const value = 1
         const usdcValue = ethers.utils.parseEther(value.toString());
 
@@ -199,8 +191,6 @@ function PoolCard(props) {
                 console.error(error);
             })
     }
-
-    console.log('pool : ', poolDetail);
     return (
         <Container>
             <div className='pool-name'>

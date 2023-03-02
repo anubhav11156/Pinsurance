@@ -48,12 +48,9 @@ const client = createClient({
   provider,
 })
 
-
-
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <>
     <WagmiConfig client={client}>
       <Provider store={store}>
         <ConnectKitProvider>
@@ -62,7 +59,7 @@ root.render(
       </Provider>
     </WagmiConfig>
 
-  </React.StrictMode>
+  </>
 );
 
 // If you want to start measuring performance in your app, pass a function

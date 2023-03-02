@@ -8,7 +8,9 @@ import { useAccount } from 'wagmi'
 import { ethers } from "ethers"
 import axios from "axios";
 import web3modal from "web3modal"
-import { poolAbi } from "../../config";
+import { poolAbi, pinsuranceContractAddress, pinsuranceAbi } from "../../config";
+import fromExponential from 'from-exponential';
+import MyClaimCard from './MyClaimCard';
 
 
 function Claim() {
@@ -17,13 +19,23 @@ function Claim() {
   const [poolAddress, setPoolAddress] = useState();
   const [documentURI, setDocumentURI] = useState("");
   const [amount, setAmount] = useState();
+  const [isFetching, setIsFetching] = useState(false);
+  const [claimData, getClaimData] = useState([]);
+  const [myClaims, setMyClaims] = useState([]);
+  const [loaded, setLoaded] = useState(false);
 
-  console.log('poolAddress : ', poolAddress)
   const { address } = useAccount();
 
   useEffect(() => {
-    // userClaims()
-  }, [])
+    fetchMyClaims();
+  }, [address]);
+
+  useEffect(() => {
+    filterClaims();
+  }, [loaded])
+
+  const hexToDec = (hex) => parseInt(hex, 16);
+
 
   /*-------------------IPFS code to upload support document -------------*/
 
@@ -52,8 +64,7 @@ function Claim() {
     }
   }
 
-  console.log('document uri is : ', documentURI)
-  /*-----------------------------------------------------------------------*/
+  /*------------------------------------------------------------------------*/
 
   /*-----------------------Ceate claim request ----------------------------*/
 
@@ -77,8 +88,8 @@ function Claim() {
         address,
         documentURI,
         requestedClaimAmount, {
-          gasLimit: 900000,
-        }
+        gasLimit: 900000,
+      }
       )
 
       await create.wait()
@@ -108,10 +119,71 @@ function Claim() {
 
   /*----------------------------Fetch user claim---------------------------*/
 
+  const fetchMyClaims = async () => {
+    setIsFetching(true);
+    const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
+    const pinsuranceContract = new ethers.Contract(
+      pinsuranceContractAddress,
+      pinsuranceAbi.abi,
+      provider
+    )
+    try {
+      const data = await pinsuranceContract.getClaimRequests(address)
+      const items = await Promise.all(
+        data.map(async (i) => {
+          let bal = hexToDec(i.claimAmount._hex);
+          let claimAmount = Number(ethers.utils.formatEther(fromExponential(bal))).toFixed(2);
+          let poolAddress = i.poolAddress;
+          let poolName = i.poolName;
+          let docURI = i.supportDocumentCID;
+          let userDetail = {
+            userAddress: `${i.userDetail.userAddress}`,
+            userMetaData: `${i.userDetail.userMetadataURI}`,
+          }
 
+          let item = {
+            claimAmount,
+            poolAddress,
+            poolName,
+            docURI,
+            userDetail
+          };
+          return item;
+        })
+      );
+      getClaimData(items);
+      setIsFetching(false);
+      setLoaded(true);
+    } catch (error) {
+      console.log(error);
+      setIsFetching(false);
+    }
+  }
 
+  const filterClaims = () => {
+    if (loaded) {
+      claimData.map((currentClaim) => {
+        if (currentClaim.userDetail.userAddress == address) {
+          setMyClaims(
+            oldArray => [...oldArray, currentClaim]
+          );
+        }
+      })
+      setLoaded(false);
+    }
+  }
   /*-----------------------------------------------------------------------*/
 
+  const claimsCard = myClaims.map(card => {
+    return (
+      <MyClaimCard
+        poolName={card.poolName}
+        poolAddress={card.poolAddress}
+        amount={card.claimAmount}
+        userAddress={card.userDetail.userAddress}
+      />
+    )
+  })
 
   return (
     <Container>
@@ -152,25 +224,17 @@ function Claim() {
           <div className='heading'>
             <p>My Claims</p>
           </div>
-          <div className='claims-container'>
-            <ClaimCard>
-              <div className='upper'>
-                <div className='a-div'>
-                  <p>
-                    Amount:
-                  </p>
-                </div>
-                <div className='ap-div'>
-                  <p>
-                    Approved:
-                  </p>
-                </div>
-              </div>
-              <div className='lower'>
-                <p>Claim</p>
-              </div>
-            </ClaimCard>
-          </div>
+          {isFetching &&
+            <div className='placeholder'>
+              <p>Fetching your claims.....</p>
+            </div>
+          }
+          {!isFetching &&
+            <div className='claims-container'>
+              {claimsCard}
+            </div>
+          }
+
         </div>
       </div>
     </Container>
@@ -349,80 +413,27 @@ const Container = styled.div`
         }
 
         .claims-container {
-          margin-top: 3rem;
+          margin-top: 15px;
           height: 100%;
-          width: 99%;
+          width: 88%;
+          overflow: scroll;
+          padding-top: 10px;
+        }
+
+        .placeholder {
+          margin-top: 15px;
+          height: 100%;
+          width: 88%;
           display: flex;
           justify-content: center;
+          align-items: start;
+
+          p {
+            margin: 0;
+            margin-top: 3rem;
+          }
         }
 
       }
     }
-`
-
-const ClaimCard = styled.div`
-  width: 90%;
-  height: 5rem;
-  background-color: #0a458d3a;
-  border-radius: 6px;
-  border: 1px solid #0a458d3d;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  overflow: hidden;
-
-  .upper {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    width: 100%;
-
-    .a-div {
-      flex: 1;
-      font-size: 14px;
-
-      p {
-        margin: 0;
-        margin-left: 10px;
-      }
-    }
-
-    .ap-div {
-      flex: 1;
-      font-size: 14px;
-
-      p{
-        margin: 0;
-        margin-left: 5px;
-      }
-
-    }
-  }
-
-  .lower {
-    flex: 1;
-    width: 95%;
-    background-color: #0a458da4;
-    margin-bottom: 5px;
-    border-radius: 6px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    
-    p {
-      color: white;
-      margin: 0;
-    }
-
-    &:hover {
-      opacity: 0.9;
-    }
-
-    &:active {
-      opacity: 0.8;
-    }
-  }
 `

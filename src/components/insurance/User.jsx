@@ -115,7 +115,6 @@ function User() {
         try {
             await pinsuranceContract.getUserDetail(address)
                 .then((response) => {
-                    console.log('account : ', response);
                     fetchUserInfoFromURI(response.userMetadataURI)
                 })
         } catch (error) {
@@ -163,9 +162,6 @@ function User() {
             );
             setIsFetchingPool(false);
             setPoolDetailArray(items);
-            toast.success(`${items.length} pool found.`, {
-                position: toast.POSITION.TOP_CENTER
-            })
         } catch (error) {
             setIsFetchingPool(false);
             toast.error("ERROR: Failed to fetch pools!", {
@@ -173,8 +169,6 @@ function User() {
             });
         }
     }
-
-    console.log('testing : ', poolDetailArray);
 
     const PoolCards = poolDetailArray.map(card => {
         return (
@@ -224,7 +218,6 @@ function User() {
 
     const metadata = async () => {
         const { name, age, email, profileURI } = formInput;
-        // if (!name || !age || !email || !profileURI) return;
         const data = JSON.stringify({ name, age, email, profileURI });
         const files = [
             new File([data], 'metadata.json')

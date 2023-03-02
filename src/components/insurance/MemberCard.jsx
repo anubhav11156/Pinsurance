@@ -176,7 +176,7 @@ const Container = styled.div`
             width: 5rem;
             height: 5rem;
             border-radius: 3px;
-            border: 1px solid black;
+            border: 1px solid #0152b546;
             overflow: hidden;
             
             img {

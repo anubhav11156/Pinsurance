@@ -22,6 +22,8 @@ function Notification() {
     fetchAllClaims();
   }, [address])
 
+  /*----------------------------------Fetch claim requests---------------------------------------*/
+
   const fetchAllClaims = async () => {
     setIsFetching(true);
     const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
@@ -56,16 +58,13 @@ function Notification() {
       );
       setNotifications(items)
       setIsFetching(false);
-      toast.success(`${items.length} request found.`, {
-        position: toast.POSITION.TOP_CENTER
-      });
     } catch (error) {
       console.log(error);
       setIsFetching(false);
     }
   }
 
-  console.log('requests : ', notifications);
+  /*---------------------------------------------------------------------------------------*/
 
   const requestCards = notifications.map(card => {
     return (

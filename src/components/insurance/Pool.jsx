@@ -116,11 +116,6 @@ function Pool() {
     getDetail();
   }
 
-  console.log(poolBalance);
-  console.log(members);
-  console.log('pool active : ', isPoolActive);
-  console.log('name : ', poolName);
-
   const memberCards = members.map(card => {
     return (
       <MemberCard 
