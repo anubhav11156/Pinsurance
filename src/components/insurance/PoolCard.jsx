@@ -9,14 +9,16 @@ import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
 import web3modal from "web3modal"
 import fromExponential from 'from-exponential';
+import { Web3Storage } from 'web3.storage';
+import QRCode from 'qrcode'
+// var qr = require('qr-image');
+// import { image } from 'qr-image';
 
 
 function PoolCard(props) {
 
     const timestamp = require('unix-timestamp');
-
     const { address } = useAccount();
-
     const [isStaking, setIsStaking] = useState(false);
     const [poolBalance, setPoolBalance] = useState();
     const [poolName, setPoolName] = useState("");
@@ -29,6 +31,36 @@ function PoolCard(props) {
         cubicCapacity: "",
     })
 
+    const [qrImage, setQrImage] = useState({
+        imageData:"",
+    });
+
+    const [nftMetaData, setNftMetadata] = useState({
+        user: {
+            name: "",
+            age: "",
+            email: "",
+            profileURI: ""
+        },
+        pool: {
+            address: "",
+            name: ""
+        },
+        insurance: {
+            vehicle: "",
+            cubicCapacity: "",
+            premium: {
+                amount: "",
+                txHash: ""
+            },
+            period: {
+                from: "",
+                to: ""
+            }
+        }
+    })
+
+    
     const copyAddress = () => {
         copy(props.poolAddress);
     }
@@ -41,7 +73,11 @@ function PoolCard(props) {
         getDetail()
     }, [props.poolAddress])
 
+    useEffect(() => {
+        prepareNftData();
+    }, [from, poolDetail])
 
+    /*------------------------get user insurance metadata--------------------------*/
     const getMetaData = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
         const poolContract = new ethers.Contract(
@@ -68,6 +104,8 @@ function PoolCard(props) {
             cubicCapacity: uriResponse.data.cubicCapacity
         })
     }
+    /*----------------------------------------------------------------------------------*/
+
 
     /*---------------------get pool balance----------------------*/
 
@@ -108,14 +146,14 @@ function PoolCard(props) {
                     let f = hexToDec(response.from._hex);
                     let fromTime = timestamp.toDate(f);
                     let fromString = fromTime.toString();
-                    let finalFrom = fromString.slice(0,16)
-                    
+                    // let finalFrom = fromString.slice(0, 16)
+
                     let t = hexToDec(response.to._hex)
                     let toTime = timestamp.toDate(t);
                     let toString = toTime.toString();
-                    let finalTo = toString.slice(0,16)
-                    setFrom(finalFrom);
-                    setTo(finalTo);
+                    // let finalTo = toString.slice(0, 16)
+                    setFrom(fromString);
+                    setTo(toString);
                     setPoolName(response.name);
                 })
         } catch (error) {
@@ -125,6 +163,7 @@ function PoolCard(props) {
 
     /*-----------------------------------------------------------*/
 
+    /*-----------------------Stake premium----------------------------------*/
     const stakeHandler = async () => {
         setIsStaking(true);
         const modal = new web3modal({
@@ -191,6 +230,115 @@ function PoolCard(props) {
                 console.error(error);
             })
     }
+
+    /*----------------------------------------------------------------------*/
+
+    /*-------------------IPFS code to upload nft metadata -------------*/
+
+    const storageKey = process.env.REACT_APP_WEB3_STORAGE;
+
+    const storageClient = () => {
+        return new Web3Storage({ token: `${storageKey}` })
+    }
+
+    const uploadToIPFS = async (files) => {
+        const client = storageClient();
+        const cid = await client.put(files);
+        return cid;
+    }
+
+    const uploadMetaData = async () => {
+        console.log('nftMetaData : ', nftMetaData);
+        const { user, pool, insurance } = nftMetaData;
+        const data = JSON.stringify({ user, pool, insurance });
+        const files = [
+            new File([data], 'nftMetadata.json')
+        ]
+
+        const cid = await uploadToIPFS(files);
+
+        const uri = `https://${cid}.ipfs.w3s.link/nftMetadata.json`
+
+        if (cid.length) {
+            toast.success("Uploaded to IPFS", {
+                position: toast.POSITION.TOP_CENTER
+            });
+            setMetaDataURI(uri);
+            console.log('meta uri is : ', uri);
+            await uploadQrData(uri);
+        } else {
+            toast.error("IPFS upload failed!", {
+                position: toast.POSITION.TOP_CENTER
+            });
+        }
+    }
+
+    const uploadQrData = async (_uri) => {
+        console.log('in uploadQrData : ', _uri);
+        const qrData = await toQrCode(_uri);
+
+        const data = JSON.stringify({qrData});
+        const files = [
+            new File([data],'qrImage.json')
+        ]
+
+        const cid = await uploadToIPFS(files);
+        const qrImageUri = `https://${cid}.ipfs.w3s.link/qrImage.json`;
+
+        console.log('qrImage uri is : ', qrImageUri);
+    }
+    /*------------------------------------------------------------------------*/
+
+
+
+
+    const mintPolicy = async () => {
+        console.log('clicked!');
+        // first upload metadat to ipfs
+        await uploadMetaData();
+    }
+
+    const prepareNftData = () => {
+        setNftMetadata({
+            ...nftMetaData,
+            user: {
+                name: props.name,
+                age: props.age,
+                email: props.email,
+                address: props.userAddress,
+                profileURI: props.profileURI
+            },
+            pool: {
+                address: props.poolAddress,
+                name: poolName
+            },
+            insurance: {
+                vehicle: poolDetail.vehicle,
+                cubicCapacity: poolDetail.cubicCapacity,
+                premium: {
+                    amount: poolDetail.premium,
+                    txHash: "0xF8E9F063228eb47137101eb863BF3976466AA31F"
+                },
+                period: {
+                    from: from,
+                    to: to
+                }
+            }
+        })
+    }
+
+    /*-------------convert uri to qr-code----------------*/
+    const toQrCode = async (metaUri) => {
+        const qrData = await QRCode.toDataURL(`${metaUri}`);
+        console.log('qrData is : ', qrData);
+        return qrData;
+        // setQrImage({
+        //     ...qrImage,
+        //     imageData: `${qrData}`
+        // })
+    }
+    /*---------------------------------------------------*/
+
     return (
         <Container>
             <div className='pool-name'>
@@ -243,7 +391,7 @@ function PoolCard(props) {
                         </div>
                         <div className='text'>
                             <p className='from-text'>
-                                {from}
+                                {from?.slice(0, 16)}
                             </p>
                         </div>
                     </div>
@@ -253,7 +401,7 @@ function PoolCard(props) {
                         </div>
                         <div className='text'>
                             <p className='to-text'>
-                                {to}
+                                {to?.slice(0, 16)}
                             </p>
                         </div>
                     </div>
@@ -322,10 +470,11 @@ function PoolCard(props) {
                 </div>
 
             </div>
-            <div className='status-div'>
-                <div className='inner'>
-                    <p>Pool Status</p>
-                </div>
+            <div className='status-div' onClick={mintPolicy}>
+                <p>Mint Policy</p>
+            </div>
+            <div>
+                <img src={qrImage}/>
             </div>
         </Container>
     )

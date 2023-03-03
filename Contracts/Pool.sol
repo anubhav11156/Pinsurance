@@ -30,6 +30,7 @@ contract Pool {
         string amountStaked;
         bool haveStaked;
         string metadataURI;
+        string txHash;
     }
 
     struct poolDetail {
@@ -54,7 +55,6 @@ contract Pool {
 
     mapping(address => userClaim ) userClaimDetails;
 
-
     function getStakeStatus(address userAddress) public view returns(bool){
         return userPoolAccountStatus[userAddress].haveStaked;
     }
@@ -72,9 +72,10 @@ contract Pool {
         return userPoolAccountStatus[userAddress].metadataURI;
     }
 
-    function stake(address userAddress, string memory amount) public {
+    function stake(address userAddress, string memory amount, string memory txHash) public {
         userPoolAccountStatus[userAddress].haveStaked = true;
         userPoolAccountStatus[userAddress].amountStaked = amount;
+        userPoolAccountStatus[userAddress].txHash = txHash;
 
         if(poolMembers.length==3){ // means all user have staked their amount
             poolData.isActive=true;
@@ -131,14 +132,12 @@ contract Pool {
         return userPoolAccountStatus[userAddress].haveStaked;
     }
 
-    // this one gonna be challenging!
     function claimFund(uint256 amount) public {
         require((block.timestamp > poolData.from)&&(block.timestamp < poolData.to),'Claim request not in pool period!');
         require(userClaimDetails[msg.sender].isApproved,'Claim not approved yet!');
         require(!userClaimDetails[msg.sender].claimed,'Already claimed!');
 
-        // transfer MockUSDC from contract address to msg.sender.
-        // payable(msg.sender).transfer(userClaimDetails[msg.sender].claimAmount);
+ 
         uint poolBalance = usdc.balanceOf(address(this));
         require(poolBalance>amount,'Insufficient balance');
         usdc.transfer(msg.sender, amount);
@@ -149,6 +148,11 @@ contract Pool {
         return userClaimDetails[claimerAddress].poolMembersApprovalStatus[msg.sender];
     }
 
+    function getUserStakeTxHash(address userAddress) public view returns(string memory) {
+        return userPoolAccountStatus[userAddress].txHash;
+    }
+
+    
     receive() external payable {}
 
     fallback() external payable {}

@@ -30,7 +30,6 @@ function User() {
     const [accountDetail, setAccountDetaiil] = useState({
         name: "",
         age: "",
-        address: "",
         filBal: "",
         usdcBal: "",
         email: "",
@@ -175,6 +174,11 @@ function User() {
             <PoolCard
                 memberCount={card.memberCount}
                 poolAddress={card.poolAddress}
+                name={accountDetail.name}
+                userAddress={address}
+                age={accountDetail.age}
+                email={accountDetail.email}
+                profileURI={accountDetail.profileURI}
             />
         )
     })

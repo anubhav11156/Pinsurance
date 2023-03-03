@@ -643,6 +643,25 @@ export const poolAbi = {
                     "type": "address"
                 }
             ],
+            "name": "getUserStakeTxHash",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                }
+            ],
             "name": "isUserMember",
             "outputs": [
                 {
@@ -682,6 +701,11 @@ export const poolAbi = {
                 {
                     "internalType": "string",
                     "name": "amount",
+                    "type": "string"
+                },
+                {
+                    "internalType": "string",
+                    "name": "txHash",
                     "type": "string"
                 }
             ],

@@ -10832,7 +10832,7 @@
   "resolved" "https://registry.npmjs.org/q/-/q-1.5.1.tgz"
   "version" "1.5.1"
 
-"qrcode@^1.5.0", "qrcode@1.5.1":
+"qrcode@^1.5.0", "qrcode@^1.5.1", "qrcode@1.5.1":
   "integrity" "sha512-nS8NJ1Z3md8uTjKtP+SGGhfqmTCs5flU/xR623oI0JX+Wepz9R8UrRVCTBTJm3qGw3rH6jJ6MUHjkDx15cxSSg=="
   "resolved" "https://registry.npmjs.org/qrcode/-/qrcode-1.5.1.tgz"
   "version" "1.5.1"
