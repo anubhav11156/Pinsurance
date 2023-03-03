@@ -29,7 +29,9 @@ function PoolCard(props) {
         vehicle: "",
         cubicCapacity: "",
     })
-    const [bothURI, setBothURI] = useState({});
+    // const [ policyMetadata, setPolicyMetadata ] = useState();
+    // const [qrCodeURI, setQrCodeURI] = useState();
+    const [bothURI, setBothURI] = useState();
     const [isMinting, setIsMinting] = useState(false);
     const [nftMetaData, setNftMetadata] = useState({
         user: {
@@ -261,7 +263,7 @@ function PoolCard(props) {
     }
 
     const uploadQrData = async (_uri) => {
-
+        console.log('meta uri is : ', _uri);
         const qrImageData = await toQrCode(_uri);
 
         const data = JSON.stringify({ qrImageData });
@@ -271,11 +273,14 @@ function PoolCard(props) {
 
         const cid = await uploadToIPFS(files);
         const qrImageUri = `https://${cid}.ipfs.w3s.link/qrImage.json`;
-        setBothURI({
-            ...bothURI,
-            policyMetadata: _uri,
-            qrCodeURI: qrImageUri
-        });
+        // setQrCodeURI(qrImageUri);
+        if (cid.length) {
+            await uploadBothUri(_uri, qrImageUri);
+        } else {
+            toast.error("IPFS upload failed!", {
+                position: toast.POSITION.TOP_CENTER
+            });
+        }
     }
 
     /*-------------convert uri to qr-code----------------*/
@@ -288,38 +293,39 @@ function PoolCard(props) {
     /*------------------------------------------------------------------------*/
 
 
-    const uriUploadWork = async () => {
+    const uploadBothUri = async (metaUri, qrUri) => {
+        console.log('policyMetadata : ', metaUri);
+        console.log('qrCodeURI : ',qrUri);
 
-        await uploadMetaData();
-
-        const { policyMetadata, qrCodeURI } = bothURI;
-
-        const data = JSON.stringify({ policyMetadata, qrCodeURI });
+        const data = JSON.stringify({ metaUri, qrUri });
         const files = [
             new File([data], 'uri.json')
         ]
 
-        const cid = await uploadToIPFS(files);
+        const cid = await uploadToIPFS(files)
+        const finalUri = `https://${cid}.ipfs.w3s.link/uri.json`;
 
-        if (cid.length) {
-            toast.success("Metadata uplodaed to IPFS", {
-                position: toast.POSITION.TOP_CENTER
-            });
-            return `https://${cid}.ipfs.w3s.link/uri.json`;
+        console.log('final uri : ', finalUri );
+        // console.log('main cid is : ', cid);
+
+        if(cid.length) {
+            console.log("all good!");
         } else {
-            toast.error("Metadata upload failed!", {
-                position: toast.POSITION.TOP_CENTER
-            });
-            return
+            console.log('something bad happened!')
         }
     }
 
     const mintPolicy = async () => {
         setIsMinting(true);
-        const mainUri = await uriUploadWork();
-        console.log('Main URI is : ', mainUri);
+        await uploadMetaData();
         setIsMinting(false);
     }
+
+
+
+
+    // console.log('main uri is : ', bothURI);
+    
 
     const prepareNftData = () => {
         setNftMetadata({
