@@ -4,6 +4,7 @@ import { ethers } from "ethers"
 import web3modal from "web3modal"
 import { poolAbi, mockUsdcContractAddress, mockUsdcAbi, policyAbi, policyContractAddress } from "../../config";
 import { useAccount } from 'wagmi'
+import NFTCard from './NFTCard';
 
 
 function PolicyNFTs() {
@@ -14,7 +15,7 @@ function PolicyNFTs() {
 
     useEffect(() => {
         fetchPolicies();
-    },[address])
+    }, [address])
 
     const fetchPolicies = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
@@ -55,25 +56,13 @@ function PolicyNFTs() {
             </div>
             <div className='nft-container'>
                 <div className='nft-box'>
-                    NFT_BOX
+                    <NFTCard />
                 </div>
                 <div className='nft-box'>
-                    NFT_BOX
+                    <NFTCard />
                 </div>
                 <div className='nft-box'>
-                    NFT_BOX
-                </div>
-                <div className='nft-box'>
-                    NFT_BOX
-                </div>
-                <div className='nft-box'>
-                    NFT_BOX
-                </div>
-                <div className='nft-box'>
-                    NFT_BOX
-                </div>
-                <div className='nft-box'>
-                    NFT_BOX
+                    <NFTCard />
                 </div>
             </div>
         </Container>
@@ -125,18 +114,23 @@ const Container = styled.div`
         flex: 1;
         width: 95%;
         margin-top: 1.8rem;
-
+        padding-left: 0.5rem;
         display: grid;
-        grid-template-columns: 16rem 16rem 16rem 16rem 16rem;
-        column-gap: 2.5rem;
+        grid-template-columns: 15.7rem 15.7rem 15.7rem 15.7rem 15.7rem;
+        column-gap: 2.8rem;
         row-gap: 1.3rem;
         .nft-box {
-            height: 20rem;
+            height: 19.5rem;
             width: 100%;
-            background-color: lightpink;
             display: flex;
             justify-content: center;
             align-items: center;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid  #0152b5b6;
+            /* border: 1px solid #141414f1; */
+            box-sizing: border-box;
+            /* box-shadow: 1px 1px 6px #0152b560; */
         }
     }   
 `
