@@ -1,4 +1,4 @@
-export const pinsuranceContractAddress = "0xCBf60376A5547207A3B7408f41c99313fd0f3b7c";
+export const pinsuranceContractAddress = "0x4C26ADff0DDB9f0295c0903c4D957fa0175468C7";
 
 export const mockUsdcContractAddress = "0xF8E9F063228eb47137101eb863BF3976466AA31F";
 
@@ -476,7 +476,13 @@ export const poolAbi = {
             "type": "function"
         },
         {
-            "inputs": [],
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "amount",
+                    "type": "uint256"
+                }
+            ],
             "name": "claimFund",
             "outputs": [],
             "stateMutability": "nonpayable",
@@ -516,19 +522,6 @@ export const poolAbi = {
             "name": "declineClaim",
             "outputs": [],
             "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "inputs": [],
-            "name": "getBalance",
-            "outputs": [
-                {
-                    "internalType": "uint256",
-                    "name": "",
-                    "type": "uint256"
-                }
-            ],
-            "stateMutability": "view",
             "type": "function"
         },
         {

@@ -2,7 +2,6 @@
 
 pragma solidity 0.8.13;
 
-import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol";
 import "./Pool.sol";
 
 contract Pinsurance {

@@ -8,6 +8,7 @@ import Notification from './insurance/Notification';
 import { useAccount } from 'wagmi'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import PolicyNFTs from './insurance/PolicyNFTs';
 
 function Insurance() {
 
@@ -17,6 +18,7 @@ function Insurance() {
   const [claimMenu, setClaimMenu] = useState(false);
   const [notificationMenu, setNotificationMenu] = useState(false);
   const [meetingMenu, setMeetingMenu] = useState(false);
+  const [nftMenu, setNftMenu] = useState(false);
 
   const { isConnected } = useAccount();
 
@@ -28,6 +30,7 @@ function Insurance() {
       setClaimMenu(false);
       setNotificationMenu(false);
       setMeetingMenu(false);
+      setNftMenu(false);
     } else {
       setUserMenu(true);
     }
@@ -41,6 +44,7 @@ function Insurance() {
       setClaimMenu(false);
       setNotificationMenu(false);
       setMeetingMenu(false);
+      setNftMenu(false);
     }
 
   }
@@ -53,6 +57,7 @@ function Insurance() {
       setClaimMenu(false);
       setNotificationMenu(false);
       setMeetingMenu(false);
+      setNftMenu(false);
     }
 
   }
@@ -65,6 +70,7 @@ function Insurance() {
       setClaimMenu(false);
       setNotificationMenu(false);
       setMeetingMenu(false);
+      setNftMenu(false);
     }
 
   }
@@ -77,6 +83,7 @@ function Insurance() {
       setClaimMenu(true);
       setNotificationMenu(false);
       setMeetingMenu(false);
+      setNftMenu(false);
     }
 
   }
@@ -89,6 +96,7 @@ function Insurance() {
       setClaimMenu(false);
       setNotificationMenu(true);
       setMeetingMenu(false);
+      setNftMenu(false);
     }
 
   }
@@ -101,8 +109,21 @@ function Insurance() {
       setClaimMenu(false);
       setNotificationMenu(false);
       setMeetingMenu(true);
+      setNftMenu(false);
     }
 
+  }
+
+  const nftButton = () => {
+    if (isConnected) {
+      setUserMenu(false);
+      setJoinMenu(false);
+      setPoolMenu(false);
+      setClaimMenu(false);
+      setNotificationMenu(false);
+      setMeetingMenu(false);
+      setNftMenu(true);
+    }
   }
 
   const connectWalletHandle = () => {
@@ -125,6 +146,17 @@ function Insurance() {
               </div>
               <div className='bar' style={{
                 backgroundColor: userMenu ? "#ffffffae" : ""
+              }}></div>
+            </div>
+            <div className='nft-menu'>
+              <div className='image'>
+                <img src="/images/policy-nft-1.png" onClick={nftButton} />
+                <div className='nft'>
+                  Policy NFT
+                </div>
+              </div>
+              <div className='bar' style={{
+                backgroundColor: nftMenu ? "#ffffffae" : ""
               }}></div>
             </div>
             <div className='join-menu'>
@@ -164,7 +196,7 @@ function Insurance() {
               <div className='image'>
                 <img src="/images/notification.png" onClick={notifications} />
                 <div className='notification'>
-                   Notifications
+                  Notifications
                 </div>
               </div>
               <div className='bar' style={{
@@ -175,7 +207,7 @@ function Insurance() {
               <div className='image'>
                 <img src="/images/video.png" onClick={scheduleMeeting} />
                 <div className='meeting'>
-                   Join or Create Meeting
+                  Join or Create Meeting
                 </div>
               </div>
               <div className='bar' style={{
@@ -189,6 +221,9 @@ function Insurance() {
             <>
               {userMenu &&
                 <User />
+              }
+              { nftMenu &&
+                <PolicyNFTs />
               }
               {poolMenu &&
                 <Pool />
@@ -275,7 +310,8 @@ const Heading = styled.div`
     .join-menu,
     .notification-menu,
     .meeting-menu,
-    .claim-menu {
+    .claim-menu,
+    .nft-menu {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -598,6 +634,63 @@ const Heading = styled.div`
         } 
 
         &:hover .meeting {
+          opacity: 1;
+        }
+
+        &:hover {
+          opacity: 0.8;
+        }
+
+        img {
+          width: 100%;
+          opacity: 0.9;
+        }
+
+       
+      }
+
+      .bar {
+        margin-top: 4px;
+        height: 0.2rem;
+        width: 13%;
+        border-radius: 10px;
+      }
+    }
+
+    .nft-menu {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 2px;
+
+      .image {
+        flex:1;
+        width: 14%;
+        display: flex;
+        align-items: end;
+        justify-content: center;
+        cursor: pointer;
+        transition: opacity 0.25s;
+
+        .nft {
+          position: absolute;
+          height: 1.5rem;
+          width: 6.2rem;
+          top: 2rem;
+          background-color: #000000;
+          font-size: 14px;
+          color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 5px;
+          opacity: 0;
+          z-index: 1000;
+          transition: opacity 0.2s;
+        } 
+
+        &:hover .nft {
           opacity: 1;
         }
 

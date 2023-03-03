@@ -3,17 +3,22 @@
 pragma solidity 0.8.13; 
 
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Pinsurance.sol";
 
 contract Pool {
     
     string POOL_NAME;
-    address PINSURANCE_ADRESS;
+    address PINSURANCE_ADDRESS;
+    address FAKE_USDC_ADDRESS;
 
     constructor(string memory poolName, address pinsuranceAddress) {
         POOL_NAME = poolName;
-        PINSURANCE_ADRESS = pinsuranceAddress;
+        PINSURANCE_ADDRESS = pinsuranceAddress;
+        FAKE_USDC_ADDRESS = 0xF8E9F063228eb47137101eb863BF3976466AA31F;
     }
+
+    IERC20 usdc = IERC20(FAKE_USDC_ADDRESS); //usdt contract
 
     using Counters for Counters.Counter;
     Counters.Counter public claimCount;
@@ -30,7 +35,7 @@ contract Pool {
     struct poolDetail {
         uint256 from; // unix timestamp
         uint256 to;   // unix timestamp
-        bool isActive; // when all user have joined --> memberCount = 2 -> for demo purpose
+        bool isActive; // when all user have joined --> memberCount = 3 -> for demo purpose
         string name;
     }
 
@@ -48,10 +53,6 @@ contract Pool {
     mapping(address => userPoolAccount) userPoolAccountStatus;
 
     mapping(address => userClaim ) userClaimDetails;
-
-    function getBalance() public view returns(uint256) {
-        return address(this).balance;
-    }
 
 
     function getStakeStatus(address userAddress) public view returns(bool){
@@ -95,7 +96,7 @@ contract Pool {
             userClaimDetails[_userAddress].claimAmount = amount;
     
             // now call the pinsurance contract to create a new claim request.
-            Pinsurance  pinsuranceContract = Pinsurance(PINSURANCE_ADRESS);
+            Pinsurance  pinsuranceContract = Pinsurance(PINSURANCE_ADDRESS);
             pinsuranceContract.createClaim(_userAddress, address(this), docUri, POOL_NAME, amount);
 
         }
@@ -131,10 +132,16 @@ contract Pool {
     }
 
     // this one gonna be challenging!
-    function claimFund() public {
+    function claimFund(uint256 amount) public {
+        require((block.timestamp > poolData.from)&&(block.timestamp < poolData.to),'Claim request not in pool period!');
         require(userClaimDetails[msg.sender].isApproved,'Claim not approved yet!');
         require(!userClaimDetails[msg.sender].claimed,'Already claimed!');
-        payable(msg.sender).transfer(userClaimDetails[msg.sender].claimAmount);
+
+        // transfer MockUSDC from contract address to msg.sender.
+        // payable(msg.sender).transfer(userClaimDetails[msg.sender].claimAmount);
+        uint poolBalance = usdc.balanceOf(address(this));
+        require(poolBalance>amount,'Insufficient balance');
+        usdc.transfer(msg.sender, amount);
         userClaimDetails[msg.sender].claimed = true;
     }
 
@@ -145,5 +152,4 @@ contract Pool {
     receive() external payable {}
 
     fallback() external payable {}
-
 }

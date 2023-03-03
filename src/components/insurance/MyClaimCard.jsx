@@ -1,20 +1,67 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { ethers } from 'ethers';
+import web3modal from "web3modal"
 import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, poolAbi, mockUsdcAbi } from "../../config";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function MyClaimCard(props) {
+    console.log(props);
 
     const [claimStatus, setClaimStatus] = useState(false);
 
+    useEffect(() => {
+        getClaimStatus();
+    }, [])
+
     const claimHandler = async () => {
+        // setIsRequesting(true);
+        const modal = new web3modal({
+            cacheProvider: true,
+        });
+
+        const connection = await modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const poolContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            signer
+        )
+        try {
+            const amount = ethers.utils.parseEther(props.amount); 
+            const tx = await poolContract.claimFund(
+                amount, {
+                // gasLimit: 9993000,
+                gasLimit: 9031340,
+                }
+            )
+
+            await tx.wait()
+                .then(() => {
+                    // setIsRequesting(false);
+                    console.log('done')
+                    toast.success("Claimed", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                }).catch((error) => {
+                    // setIsRequesting(false);
+                    toast.error("Failed to request claim.", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                    console.error(error);
+                })
+        } catch (e) {
+            console.log(e);
+            // setIsRequesting(false);
+            toast.error("Transaction failed!", {
+                position: toast.POSITION.TOP_CENTER
+            });
+        }
 
     }
 
-    useEffect(() => {
-        getClaimStatus();
-    },[])
 
     const getClaimStatus = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');

@@ -305,7 +305,7 @@ function PoolCard(props) {
                         </div>
                         <div className='text'>
                             <p className='count-text'>
-                                {props.memberCount}/2
+                                {props.memberCount}/3
                             </p>
                         </div>
                     </div>
