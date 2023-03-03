@@ -1,8 +1,49 @@
-import React from 'react'
+import { React, useState, useEffect } from 'react'
 import styled from 'styled-components'
+import { ethers } from "ethers"
+import web3modal from "web3modal"
+import { poolAbi, mockUsdcContractAddress, mockUsdcAbi, policyAbi, policyContractAddress } from "../../config";
+import { useAccount } from 'wagmi'
 
 
 function PolicyNFTs() {
+
+    const [policies, setPolicies] = useState([]);
+
+    const { address } = useAccount();
+
+    useEffect(() => {
+        fetchPolicies();
+    },[address])
+
+    const fetchPolicies = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
+        const policyContract = new ethers.Contract(
+            policyContractAddress,
+            policyAbi.abi,
+            provider
+        )
+        try {
+            const data = await policyContract.fetchMyPolicies(address);
+            const items = await Promise.all(
+                data.map(async (i) => {
+                    const tokenUri = await policyContract.tokenURI(i.tokenID.toString());
+                    let item = {
+                        tokenId: i.tokenID.toNumber(),
+                        uri: tokenUri,
+                    };
+                    return item;
+                })
+            );
+            console.log('policies : ', items);
+            setPolicies(items);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    console.log('Policies are : ', policies);
+
     return (
         <Container>
             <div className='label'>

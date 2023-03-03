@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import copy from 'copy-to-clipboard';
-import { poolAbi, mockUsdcContractAddress, mockUsdcAbi } from "../../config";
+import { poolAbi, mockUsdcContractAddress, mockUsdcAbi, policyAbi, policyContractAddress } from "../../config";
 import { ToastContainer, toast } from 'react-toastify';
 import { useAccount } from 'wagmi'
 import { ethers } from "ethers"
+import web3modal from "web3modal"
 import axios from "axios";
 import ClipLoader from "react-spinners/ClipLoader";
-import web3modal from "web3modal"
 import fromExponential from 'from-exponential';
 import { Web3Storage } from 'web3.storage';
-import QRCode from 'qrcode'
+import QRCode from 'qrcode';
 
 
 function PoolCard(props) {
@@ -29,9 +29,6 @@ function PoolCard(props) {
         vehicle: "",
         cubicCapacity: "",
     })
-    // const [ policyMetadata, setPolicyMetadata ] = useState();
-    // const [qrCodeURI, setQrCodeURI] = useState();
-    const [bothURI, setBothURI] = useState();
     const [isMinting, setIsMinting] = useState(false);
     const [nftMetaData, setNftMetadata] = useState({
         user: {
@@ -295,7 +292,7 @@ function PoolCard(props) {
 
     const uploadBothUri = async (metaUri, qrUri) => {
         console.log('policyMetadata : ', metaUri);
-        console.log('qrCodeURI : ',qrUri);
+        console.log('qrCodeURI : ', qrUri);
 
         const data = JSON.stringify({ metaUri, qrUri });
         const files = [
@@ -305,11 +302,50 @@ function PoolCard(props) {
         const cid = await uploadToIPFS(files)
         const finalUri = `https://${cid}.ipfs.w3s.link/uri.json`;
 
-        console.log('final uri : ', finalUri );
+        console.log('final uri : ', finalUri);
         // console.log('main cid is : ', cid);
 
-        if(cid.length) {
+        if (cid.length) {
             console.log("all good!");
+
+            const modal = new web3modal({
+                cacheProvider: true,
+            });
+
+            const connection = await modal.connect();
+            const provider = new ethers.providers.Web3Provider(connection);
+            const signer = provider.getSigner();
+
+            console.log(signer);
+
+            const policyContract = new ethers.Contract(
+                policyContractAddress,
+                policyAbi.abi,
+                signer
+            )
+
+            try {
+                const tx = await policyContract.createPolicyToken(
+                    finalUri,
+                )
+
+                await tx.wait()
+                .then(()=>{
+                    console.log("minted!")
+                    toast.success("Policy Minted!", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                }).catch((error) => {
+                    toast.error("Failed to mint policy!", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                    console.error(error);
+                })
+
+            } catch (error) {
+                console.log(error);
+            }
+
         } else {
             console.log('something bad happened!')
         }
@@ -325,7 +361,7 @@ function PoolCard(props) {
 
 
     // console.log('main uri is : ', bothURI);
-    
+
 
     const prepareNftData = () => {
         setNftMetadata({
