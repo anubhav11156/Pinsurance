@@ -22,6 +22,8 @@ function PoolCard(props) {
     const [poolBalance, setPoolBalance] = useState();
     const [poolName, setPoolName] = useState("");
     const [from, setFrom] = useState();
+    const [txHash, setTxHash] = useState();
+    const[haveStaked, setHaveStaked] = useState(false);
     const [to, setTo] = useState();
     const [poolDetail, setPoolDetail] = useState({
         premium: "",
@@ -65,12 +67,14 @@ function PoolCard(props) {
     useEffect(() => {
         getMetaData()
         getPoolBalance()
+        getTransactionHash()
+        fetchStakeStatus()
         getDetail()
     }, [props.poolAddress])
 
     useEffect(() => {
         prepareNftData();
-    }, [from, poolDetail, props.name])
+    }, [from, poolDetail, props.name, txHash])
 
     /*------------------------get user insurance metadata--------------------------*/
     const getMetaData = async () => {
@@ -100,6 +104,50 @@ function PoolCard(props) {
         })
     }
     /*----------------------------------------------------------------------------------*/
+
+    /*---------------------------get transaction hash-----------------------------------*/
+
+    const getTransactionHash = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
+        const poolContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            provider
+        )
+        try {
+            await poolContract.getUserStakeTxHash(address)
+                .then((response) => {
+                    console.log('tx hash is : ',response)
+                    setTxHash(response);
+                })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    /*----------------------------------------------------------------------------------*/
+
+    /*---------------------------------Fetch stake status-------------------------------*/
+
+    const fetchStakeStatus = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
+        const poolContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            provider
+        )
+        try {
+            await poolContract.getStakeStatus(address)
+                .then((response) => {
+                    console.log('stake status : ',response)
+                    setHaveStaked(response)
+                })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    /*------------------------------------------------------------------------------------*/
 
 
     /*---------------------get pool balance----------------------*/
@@ -328,7 +376,9 @@ function PoolCard(props) {
             try {
                 const tx = await policyContract.createPolicyToken(
                     finalUri,
-                    props.poolAddress,
+                    props.poolAddress, {
+                        gasLimit: 900000,
+                    }
                 )
 
                 await tx.wait()
@@ -365,9 +415,22 @@ function PoolCard(props) {
     }
 
     const mintPolicy = async () => {
-        setIsMinting(true);
-        await uploadMetaData();
-        setIsMinting(false);
+        if((haveStaked)&&(props.memberCount==2)){
+            setIsMinting(true);
+            await uploadMetaData();
+            setIsMinting(false);
+        } else {
+            if(!haveStaked) {
+                toast.error("Stake premium first!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+            } else {
+                toast.error("Pool not active yet!", {
+                    position: toast.POSITION.TOP_CENTER
+                });
+            }
+        }
+       
     }
 
     const prepareNftData = () => {
@@ -389,7 +452,7 @@ function PoolCard(props) {
                 cubicCapacity: poolDetail.cubicCapacity,
                 premium: {
                     amount: poolDetail.premium,
-                    txHash: "0xF8E9F063228eb47137101eb863BF3976466AA31F"
+                    txHash: txHash
                 },
                 period: {
                     from: from,
@@ -398,6 +461,11 @@ function PoolCard(props) {
             }
         })
     }
+
+    console.log('test : ', nftMetaData);
+
+    console.log('member count : ', props.memberCount);
+    console.log('member count : ', typeof(props.memberCount));
 
     return (
         <Container>
