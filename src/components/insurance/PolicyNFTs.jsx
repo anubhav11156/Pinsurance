@@ -1,15 +1,16 @@
 import { React, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { ethers } from "ethers"
-import web3modal from "web3modal"
-import { poolAbi, mockUsdcContractAddress, mockUsdcAbi, policyAbi, policyContractAddress } from "../../config";
+import { policyAbi, policyContractAddress } from "../../config";
 import { useAccount } from 'wagmi'
 import NFTCard from './NFTCard';
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function PolicyNFTs() {
 
     const [policies, setPolicies] = useState([]);
+    const [isfetching, setIsFetching] = useState(false);
 
     const { address } = useAccount();
 
@@ -18,6 +19,7 @@ function PolicyNFTs() {
     }, [address])
 
     const fetchPolicies = async () => {
+        setIsFetching(true);
         const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
         const policyContract = new ethers.Contract(
             policyContractAddress,
@@ -36,15 +38,25 @@ function PolicyNFTs() {
                     return item;
                 })
             );
-            console.log('policies : ', items);
+            setIsFetching(false);
             setPolicies(items);
         } catch (error) {
             console.log(error);
+            setIsFetching(false)
+            toast.error("Failed to fetch NFTs!", {
+                position: toast.POSITION.TOP_CENTER
+            });
         }
     }
 
-    console.log('Policies are : ', policies);
-
+    const policyCards = policies.map(card => {
+        return (
+            <NFTCard
+                tokenId={card.tokenId}
+                uri={card.uri}
+            />
+        )
+    })
     return (
         <Container>
             <div className='label'>
@@ -54,17 +66,16 @@ function PolicyNFTs() {
                 </div>
                 <div className='line-2'></div>
             </div>
-            <div className='nft-container'>
-                <div className='nft-box'>
-                    <NFTCard />
+            {isfetching &&
+                <div className='placeholder'>
+                    <p>Fetching policy NFTs......</p>
                 </div>
-                <div className='nft-box'>
-                    <NFTCard />
+            }
+            {!isfetching &&
+                <div className='nft-container'>
+                    {policyCards}
                 </div>
-                <div className='nft-box'>
-                    <NFTCard />
-                </div>
-            </div>
+            }
         </Container>
     )
 }
@@ -119,18 +130,21 @@ const Container = styled.div`
         grid-template-columns: 15.7rem 15.7rem 15.7rem 15.7rem 15.7rem;
         column-gap: 2.8rem;
         row-gap: 1.3rem;
-        .nft-box {
-            height: 19.5rem;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 5px;
-            overflow: hidden;
-            border: 1px solid  #0152b5b6;
-            /* border: 1px solid #141414f1; */
-            box-sizing: border-box;
-            /* box-shadow: 1px 1px 6px #0152b560; */
+    } 
+    
+    .placeholder {
+        flex: 1;
+        width: 95%;
+        margin-top: 1.8rem;
+        padding-left: 0.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: start;
+
+        p {
+            margin: 0;
+            margin-top: 4rem;
+            font-size: 20px;
         }
-    }   
+    }
 `
