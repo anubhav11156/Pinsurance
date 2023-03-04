@@ -2,7 +2,7 @@ export const pinsuranceContractAddress = "0x4C26ADff0DDB9f0295c0903c4D957fa01754
 
 export const mockUsdcContractAddress = "0xF8E9F063228eb47137101eb863BF3976466AA31F";
 
-export const policyContractAddress = "0xAd785B227545A39e1C971bfb178673Eb97D7CA2E";
+export const policyContractAddress = "0xB8fa5247544ed3DBd24627A0D6Fb2d53a785134a";
 
 export const pinsuranceAbi = {
     "_format": "hh-sol-artifact-1",
@@ -848,6 +848,11 @@ export const policyAbi = {
                     "internalType": "string",
                     "name": "policyDataURI",
                     "type": "string"
+                },
+                {
+                    "internalType": "address",
+                    "name": "poolAddress",
+                    "type": "address"
                 }
             ],
             "name": "createPolicyToken",

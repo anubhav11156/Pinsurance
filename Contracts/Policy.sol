@@ -22,19 +22,24 @@ contract Policy is ERC721URIStorage {
 
     mapping(uint256 => policyNFT) idToPolicy;
 
+    mapping(address => mapping(address =>  bool)) haveUserMintedNft;
+
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
 
     /*--------------------------------------Mint Policy NFT-------------------------------------*/
 
-    function createPolicyToken(string memory policyDataURI) public returns(uint256) {
-
+    function createPolicyToken(string memory policyDataURI, address poolAddress) public returns(uint256) {
+        // (one mint per pool)
+        require(!haveUserMintedNft[poolAddress][msg.sender],'Already Minted');
         _tokenIds.increment();
         uint256 newItemId = _tokenIds.current();
 
         _mint(_msgSender() , newItemId);
         _setTokenURI(newItemId, policyDataURI);
+
+        haveUserMintedNft[poolAddress][msg.sender] = true;
 
         createPolicyNFT(newItemId);
 

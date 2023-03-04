@@ -55,10 +55,6 @@ function NFTCard(props) {
         }
     }
 
-    console.log('premium : ', premium)
-    console.log('vehicle : ', vehicle)
-    console.log('cc ', cubicCapacity);
-
     return (
         <NftBox>
             <Container>

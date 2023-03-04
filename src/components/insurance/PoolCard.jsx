@@ -260,7 +260,7 @@ function PoolCard(props) {
     }
 
     const uploadQrData = async (_uri) => {
-        console.log('meta uri is : ', _uri);
+
         const qrImageData = await toQrCode(_uri);
 
         const data = JSON.stringify({ qrImageData });
@@ -270,7 +270,7 @@ function PoolCard(props) {
 
         const cid = await uploadToIPFS(files);
         const qrImageUri = `https://${cid}.ipfs.w3s.link/qrImage.json`;
-        // setQrCodeURI(qrImageUri);
+
         if (cid.length) {
             await uploadBothUri(_uri, qrImageUri);
         } else {
@@ -291,22 +291,20 @@ function PoolCard(props) {
 
 
     const uploadBothUri = async (metaUri, qrUri) => {
-        console.log('policyMetadata : ', metaUri);
-        console.log('qrCodeURI : ', qrUri);
 
-        const data = JSON.stringify({ metaUri, qrUri });
+        const uriData = JSON.stringify({ metaUri, qrUri });
         const files = [
-            new File([data], 'uri.json')
+            new File([uriData], 'uri.json')
         ]
 
         const cid = await uploadToIPFS(files)
         const finalUri = `https://${cid}.ipfs.w3s.link/uri.json`;
 
-        console.log('final uri : ', finalUri);
-        // console.log('main cid is : ', cid);
-
         if (cid.length) {
-            console.log("all good!");
+
+            toast.success("Metadata uploaded to IPFS.", {
+                position: toast.POSITION.TOP_CENTER
+            });
 
             const modal = new web3modal({
                 cacheProvider: true,
@@ -327,27 +325,39 @@ function PoolCard(props) {
             try {
                 const tx = await policyContract.createPolicyToken(
                     finalUri,
+                    props.poolAddress,
                 )
 
                 await tx.wait()
-                .then(()=>{
-                    console.log("minted!")
-                    toast.success("Policy Minted!", {
-                        position: toast.POSITION.TOP_CENTER
-                    });
-                }).catch((error) => {
-                    toast.error("Failed to mint policy!", {
-                        position: toast.POSITION.TOP_CENTER
-                    });
-                    console.error(error);
-                })
+                    .then(() => {
+                        console.log("minted!")
+                        toast.success("Policy Minted!", {
+                            position: toast.POSITION.TOP_CENTER
+                        });
+                    }).catch((error) => {
+                        toast.error("Failed to mint policy!", {
+                            position: toast.POSITION.TOP_CENTER
+                        });
+                        console.error(error);
+                    })
 
             } catch (error) {
-                console.log(error);
+                if (error.code === 'UNPREDICTABLE_GAS_LIMIT') {
+                    setIsMinting(false);
+                    toast.error("Recert: Already Minted!", {
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                } else {
+                    console.log('should not be printed')
+                    setIsMinting(false);
+                }
+                setIsMinting(false);
             }
 
         } else {
-            console.log('something bad happened!')
+            toast.error("Metadata upload might have failed.", {
+                position: toast.POSITION.TOP_CENTER
+            });
         }
     }
 
@@ -356,12 +366,6 @@ function PoolCard(props) {
         await uploadMetaData();
         setIsMinting(false);
     }
-
-
-
-
-    // console.log('main uri is : ', bothURI);
-
 
     const prepareNftData = () => {
         setNftMetadata({
