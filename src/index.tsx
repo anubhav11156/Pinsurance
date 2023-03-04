@@ -12,12 +12,12 @@ import { CoinbaseWalletConnector } from 'wagmi/connectors/coinbaseWallet'
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
 import { ConnectKitProvider } from 'connectkit';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
-import { fantomTestnet} from 'wagmi/chains'
+import { fantomTestnet, goerli, mainnet} from 'wagmi/chains'
 
 
 
 const { chains, provider} = configureChains(
-  [fantomTestnet],
+  [fantomTestnet, goerli, mainnet],
   [
     jsonRpcProvider({
       rpc: (chain) => ({

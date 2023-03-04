@@ -1612,6 +1612,11 @@
     "@ethersproject/properties" "^5.7.0"
     "@ethersproject/strings" "^5.7.0"
 
+"@huddle01/huddle01-iframe@^0.0.9":
+  "integrity" "sha512-Zx4o/ySo58WejAMW2BB9jxTHhqST1cx0i4sr/DSC4odhpn9xRLpTeUPkb1ZSx97l4qNbOCoLZmJoAnjUGQy41w=="
+  "resolved" "https://registry.npmjs.org/@huddle01/huddle01-iframe/-/huddle01-iframe-0.0.9.tgz"
+  "version" "0.0.9"
+
 "@humanwhocodes/config-array@^0.11.8":
   "integrity" "sha512-UybHIJzJnR5Qc/MsD9Kr+RpO2h+/P1GhOwdiLPXK5TWk5sgTdu88bTD9UP+CKbPPh5Rni1u0GjAdYQLemG8g+g=="
   "resolved" "https://registry.npmjs.org/@humanwhocodes/config-array/-/config-array-0.11.8.tgz"

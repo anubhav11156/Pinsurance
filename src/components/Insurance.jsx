@@ -9,6 +9,7 @@ import { useAccount } from 'wagmi'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PolicyNFTs from './insurance/PolicyNFTs';
+import Meeting from './insurance/Meeting';
 
 function Insurance() {
 
@@ -236,6 +237,9 @@ function Insurance() {
               }
               {notificationMenu &&
                 <Notification />
+              }
+              {meetingMenu &&
+                <Meeting />
               }
             </>
           }
