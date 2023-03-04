@@ -170,9 +170,9 @@ contract Pinsurance {
         require(userAddressTouserAccount[userAddress].userAccountStatus==true,'Create account first.');
         require(poolAddressToStatus[poolAddress] == true,'No pool found  with given poolAddress');
 
-        uint256 empty = (3 - poolAddressToPoolDetail[poolAddress].members.length);
+        uint256 empty = (2 - poolAddressToPoolDetail[poolAddress].members.length);
 
-        require((empty >= 1),'Not enough slot in the pool.');
+        require((empty > 0),'Not enough slot in the pool.');
 
         userToPoolMembership[userAddress][poolAddressToPoolDetail[poolAddress].poolContractAddress]=true; // for membership
         poolAddressToPoolDetail[poolAddress].currentMemberCount++;

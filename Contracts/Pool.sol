@@ -73,6 +73,7 @@ contract Pool {
     }
 
     function stake(address userAddress, string memory amount, string memory txHash) public {
+        require(!userPoolAccountStatus[userAddress].haveStaked,'Already Staked!');
         userPoolAccountStatus[userAddress].haveStaked = true;
         userPoolAccountStatus[userAddress].amountStaked = amount;
         userPoolAccountStatus[userAddress].txHash = txHash;

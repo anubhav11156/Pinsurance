@@ -181,15 +181,17 @@ function PoolCard(props) {
         )
 
         await transaction.wait()
-            .then(() => {
-                stakeAmount()
+            .then((response) => {
+                console.log(response);
+                console.log(response.transactionHash);
+                stakeAmount(response.transactionHash);
             })
             .catch((error) => {
                 console.log(error);
             })
     }
 
-    const stakeAmount = async () => {
+    const stakeAmount = async (txhash) => {
         const modal = new web3modal({
             cacheProvider: true,
         });
@@ -206,6 +208,7 @@ function PoolCard(props) {
         const create = await poolContract.stake(
             address,
             poolDetail.premium,
+            txhash
         )
 
         await create.wait()

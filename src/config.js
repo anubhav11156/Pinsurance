@@ -1,8 +1,8 @@
-export const pinsuranceContractAddress = "0x4C26ADff0DDB9f0295c0903c4D957fa0175468C7";
+export const pinsuranceContractAddress = "0x66ba8fd15b380a908c85a2a0513de9ea080c70da";
 
 export const mockUsdcContractAddress = "0xF8E9F063228eb47137101eb863BF3976466AA31F";
 
-export const policyContractAddress = "0xB8fa5247544ed3DBd24627A0D6Fb2d53a785134a";
+export const policyContractAddress = "0xbe1816d893c54a62558065ea9e73d779730128c1";
 
 export const pinsuranceAbi = {
     "_format": "hh-sol-artifact-1",
