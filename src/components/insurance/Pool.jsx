@@ -95,7 +95,6 @@ function Pool() {
     try {
       await poolContract.getPoolDetail()
         .then((response) => {
-          console.log(response)
           setIsPoolActive(response.isActive);
           setPoolName(response.name);
           setIsSearching(false);

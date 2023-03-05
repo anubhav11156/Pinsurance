@@ -230,8 +230,6 @@ function PoolCard(props) {
 
         await transaction.wait()
             .then((response) => {
-                console.log(response);
-                console.log(response.transactionHash);
                 stakeAmount(response.transactionHash);
             })
             .catch((error) => {
@@ -461,11 +459,6 @@ function PoolCard(props) {
             }
         })
     }
-
-    console.log('test : ', nftMetaData);
-
-    console.log('member count : ', props.memberCount);
-    console.log('member count : ', typeof(props.memberCount));
 
     return (
         <Container>

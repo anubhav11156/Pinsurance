@@ -16,6 +16,7 @@ function RequestCard(props) {
         profileURI: ""
     });
     const [isApproving, setIsApproving] = useState(false);
+    const [claimStatus, setClaimStatus] = useState(false);
 
 
     const approve = async () => {
@@ -106,9 +107,28 @@ function RequestCard(props) {
         }
     }
 
+    /*--------------------get claim status of requests---------------------------*/
+    const getClaimStatus = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
+        const pinsuranceContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            provider
+        )
+        try {
+            const status = await pinsuranceContract.getClaimStatus(props.userAddress);
+            setClaimStatus(status);
+        } catch (error) {
+            console.log(error);
+            setIsFetching(false);
+        }
+    }
+    /*--------------------------------------------------------------------------------*/
+
     useEffect(() => {
         fetchUserMetaData()
-    }, [props.userAddress]);
+        getClaimStatus();
+    }, [props.userAddress, props.userAddress]);
 
     const fetchUserMetaData = async () => {
         const uriResponse = await axios.get(props.userMetaURI);
@@ -162,20 +182,31 @@ function RequestCard(props) {
                                 <img src="images/link.png" />
                             </div>
                         </a>
-                        <div className='buttons-div'>
-                            <div className='approve-div' onClick={approve}>
-                                {!isApproving &&
-                                    <p>Approve</p>
-                                }
-                                {isApproving &&
-                                    <ClipLoader color="#ffffff" size={13} />
-                                }
+                        {claimStatus &&
+                            <div className='status-div'>
+                                <p>Request approved by majority</p>
                             </div>
-                            <div className='decline-div'>
-                                <p>Decline</p>
+                        }
+                        {!claimStatus &&
+                            <div className='buttons-div'>
+                                <div className='approve-div' onClick={approve}>
+                                    {!isApproving &&
+                                        <p>Approve</p>
+                                    }
+                                    {isApproving &&
+                                        <ClipLoader color="#ffffff" size={13} />
+                                    }
+                                </div>
+                                <div className='decline-div' onClick={decline}>
+                                    {!isApproving &&
+                                        <p>Decline</p>
+                                    }
+                                    {isApproving &&
+                                        <ClipLoader color="#ffffff" size={13} />
+                                    }
+                                </div>
                             </div>
-                        </div>
-
+                        }
                     </div>
                 </div>
             </div>
@@ -489,6 +520,25 @@ const Container = styled.div`
                         color: white;
                         font-size: 15px;
                     }
+                }
+            }
+
+            .status-div {
+                flex:1;
+                height: 100%;
+                border-radius: 3px;
+                display: flex;
+                justify-content:center;
+                align-items: center;
+                gap: 1rem;
+                overflow: hidden;
+                background-color: green;
+                /* border: 1px solid white; */
+
+                p {
+                    margin: 0;
+                    color: white;
+                    font-size: 15px;
                 }
             }
         }

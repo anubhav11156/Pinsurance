@@ -23,6 +23,7 @@ function Claim() {
   const [claimData, getClaimData] = useState([]);
   const [myClaims, setMyClaims] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   const { address } = useAccount();
 
@@ -46,6 +47,7 @@ function Claim() {
   }
 
   const uploadDoc = async () => {
+    setUploading(true);
     const fileInput = document.getElementById('docs');
     const pathname = fileInput.files[0].name;
 
@@ -55,12 +57,14 @@ function Claim() {
       toast.success("Uploaded to IPFS", {
         position: toast.POSITION.TOP_CENTER
       });
+      setUploading(false);
       const uri = `https://${cid}.ipfs.w3s.link/${pathname}`
       setDocumentURI(uri);
     } else {
       toast.error("IPFS upload failed!", {
         position: toast.POSITION.TOP_CENTER
       });
+      setUploading(false);
     }
   }
 
@@ -111,8 +115,6 @@ function Claim() {
         position: toast.POSITION.TOP_CENTER
       });
     }
-
-
   }
 
   /*-----------------------------------------------------------------------*/
@@ -206,7 +208,15 @@ function Claim() {
               }} />
             </div>
             <div className='upload-div'>
-              <input type="file" id="docs" onChange={uploadDoc} />
+              {uploading &&
+                <p>Uploading support document......</p>
+              }
+              <>
+                {!uploading &&
+                  < input type="file" id="docs" onChange={uploadDoc} />
+
+                }
+              </>
             </div>
           </div>
           <div className='button' onClick={requestHandler}>
@@ -349,6 +359,12 @@ const Container = styled.div`
               background-color: #e3dddd2d;
               border-radius: 2px;
               cursor: pointer;
+            }
+
+            p {
+              margin:0;
+              font-size: 12px;
+              color: white;
             }
           }
 
