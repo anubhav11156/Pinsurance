@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { ethers } from 'ethers';
 import web3modal from "web3modal"
-import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, poolAbi, mockUsdcAbi } from "../../config";
+import ClipLoader from "react-spinners/ClipLoader";
+import { poolAbi } from "../../config";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -10,13 +11,17 @@ function MyClaimCard(props) {
     console.log(props);
 
     const [claimStatus, setClaimStatus] = useState(false);
+    const [haveClaimed, setHaveClaimed] = useState(false);
+    const [isClaiming, setIsClaiming] = useState(false);
 
     useEffect(() => {
         getClaimStatus();
+        userFundClaimStatus();
     }, [])
 
     const claimHandler = async () => {
-        // setIsRequesting(true);
+        setIsClaiming(true);
+
         const modal = new web3modal({
             cacheProvider: true,
         });
@@ -30,52 +35,65 @@ function MyClaimCard(props) {
             signer
         )
         try {
-            const amount = ethers.utils.parseEther(props.amount); 
+            const amount = ethers.utils.parseEther(props.amount);
             const tx = await poolContract.claimFund(
                 amount, {
-                // gasLimit: 9993000,
                 gasLimit: 999999,
-                }
+            }
             )
 
             await tx.wait()
                 .then(() => {
-                    // setIsRequesting(false);
                     console.log('done')
                     toast.success("Claimed", {
                         position: toast.POSITION.TOP_CENTER
                     });
+                    setIsClaiming(false);
                 }).catch((error) => {
-                    // setIsRequesting(false);
                     toast.error("Failed to request claim.", {
                         position: toast.POSITION.TOP_CENTER
                     });
                     console.error(error);
+                    setIsClaiming(false);
                 })
         } catch (e) {
             console.log(e);
-            // setIsRequesting(false);
             toast.error("Transaction failed!", {
                 position: toast.POSITION.TOP_CENTER
             });
+            setIsClaiming(false);
         }
-
     }
 
 
     const getClaimStatus = async () => {
         const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
-        const pinsuranceContract = new ethers.Contract(
+        const poolContract = new ethers.Contract(
             props.poolAddress,
             poolAbi.abi,
             provider
         )
         try {
-            const status = await pinsuranceContract.getClaimStatus(props.userAddress);
+            const status = await poolContract.getClaimStatus(props.userAddress);
             setClaimStatus(status);
         } catch (error) {
             console.log(error);
-            setIsFetching(false);
+        }
+    }
+
+    const userFundClaimStatus = async () => {
+        const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
+        const poolContract = new ethers.Contract(
+            props.poolAddress,
+            poolAbi.abi,
+            provider
+        )
+        try {
+            const response = await poolContract.haveUserClaimed(props.userAddress);
+            console.log('claimed : ', response);
+            setHaveClaimed(response);
+        } catch (error) {
+            console.log(error);
         }
     }
 
@@ -110,9 +128,21 @@ function MyClaimCard(props) {
                 }
 
             </div>
-            <div className='claim-button' onClick={claimHandler}>
-                <p>Claim</p>
-            </div>
+            {haveClaimed &&
+                <div className='claimed'>
+                    <p>Funds claimed</p>
+                </div>
+            }
+            {!haveClaimed &&
+                <div className='claim-button' onClick={claimHandler}>
+                    {!isClaiming &&
+                        <p>Claim</p>
+                    }
+                    {isClaiming &&
+                        <ClipLoader color="#ffffff" size={13} />
+                    }
+                </div>
+            }
         </Container>
     )
 }
@@ -282,6 +312,22 @@ const Container = styled.div`
         &:active {
             opacity: 0.8;
         }
+
+        p {
+            margin: 0;
+            font-size: 14px;
+            color: white;
+        }
+    }
+
+    .claimed {
+        flex:1;
+        background-color: #ffa600;
+        width: 95%;
+        border-radius: 3px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
 
         p {
             margin: 0;

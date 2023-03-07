@@ -3,8 +3,9 @@
 pragma solidity 0.8.13; 
 
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Pinsurance.sol";
+import "./MockUSDC.sol";
 
 contract Pool {
     
@@ -143,9 +144,14 @@ contract Pool {
         // uint poolBalance = usdc.balanceOf(address(this));
         // require(poolBalance>amount,'Insufficient pool balance');
 
+        FakeUSDC  mockUsdcContract = FakeUSDC(FAKE_USDC_ADDRESS);
+        mockUsdcContract.approve(address(this), amount);
+        mockUsdcContract.transferFrom(address(this), user, amount);
+         
+
         // approve and then transfer
-        usdc.approve(address(this), amount);
-        usdc.transferFrom(address(this), user, amount);
+        // usdc.approve(address(this), amount);
+        // usdc.transferFrom(address(this), user, amount);
         userClaimDetails[msg.sender].claimed = true;
     }
 

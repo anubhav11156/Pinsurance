@@ -23,7 +23,7 @@ function PoolCard(props) {
     const [poolName, setPoolName] = useState("");
     const [from, setFrom] = useState();
     const [txHash, setTxHash] = useState();
-    const[haveStaked, setHaveStaked] = useState(false);
+    const [haveStaked, setHaveStaked] = useState(false);
     const [to, setTo] = useState();
     const [poolDetail, setPoolDetail] = useState({
         premium: "",
@@ -77,7 +77,7 @@ function PoolCard(props) {
 
     useEffect(() => {
         fetchStakeStatus()
-    },[haveStaked])
+    }, [haveStaked])
 
     /*------------------------get user insurance metadata--------------------------*/
     const getMetaData = async () => {
@@ -120,7 +120,7 @@ function PoolCard(props) {
         try {
             await poolContract.getUserStakeTxHash(address)
                 .then((response) => {
-                    console.log(`tx hash | pool : ${props.poolAddress} : `,response)
+                    console.log(`tx hash | pool : ${props.poolAddress} : `, response)
                     setTxHash(response);
                 })
         } catch (error) {
@@ -142,7 +142,7 @@ function PoolCard(props) {
         try {
             await poolContract.getStakeStatus(address)
                 .then((response) => {
-                    console.log('stake status : ',response)
+                    console.log('stake status : ', response)
                     setHaveStaked(response)
                 })
         } catch (error) {
@@ -376,8 +376,8 @@ function PoolCard(props) {
                 const tx = await policyContract.createPolicyToken(
                     finalUri,
                     props.poolAddress, {
-                        gasLimit: 900000,
-                    }
+                    gasLimit: 900000,
+                }
                 )
 
                 await tx.wait()
@@ -414,12 +414,12 @@ function PoolCard(props) {
     }
 
     const mintPolicy = async () => {
-        if((haveStaked)&&(props.memberCount==2)){
+        if ((haveStaked) && (props.memberCount == 2)) {
             setIsMinting(true);
             await uploadMetaData();
             setIsMinting(false);
         } else {
-            if(!haveStaked) {
+            if (!haveStaked) {
                 toast.error("Stake premium first!", {
                     position: toast.POSITION.TOP_CENTER
                 });
@@ -429,7 +429,7 @@ function PoolCard(props) {
                 });
             }
         }
-       
+
     }
 
     const prepareNftData = () => {
@@ -571,15 +571,21 @@ function PoolCard(props) {
                 </div>
             </div>
             <div className='stake-amount'>
-                <div className='inner' onClick={stakeHandler}>
-                    {!isStaking &&
-                        <p>Stake $ {poolDetail.premium}</p>
-                    }
-                    {isStaking &&
-                        <ClipLoader color="#ffffff" size={16} />
-                    }
-                </div>
-
+                {haveStaked &&
+                    <div className='staked'>
+                        <p>Premium Staked</p>
+                    </div>
+                }
+                {!haveStaked &&
+                    <div className='inner' onClick={stakeHandler}>
+                        {!isStaking &&
+                            <p>Stake $ {poolDetail.premium}</p>
+                        }
+                        {isStaking &&
+                            <ClipLoader color="#ffffff" size={16} />
+                        }
+                    </div>
+                }
             </div>
             <div className='status-div' onClick={mintPolicy}>
                 {!isMinting &&
@@ -1068,6 +1074,20 @@ const Container = styled.div`
         align-items: center;
         overflow: hidden;
 
+        .staked {
+            flex: 1;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            background-color: #0152b5c3;
+            display: flex;
+
+            p {
+                margin: 0;
+                font-size: 15px;
+                color: white;
+            }
+        }
 
         .inner {
             display: flex;
