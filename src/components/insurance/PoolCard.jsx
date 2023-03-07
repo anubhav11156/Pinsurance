@@ -68,13 +68,16 @@ function PoolCard(props) {
         getMetaData()
         getPoolBalance()
         getTransactionHash()
-        fetchStakeStatus()
         getDetail()
     }, [props.poolAddress])
 
     useEffect(() => {
         prepareNftData();
     }, [from, poolDetail, props.name, txHash])
+
+    useEffect(() => {
+        fetchStakeStatus()
+    },[haveStaked])
 
     /*------------------------get user insurance metadata--------------------------*/
     const getMetaData = async () => {
@@ -117,7 +120,7 @@ function PoolCard(props) {
         try {
             await poolContract.getUserStakeTxHash(address)
                 .then((response) => {
-                    console.log('tx hash is : ',response)
+                    console.log(`tx hash | pool : ${props.poolAddress} : `,response)
                     setTxHash(response);
                 })
         } catch (error) {
@@ -362,8 +365,6 @@ function PoolCard(props) {
             const connection = await modal.connect();
             const provider = new ethers.providers.Web3Provider(connection);
             const signer = provider.getSigner();
-
-            console.log(signer);
 
             const policyContract = new ethers.Contract(
                 policyContractAddress,

@@ -78,7 +78,7 @@ contract Pool {
         userPoolAccountStatus[userAddress].amountStaked = amount;
         userPoolAccountStatus[userAddress].txHash = txHash;
 
-        if(poolMembers.length==3){ // means all user have staked their amount
+        if(poolMembers.length==2){ // means all user have staked their amount
             poolData.isActive=true;
             poolData.from = block.timestamp;
             poolData.to = poolData.from + 31536000; // after one year
@@ -134,14 +134,18 @@ contract Pool {
     }
 
     function claimFund(uint256 amount) public {
-        require((block.timestamp > poolData.from)&&(block.timestamp < poolData.to),'Claim request not in pool period!');
-        require(userClaimDetails[msg.sender].isApproved,'Claim not approved yet!');
-        require(!userClaimDetails[msg.sender].claimed,'Already claimed!');
+        // require((block.timestamp > poolData.from)&&(block.timestamp < poolData.to),'Claim request not in pool period!');
+        // require(userClaimDetails[msg.sender].isApproved,'Claim not approved yet!');
+        // require(!userClaimDetails[msg.sender].claimed,'Already claimed!');
 
+        address user = msg.sender;
  
-        uint poolBalance = usdc.balanceOf(address(this));
-        require(poolBalance>amount,'Insufficient balance');
-        usdc.transfer(msg.sender, amount);
+        // uint poolBalance = usdc.balanceOf(address(this));
+        // require(poolBalance>amount,'Insufficient pool balance');
+
+        // approve and then transfer
+        usdc.approve(address(this), amount);
+        usdc.transferFrom(address(this), user, amount);
         userClaimDetails[msg.sender].claimed = true;
     }
 

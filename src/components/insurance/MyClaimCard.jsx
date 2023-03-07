@@ -34,7 +34,7 @@ function MyClaimCard(props) {
             const tx = await poolContract.claimFund(
                 amount, {
                 // gasLimit: 9993000,
-                gasLimit: 9031340,
+                gasLimit: 999999,
                 }
             )
 

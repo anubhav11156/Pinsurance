@@ -111,7 +111,7 @@ function Claim() {
         })
     } catch (e) {
       setIsRequesting(false);
-      toast.error("Revert: Premium not staked!", {
+      toast.error("Failed to request claim.", {
         position: toast.POSITION.TOP_CENTER
       });
     }

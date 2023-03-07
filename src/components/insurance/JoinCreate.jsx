@@ -90,6 +90,7 @@ function JoinCreate() {
     // Upload Metadata to IPFS.
     const uri = await metadata();
     console.log('URI : ', uri);
+    console.log('Here');
     const modal = new web3modal({
       cacheProvider: true,
     });
@@ -113,6 +114,7 @@ function JoinCreate() {
 
     await transaction.wait()
       .then(() => {
+        console.log('fee paid')
         createInsurancePool(signer, uri)
       })
       .catch((error) => {
@@ -121,6 +123,7 @@ function JoinCreate() {
   }
 
   const createInsurancePool = async (_signer, _uri) => {
+    console.log('in create pool section')
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
       pinsuranceAbi.abi,
@@ -130,7 +133,9 @@ function JoinCreate() {
     const create = await pinsuranceContract.createPool(
       poolName,
       _uri,
-      address
+      address, {
+        gasLimit: 8000000,
+      }
     )
 
     await create.wait()
@@ -210,7 +215,10 @@ function JoinCreate() {
     const join = await pinsuranceContract.joinPool(
       poolAddress,
       address,
-      _uri,
+      _uri, {
+        // gasLimit: 900000,
+        gasLimit: 8000000,
+      }
     )
 
     await join.wait()

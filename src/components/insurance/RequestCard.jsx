@@ -16,6 +16,7 @@ function RequestCard(props) {
         profileURI: ""
     });
     const [isApproving, setIsApproving] = useState(false);
+    const [isdecling, setIsdecling] = useState(false);
     const [claimStatus, setClaimStatus] = useState(false);
 
 
@@ -64,7 +65,7 @@ function RequestCard(props) {
     }
 
     const decline = async () => {
-        setIsApproving(true);
+        setIsdecling(true);
         const modal = new web3modal({
             cacheProvider: true,
         });
@@ -89,9 +90,9 @@ function RequestCard(props) {
                     toast.success("Claim declined.", {
                         position: toast.POSITION.TOP_CENTER
                     });
-                    setIsApproving(false);
+                    setIsdecling(false);
                 }).catch((error) => {
-                    setIsApproving(false);
+                    setIsdecling(false);
                     toast.error("Error: Transaction failed!", {
                         position: toast.POSITION.TOP_CENTER
                     });
@@ -100,7 +101,7 @@ function RequestCard(props) {
 
         } catch (error) {
             console.log(error);
-            setIsApproving(false);
+            setIsdecling(false);
             toast.error("Transaction failed!", {
                 position: toast.POSITION.TOP_CENTER
             });
@@ -128,7 +129,7 @@ function RequestCard(props) {
     useEffect(() => {
         fetchUserMetaData()
         getClaimStatus();
-    }, [props.userAddress, props.userAddress]);
+    }, [props.userAddress]);
 
     const fetchUserMetaData = async () => {
         const uriResponse = await axios.get(props.userMetaURI);
@@ -198,10 +199,10 @@ function RequestCard(props) {
                                     }
                                 </div>
                                 <div className='decline-div' onClick={decline}>
-                                    {!isApproving &&
+                                    {!isdecling &&
                                         <p>Decline</p>
                                     }
-                                    {isApproving &&
+                                    {isdecling &&
                                         <ClipLoader color="#ffffff" size={13} />
                                     }
                                 </div>
