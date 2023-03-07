@@ -1,6 +1,5 @@
 import { useState, useEffect, React } from 'react'
 import styled from 'styled-components'
-import axios from "axios";
 import { ethers } from "ethers"
 import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, poolAbi, mockUsdcAbi } from "../../config";
 import { ToastContainer, toast } from 'react-toastify';
@@ -147,7 +146,6 @@ function Pool() {
         <div className='down'>
           <div className='pool-detail'>
             <div className='upper'>
-              {/* <p>Pool Name</p> */}
               <div className='name-label'>
                 <p>Pool Name</p>
               </div>
@@ -169,7 +167,7 @@ function Pool() {
                   <p>Members</p>
                 </div>
                 <div className='text'>
-                  <p>{members.length}/3</p>
+                  <p>{members.length}/2</p>
                 </div>
               </div>
               <div className='status-div'>

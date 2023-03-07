@@ -467,6 +467,14 @@ function PoolCard(props) {
                 <div className='pool-name-div'>
                     <p>{poolName}</p>
                 </div>
+                <div className='pool-status'>
+                    {(props.memberCount == 2) &&
+                        <p>Active</p>
+                    }
+                    { (props.memberCount != 2) &&
+                        <p>Not active</p>
+                    }
+                </div>
             </div>
             <div className='pool-address'>
                 <div className='address'>
@@ -564,7 +572,7 @@ function PoolCard(props) {
                         </div>
                         <div className='text'>
                             <p className='count-text'>
-                                {props.memberCount}/3
+                                {props.memberCount}/2
                             </p>
                         </div>
                     </div>
@@ -623,7 +631,7 @@ const Container = styled.div`
         overflow: hidden;
 
         .pool-name-div {
-            width: 12rem;
+            width: 15rem;
             display: flex;
             justify-content: start;
             align-items: center;
@@ -635,56 +643,23 @@ const Container = styled.div`
             }
         }        
         
-        .pool-id {
-            flex: 1;
+        .pool-status {
+            margin-left: 3.5rem;
+            width: 6.5rem;
+            height: 57%;
+            border: 1px solid #ffffffa1;
+            /* color: #ffffffa1; */
             display: flex;
-            justify-content: end;
+            justify-content: center;
             align-items: center;
-            margin-right: 0.5rem;
-            height: 1.8rem;
-            border-radius: 6px;
-            overflow: hidden;
-            border: 1px solid #ffffff52;
+            border-radius: 3px;
 
-
-            .text {
-                flex: 1;
-                display: flex;
-                
-                .pool-text {
-                    flex: 1;
-                    display: flex;
-                    justify-content: start;
-                    align-items: center;
-                    font-size: 12px;
-                    margin-left: 10px;
-                    color: #ffffffe8;
-                }
-
-                .copy {
-                    width: 2.5rem;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    cursor: pointer;
-                    transition: background-color 0.15s, opacity 0.15s;
-
-                    img {
-                        width: 50%;
-                            opacity: 0.7;
-                        }
-
-                    &:hover {
-                        background-color: #ffffff1c;
-                    }
-
-                    &:active {
-                        opacity: 0.7;
-                    }
-
-                }
+            p {
+                margin:0;
+                font-weight: 400;
+                color: white;
+                font-size: 15px;
             }
-            
         }
     }
 

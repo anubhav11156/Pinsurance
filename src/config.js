@@ -1,8 +1,8 @@
-export const pinsuranceContractAddress = "0xd61344A6f58c8DC7DD3aC3c25D686e528B391F11";
+export const pinsuranceContractAddress = "0x26e49c428fd6c111947d346616f896b54235b280";
 
 export const mockUsdcContractAddress = "0xF8E9F063228eb47137101eb863BF3976466AA31F";
 
-export const policyContractAddress = "0xf242a74ae9713f89cae1d5fc89d326c0c40573b8";
+export const policyContractAddress = "0x1D7Fd78f3548b813a0EDF466350b7c3c636257db";
 
 export const pinsuranceAbi = {
     "_format": "hh-sol-artifact-1",
@@ -651,6 +651,25 @@ export const poolAbi = {
                     "internalType": "string",
                     "name": "",
                     "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "address",
+                    "name": "userAddress",
+                    "type": "address"
+                }
+            ],
+            "name": "haveUserClaimed",
+            "outputs": [
+                {
+                    "internalType": "bool",
+                    "name": "",
+                    "type": "bool"
                 }
             ],
             "stateMutability": "view",

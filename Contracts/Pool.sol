@@ -3,7 +3,6 @@
 pragma solidity 0.8.13; 
 
 import "@openzeppelin/contracts/utils/Counters.sol";
-// import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./Pinsurance.sol";
 import "./MockUSDC.sol";
 
@@ -18,8 +17,6 @@ contract Pool {
         PINSURANCE_ADDRESS = pinsuranceAddress;
         FAKE_USDC_ADDRESS = 0xF8E9F063228eb47137101eb863BF3976466AA31F;
     }
-
-    IERC20 usdc = IERC20(FAKE_USDC_ADDRESS); //usdt contract
 
     using Counters for Counters.Counter;
     Counters.Counter public claimCount;
@@ -135,23 +132,21 @@ contract Pool {
     }
 
     function claimFund(uint256 amount) public {
-        // require((block.timestamp > poolData.from)&&(block.timestamp < poolData.to),'Claim request not in pool period!');
-        // require(userClaimDetails[msg.sender].isApproved,'Claim not approved yet!');
-        // require(!userClaimDetails[msg.sender].claimed,'Already claimed!');
+
+        require((block.timestamp > poolData.from)&&(block.timestamp < poolData.to),'Claim request not in pool period!');
+        require(userClaimDetails[msg.sender].isApproved,'Claim not approved yet!');
+        require(!userClaimDetails[msg.sender].claimed,'Already claimed!');
 
         address user = msg.sender;
  
-        // uint poolBalance = usdc.balanceOf(address(this));
-        // require(poolBalance>amount,'Insufficient pool balance');
-
+        // aprove and transfer funds to user
         FakeUSDC  mockUsdcContract = FakeUSDC(FAKE_USDC_ADDRESS);
+
+        require(mockUsdcContract.balanceOf(address(this))>amount,'Insufficient pool balance');
+
         mockUsdcContract.approve(address(this), amount);
         mockUsdcContract.transferFrom(address(this), user, amount);
          
-
-        // approve and then transfer
-        // usdc.approve(address(this), amount);
-        // usdc.transferFrom(address(this), user, amount);
         userClaimDetails[msg.sender].claimed = true;
     }
 
@@ -163,6 +158,9 @@ contract Pool {
         return userPoolAccountStatus[userAddress].txHash;
     }
 
+    function haveUserClaimed(address userAddress) public view returns(bool) {
+        return userClaimDetails[userAddress].claimed;
+    } 
     
     receive() external payable {}
 

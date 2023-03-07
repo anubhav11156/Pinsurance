@@ -8,7 +8,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function MyClaimCard(props) {
-    console.log(props);
 
     const [claimStatus, setClaimStatus] = useState(false);
     const [haveClaimed, setHaveClaimed] = useState(false);
@@ -45,12 +44,12 @@ function MyClaimCard(props) {
             await tx.wait()
                 .then(() => {
                     console.log('done')
-                    toast.success("Claimed", {
+                    toast.success("Funds claimed", {
                         position: toast.POSITION.TOP_CENTER
                     });
                     setIsClaiming(false);
                 }).catch((error) => {
-                    toast.error("Failed to request claim.", {
+                    toast.error("Failed to claim funds.", {
                         position: toast.POSITION.TOP_CENTER
                     });
                     console.error(error);

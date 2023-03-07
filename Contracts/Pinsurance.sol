@@ -27,7 +27,7 @@ contract Pinsurance {
     // user account detail mapping
     mapping(address => userAccount) userAddressTouserAccount;
 
-    // Pool data  ---> set pool member limit to 3 for demo purpose
+    // Pool data  ---> set pool member limit to 2 for demo purpose
     struct poolDetail {
         address poolContractAddress;        
         uint256 currentMemberCount;
@@ -148,7 +148,6 @@ contract Pinsurance {
 
         address payable newPool = payable(new Pool(poolName, address(this))); // returns address of the new pool.
 
-        // poolAddressToPoolDetail[newPool].poolAddress = poolAddress;
         poolAddressToStatus[newPool] = true;
         poolAddressToPoolDetail[newPool].poolContractAddress = newPool;
         userAddressTouserAccount[userAddress].userAssociatedPools.push(newPool);
@@ -174,7 +173,7 @@ contract Pinsurance {
 
         require((empty > 0),'Not enough slot in the pool.');
 
-        userToPoolMembership[userAddress][poolAddressToPoolDetail[poolAddress].poolContractAddress]=true; // for membership
+        userToPoolMembership[userAddress][poolAddressToPoolDetail[poolAddress].poolContractAddress]=true;
         poolAddressToPoolDetail[poolAddress].currentMemberCount++;
         userAddressTouserAccount[userAddress].userAssociatedPools.push(poolAddress);
         poolAddressToPoolDetail[poolAddress].members.push(userAddress);
