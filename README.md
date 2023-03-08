@@ -6,6 +6,10 @@ Policy NFT is your immutable tamper-resistant representation that you own an ins
 
 Any pool member can make a Claim Request from thier pool, for this they have to provide a support document for their claim request. Claim request along with support document is broadcast to all the pool members. Pool members verifies and vote for claim request. Vote > 50% approves claim request else request is declined. Once approved the claimer can witdhraw the requested amount from the pool. In-app Video call features enables pool members to easily discuss and resolve any claim request.
 
+[Video Explanation](https://youtu.be/yjVDehI7CoI)
+
+[Devpost Project Page](https://devpost.com/software/pinsurance)
+
 ### Built with
 - Solidity
 - Fantom Blockchain ( Testnet )
@@ -18,6 +22,7 @@ Any pool member can make a Claim Request from thier pool, for this they have to 
 - wagmi
 - connect-kit
 - Remix 
+- EtherJS
 
 
 ### Installation
@@ -38,5 +43,19 @@ npm install --force
 npm start
 ```
 
+### Environment Variables
+To run this dapp, you will need to add the following environment variables to your .env file
 
+`REACT_APP_WEB3_STORAGE= <web3.storage API key>`
 
+`REACT_APP_PRIVATE_KEY= <Wallet private key>`
+
+### Smart Contracts
+
+- [Pinsurance.sol](https://testnet.ftmscan.com/address/0xb46c612f413cd70c770dee0ea6a3cf3f64e98d42)
+
+- [Policy.sol](https://testnet.ftmscan.com/address/0x2cf8b13a21be699927c964f953a37871ebc8df8b)
+
+- [MockUSDC.sol](https://testnet.ftmscan.com/address/0xF8E9F063228eb47137101eb863BF3976466AA31F)
+
+- Pool.sol ( This is pool contract which is deployed by Pinsurance.sol )
