@@ -223,8 +223,7 @@ function PoolCard(props) {
             signer
         )
 
-        const value = 1
-        const usdcValue = ethers.utils.parseEther(value.toString());
+        const usdcValue = ethers.utils.parseEther(poolDetail.premium);
 
         const transaction = await usdcContract.transfer(
             props.poolAddress,

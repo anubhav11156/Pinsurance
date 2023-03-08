@@ -104,7 +104,7 @@ function JoinCreate() {
       mockUsdcAbi.abi,
       signer
     )
-    const value = 1; // platform fee : 100 USDC
+    const value = 100; // platform fee : 100 USDC
     const usdcValue = ethers.utils.parseEther(value.toString());
 
     const transaction = await usdcContract.transfer(
@@ -123,7 +123,6 @@ function JoinCreate() {
   }
 
   const createInsurancePool = async (_signer, _uri) => {
-    console.log('in create pool section')
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
       pinsuranceAbi.abi,
@@ -174,7 +173,7 @@ function JoinCreate() {
       mockUsdcAbi.abi,
       signer
     )
-    const value = 1; // platform fee : 100 USDC
+    const value = 100; // platform fee : 100 USDC
     const usdcValue = ethers.utils.parseEther(value.toString());
 
     const transaction = await usdcContract.transfer(
@@ -216,7 +215,6 @@ function JoinCreate() {
       poolAddress,
       address,
       _uri, {
-        // gasLimit: 900000,
         gasLimit: 8000000,
       }
     )
