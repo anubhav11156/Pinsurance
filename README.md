@@ -6,7 +6,7 @@ Policy NFT is your immutable tamper-resistant representation that you own an ins
 
 Any pool member can make a Claim Request from thier pool, for this they have to provide a support document for their claim request. Claim request along with support document is broadcast to all the pool members. Pool members verifies and vote for claim request. Vote > 50% approves claim request else request is declined. Once approved the claimer can witdhraw the requested amount from the pool. In-app Video call features enables pool members to easily discuss and resolve any claim request.
 
-[Video Explanation](https://youtu.be/yjVDehI7CoI)
+[Video Explanation](https://youtu.be/N8b7mintQho)
 
 [Devpost Project Page](https://devpost.com/software/pinsurance)
 
@@ -58,4 +58,4 @@ To run this dapp, you will need to add the following environment variables to yo
 
 - [MockUSDC.sol](https://testnet.ftmscan.com/address/0xF8E9F063228eb47137101eb863BF3976466AA31F)
 
-- Pool.sol ( This is pool contract which is deployed by Pinsurance.sol )
+- Pool.sol ( This is pool contract which is deployed by Pinsurance.sol, it deploys Pool contract everytime user make insurance pool on Pinsurnace. )
