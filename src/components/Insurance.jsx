@@ -1,18 +1,17 @@
-import { React, useEffect, useState } from 'react'
-import styled from 'styled-components'
-import Claim from './insurance/Claim';
-import JoinCreate from './insurance/JoinCreate';
-import Pool from './insurance/Pool';
-import User from './insurance/User';
-import Notification from './insurance/Notification';
-import { useAccount } from 'wagmi'
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import PolicyNFTs from './insurance/PolicyNFTs';
-import Meeting from './insurance/Meeting';
+import { React, useEffect, useState } from "react";
+import styled from "styled-components";
+import Claim from "./insurance/Claim";
+import JoinCreate from "./insurance/JoinCreate";
+import Pool from "./insurance/Pool";
+import User from "./insurance/User";
+import Notification from "./insurance/Notification";
+import { useAccount } from "wagmi";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import PolicyNFTs from "./insurance/PolicyNFTs";
+import Meeting from "./insurance/Meeting";
 
 function Insurance() {
-
   const [userMenu, setUserMenu] = useState(false);
   const [joinMenu, setJoinMenu] = useState(false);
   const [poolMenu, setPoolMenu] = useState(false);
@@ -47,8 +46,7 @@ function Insurance() {
       setMeetingMenu(false);
       setNftMenu(false);
     }
-
-  }
+  };
 
   const joinCreateButton = () => {
     if (isConnected) {
@@ -60,8 +58,7 @@ function Insurance() {
       setMeetingMenu(false);
       setNftMenu(false);
     }
-
-  }
+  };
 
   const poolDetail = () => {
     if (isConnected) {
@@ -73,8 +70,7 @@ function Insurance() {
       setMeetingMenu(false);
       setNftMenu(false);
     }
-
-  }
+  };
 
   const requestClaim = () => {
     if (isConnected) {
@@ -86,8 +82,7 @@ function Insurance() {
       setMeetingMenu(false);
       setNftMenu(false);
     }
-
-  }
+  };
 
   const notifications = () => {
     if (isConnected) {
@@ -99,8 +94,7 @@ function Insurance() {
       setMeetingMenu(false);
       setNftMenu(false);
     }
-
-  }
+  };
 
   const scheduleMeeting = () => {
     if (isConnected) {
@@ -112,8 +106,7 @@ function Insurance() {
       setMeetingMenu(true);
       setNftMenu(false);
     }
-
-  }
+  };
 
   const nftButton = () => {
     if (isConnected) {
@@ -125,13 +118,13 @@ function Insurance() {
       setMeetingMenu(false);
       setNftMenu(true);
     }
-  }
+  };
 
   const connectWalletHandle = () => {
     toast.info("Login to connect wallet", {
-      position: toast.POSITION.TOP_CENTER
+      position: toast.POSITION.TOP_CENTER,
     });
-  }
+  };
 
   return (
     <Container>
@@ -140,156 +133,146 @@ function Insurance() {
           <div className='menu'>
             <div className='user-menu'>
               <div className='image'>
-                <img src="/images/user.png" onClick={userMenuButton} />
-                <div className='account'>
-                  Account
-                </div>
+                <img src='/images/user.png' onClick={userMenuButton} />
+                <div className='account'>Account</div>
               </div>
-              <div className='bar' style={{
-                backgroundColor: userMenu ? "#ffffffae" : ""
-              }}></div>
+              <div
+                className='bar'
+                style={{
+                  backgroundColor: userMenu ? "#ffffffae" : "",
+                }}
+              ></div>
             </div>
             <div className='nft-menu'>
               <div className='image'>
-                <img src="/images/policy-nft-1.png" onClick={nftButton} />
-                <div className='nft'>
-                  Policy NFT
-                </div>
+                <img src='/images/policy-nft-1.png' onClick={nftButton} />
+                <div className='nft'>Policy NFT</div>
               </div>
-              <div className='bar' style={{
-                backgroundColor: nftMenu ? "#ffffffae" : ""
-              }}></div>
+              <div
+                className='bar'
+                style={{
+                  backgroundColor: nftMenu ? "#ffffffae" : "",
+                }}
+              ></div>
             </div>
             <div className='join-menu'>
               <div className='image'>
-                <img src="/images/join.png" onClick={joinCreateButton} />
-                <div className='join'>
-                  Join or Create Pool
-                </div>
+                <img src='/images/join.png' onClick={joinCreateButton} />
+                <div className='join'>Join or Create Pool</div>
               </div>
-              <div className='bar' style={{
-                backgroundColor: joinMenu ? "#ffffffae" : ""
-              }}></div>
+              <div
+                className='bar'
+                style={{
+                  backgroundColor: joinMenu ? "#ffffffae" : "",
+                }}
+              ></div>
             </div>
             <div className='pool-menu'>
               <div className='image'>
-                <img src="/images/details.png" onClick={poolDetail} />
-                <div className='pool'>
-                  Pool Detail
-                </div>
+                <img src='/images/details.png' onClick={poolDetail} />
+                <div className='pool'>Pool Detail</div>
               </div>
-              <div className='bar' style={{
-                backgroundColor: poolMenu ? "#ffffffae" : ""
-              }}></div>
+              <div
+                className='bar'
+                style={{
+                  backgroundColor: poolMenu ? "#ffffffae" : "",
+                }}
+              ></div>
             </div>
             <div className='claim-menu'>
               <div className='image'>
-                <img src="/images/claim.png" onClick={requestClaim} />
-                <div className='claim'>
-                  Request Claim
-                </div>
+                <img src='/images/claim.png' onClick={requestClaim} />
+                <div className='claim'>Request Claim</div>
               </div>
-              <div className='bar' style={{
-                backgroundColor: claimMenu ? "#ffffffae" : ""
-              }}></div>
+              <div
+                className='bar'
+                style={{
+                  backgroundColor: claimMenu ? "#ffffffae" : "",
+                }}
+              ></div>
             </div>
             <div className='notification-menu'>
               <div className='image'>
-                <img src="/images/notification.png" onClick={notifications} />
-                <div className='notification'>
-                  Notifications
-                </div>
+                <img src='/images/notification.png' onClick={notifications} />
+                <div className='notification'>Notifications</div>
               </div>
-              <div className='bar' style={{
-                backgroundColor: notificationMenu ? "#ffffffae" : ""
-              }}></div>
+              <div
+                className='bar'
+                style={{
+                  backgroundColor: notificationMenu ? "#ffffffae" : "",
+                }}
+              ></div>
             </div>
             <div className='meeting-menu'>
               <div className='image'>
-                <img src="/images/video.png" onClick={scheduleMeeting} />
-                <div className='meeting'>
-                  Join or Create Meeting
-                </div>
+                <img src='/images/video.png' onClick={scheduleMeeting} />
+                <div className='meeting'>Join or Create Meeting</div>
               </div>
-              <div className='bar' style={{
-                backgroundColor: meetingMenu ? "#ffffffae" : ""
-              }}></div>
+              <div
+                className='bar'
+                style={{
+                  backgroundColor: meetingMenu ? "#ffffffae" : "",
+                }}
+              ></div>
             </div>
           </div>
         </Heading>
         <Sections>
-          {isConnected &&
+          {isConnected && (
             <>
-              {userMenu &&
-                <User />
-              }
-              { nftMenu &&
-                <PolicyNFTs />
-              }
-              {poolMenu &&
-                <Pool />
-              }
-              {claimMenu &&
-                <Claim />
-              }
-              {joinMenu &&
-                <JoinCreate />
-              }
-              {notificationMenu &&
-                <Notification />
-              }
-              {meetingMenu &&
-                <Meeting />
-              }
+              {userMenu && <User />}
+              {nftMenu && <PolicyNFTs />}
+              {poolMenu && <Pool />}
+              {claimMenu && <Claim />}
+              {joinMenu && <JoinCreate />}
+              {notificationMenu && <Notification />}
+              {meetingMenu && <Meeting />}
             </>
-          }
-          {!isConnected &&
+          )}
+          {!isConnected && (
             <PlaceHolder>
               <div className='div-1'>
                 <div className='text'>
-                  <p>
-                    Join or Create Insurnace Pools with your Peers.
-                  </p>
+                  <p>Create or Join Insurnace Pools with your Peers.</p>
                 </div>
                 <div className='for-button'>
-                  <div className='connect' onClick={connectWalletHandle}>Connect Wallet</div>
+                  <div className='connect' onClick={connectWalletHandle}>
+                    Connect Wallet
+                  </div>
                 </div>
               </div>
             </PlaceHolder>
-          }
+          )}
         </Sections>
       </Main>
-      <ToastContainer
-        autoClose={1000}
-        hideProgressBar={true}
-      />
+      <ToastContainer autoClose={1000} hideProgressBar={true} />
     </Container>
-  )
+  );
 }
 
-export default Insurance
+export default Insurance;
 
 const Container = styled.div`
-    flex: 1;
-    padding-left: 13.2rem;
-    padding-right: 12rem;
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
+  flex: 1;
+  padding-left: 13.2rem;
+  padding-right: 12rem;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
   overflow: hidden;
   .Toastify__toast {
     border: 1px solid #0152b58e;
   }
-`
+`;
 
 const Main = styled.div`
-    height:865px;
-    width: 100%;
-    margin-top:40px ;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-`
+  height: 865px;
+  width: 100%;
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+`;
 
 const Heading = styled.div`
   height: 5.2rem;
@@ -323,7 +306,7 @@ const Heading = styled.div`
 
       .image {
         position: relative;
-        flex:1;
+        flex: 1;
         width: 15%;
         display: flex;
         align-items: end;
@@ -334,7 +317,7 @@ const Heading = styled.div`
         .account {
           position: absolute;
           height: 1.5rem;
-          width:5rem;
+          width: 5rem;
           top: 2.2rem;
           background-color: #000000;
           font-size: 14px;
@@ -346,7 +329,7 @@ const Heading = styled.div`
           opacity: 0;
           z-index: 1000;
           transition: opacity 0.2s;
-        } 
+        }
 
         &:hover .account {
           opacity: 1;
@@ -356,14 +339,10 @@ const Heading = styled.div`
           opacity: 0.8;
         }
 
-        
-
         img {
           width: 100%;
           opacity: 0.9;
         }
-
-       
       }
 
       .bar {
@@ -372,7 +351,7 @@ const Heading = styled.div`
         width: 13%;
         border-radius: 10px;
       }
-    }  
+    }
 
     .join-menu {
       flex: 1;
@@ -382,7 +361,7 @@ const Heading = styled.div`
 
       .image {
         position: relative;
-        flex:1;
+        flex: 1;
         width: 15%;
         display: flex;
         align-items: end;
@@ -393,7 +372,7 @@ const Heading = styled.div`
         .join {
           position: absolute;
           height: 1.5rem;
-          width:9.3rem;
+          width: 9.3rem;
           top: 2.2rem;
           background-color: #000000;
           font-size: 14px;
@@ -405,7 +384,7 @@ const Heading = styled.div`
           opacity: 0;
           z-index: 1000;
           transition: opacity 0.2s;
-        } 
+        }
 
         &:hover .join {
           opacity: 1;
@@ -415,14 +394,10 @@ const Heading = styled.div`
           opacity: 0.8;
         }
 
-        
-
         img {
           width: 100%;
           opacity: 0.9;
         }
-
-       
       }
 
       .bar {
@@ -432,7 +407,7 @@ const Heading = styled.div`
         border-radius: 10px;
       }
     }
-    
+
     .pool-menu {
       flex: 1;
       display: flex;
@@ -441,7 +416,7 @@ const Heading = styled.div`
       margin-top: 2px;
 
       .image {
-        flex:1;
+        flex: 1;
         width: 12%;
         display: flex;
         align-items: end;
@@ -464,7 +439,7 @@ const Heading = styled.div`
           opacity: 0;
           z-index: 1000;
           transition: opacity 0.2s;
-        } 
+        }
 
         &:hover .pool {
           opacity: 1;
@@ -478,8 +453,6 @@ const Heading = styled.div`
           width: 100%;
           opacity: 0.9;
         }
-
-       
       }
 
       .bar {
@@ -498,7 +471,7 @@ const Heading = styled.div`
 
       .image {
         margin-top: 5px;
-        flex:1;
+        flex: 1;
         width: 12%;
         display: flex;
         align-items: end;
@@ -509,7 +482,7 @@ const Heading = styled.div`
         .notification {
           position: absolute;
           height: 1.5rem;
-          width:7rem;
+          width: 7rem;
           top: 2rem;
           background-color: #000000;
           font-size: 14px;
@@ -521,7 +494,7 @@ const Heading = styled.div`
           opacity: 0;
           z-index: 1000;
           transition: opacity 0.2s;
-        } 
+        }
 
         &:hover .notification {
           opacity: 1;
@@ -535,8 +508,6 @@ const Heading = styled.div`
           width: 100%;
           opacity: 0.9;
         }
-
-       
       }
 
       .bar {
@@ -555,7 +526,7 @@ const Heading = styled.div`
       margin-top: 5px;
 
       .image {
-        flex:1;
+        flex: 1;
         width: 12.5%;
         display: flex;
         align-items: end;
@@ -578,7 +549,7 @@ const Heading = styled.div`
           opacity: 0;
           z-index: 1000;
           transition: opacity 0.2s;
-        } 
+        }
 
         &:hover .claim {
           opacity: 1;
@@ -592,8 +563,6 @@ const Heading = styled.div`
           width: 100%;
           opacity: 0.9;
         }
-
-       
       }
 
       .bar {
@@ -612,7 +581,7 @@ const Heading = styled.div`
       margin-top: 2px;
       .image {
         margin-top: 5px;
-        flex:1;
+        flex: 1;
         width: 12%;
         display: flex;
         align-items: end;
@@ -623,7 +592,7 @@ const Heading = styled.div`
         .meeting {
           position: absolute;
           height: 1.5rem;
-          width:11rem;
+          width: 11rem;
           top: 1.9rem;
           background-color: #000000;
           font-size: 14px;
@@ -635,7 +604,7 @@ const Heading = styled.div`
           opacity: 0;
           z-index: 1000;
           transition: opacity 0.2s;
-        } 
+        }
 
         &:hover .meeting {
           opacity: 1;
@@ -649,8 +618,6 @@ const Heading = styled.div`
           width: 100%;
           opacity: 0.9;
         }
-
-       
       }
 
       .bar {
@@ -669,7 +636,7 @@ const Heading = styled.div`
       margin-top: 2px;
 
       .image {
-        flex:1;
+        flex: 1;
         width: 14%;
         display: flex;
         align-items: end;
@@ -692,7 +659,7 @@ const Heading = styled.div`
           opacity: 0;
           z-index: 1000;
           transition: opacity 0.2s;
-        } 
+        }
 
         &:hover .nft {
           opacity: 1;
@@ -706,8 +673,6 @@ const Heading = styled.div`
           width: 100%;
           opacity: 0.9;
         }
-
-       
       }
 
       .bar {
@@ -717,9 +682,8 @@ const Heading = styled.div`
         border-radius: 10px;
       }
     }
-
   }
-`
+`;
 
 const PlaceHolder = styled.div`
   display: flex;
@@ -791,9 +755,8 @@ const PlaceHolder = styled.div`
         }
       }
     }
-    
   }
-`
+`;
 
 const Sections = styled.div`
   flex: 1;
@@ -802,5 +765,4 @@ const Sections = styled.div`
   border-left: 1px solid #0152b56e;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-`
-
+`;

@@ -1,16 +1,20 @@
-import { React, useState, useEffect } from 'react'
-import styled from 'styled-components'
+import { React, useState, useEffect } from "react";
+import styled from "styled-components";
 import { ConnectKitButton } from "connectkit";
-import { useAccount } from 'wagmi';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { ethers } from "ethers"
-import { pinsuranceContractAddress, mockUsdcContractAddress, pinsuranceAbi, mockUsdcAbi } from "../config";
-import { useDispatch } from 'react-redux';
-import { accountAdded } from '../features/AccountDetailSlice';
+import { useAccount } from "wagmi";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ethers } from "ethers";
+import {
+  pinsuranceContractAddress,
+  mockUsdcContractAddress,
+  pinsuranceAbi,
+  mockUsdcAbi,
+} from "../config";
+import { useDispatch } from "react-redux";
+import { accountAdded } from "../features/AccountDetailSlice";
 
 function Header() {
-
   const dispatch = useDispatch();
   const { address } = useAccount();
 
@@ -19,23 +23,20 @@ function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [flag, setFlag] = useState(0);
 
-
   useEffect(() => {
     if (isConnected && flag == 0) {
       toast.success("Logged In", {
-        position: toast.POSITION.TOP_CENTER
+        position: toast.POSITION.TOP_CENTER,
       });
       setFlag(1);
       getAccountStatus();
     } else if (!isConnected && flag == 1) {
       toast.success("Logged Out", {
-        position: toast.POSITION.TOP_CENTER
+        position: toast.POSITION.TOP_CENTER,
       });
       setFlag(0);
     }
   }, [isConnected]);
-
-
 
   window.onscroll = function (e) {
     if (window.scrollY >= 910) {
@@ -43,56 +44,57 @@ function Header() {
     } else {
       setIsScrolled(false);
     }
-  }
+  };
 
   const planHandler = () => {
     window.scroll({
       top: 926,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
-  }
+  };
 
   const takeInsuranceHandler = () => {
     window.scroll({
       top: 926,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
-  }
+  };
 
-
-  useEffect(()=>{
+  useEffect(() => {
     getAccountStatus();
-  },[address]);
-
+  }, [address]);
 
   /*------Check user have accoun on pinsurance or not-------*/
 
   const getAccountStatus = async () => {
-    const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
+    const provider = new ethers.providers.JsonRpcProvider(
+      "https://endpoints.omniatech.io/v1/fantom/testnet/public"
+    );
     const pinsuranceContract = new ethers.Contract(
       pinsuranceContractAddress,
       pinsuranceAbi.abi,
       provider
-    )
+    );
     try {
-      await pinsuranceContract.getUserAccountStatus(address)
+      await pinsuranceContract
+        .getUserAccountStatus(address)
         .then((response) => {
-          dispatch(
-            accountAdded(response)
-          )
+          dispatch(accountAdded(response));
         })
-        .catch((e) => console.error(e))
+        .catch((e) => console.error(e));
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   /*--------------------------------------------------------*/
 
   return (
-    <Container style={{
-      borderBottom: isScrolled ? '1px solid #6aa5ec3d' : ''
-    }}>
+    <Container
+      style={{
+        borderBottom: isScrolled ? "1px solid #6aa5ec3d" : "",
+      }}
+    >
       <InsideContainer>
         <Left>
           <div className='logo'>
@@ -105,66 +107,60 @@ function Header() {
             <p>Plan</p>
           </div> */}
           <div className='insruance' onClick={takeInsuranceHandler}>
-            <p>Take Insurance</p>
+            <p>Claim Insurance</p>
           </div>
         </Middle>
         <Right>
           <div className='address-div'>
-            {isConnected &&
+            {isConnected && (
               <div className='address'>
                 <p>{address}</p>
               </div>
-            }
+            )}
           </div>
           <div className='button'>
             <ConnectKitButton.Custom>
-              {
-                ({ isConnected, show, ensName }) => {
-                  if (isConnected) {
-                    setConnected(true);
-                  } else {
-                    setConnected(false);
-                  }
-
-                  return (
-                    <div className="login" onClick={show}>
-                      {isConnected ? ensName ?? "Logout" : "Login"}
-                    </div>
-                  );
+              {({ isConnected, show, ensName }) => {
+                if (isConnected) {
+                  setConnected(true);
+                } else {
+                  setConnected(false);
                 }
-              }
+
+                return (
+                  <div className='login' onClick={show}>
+                    {isConnected ? ensName ?? "Logout" : "Login"}
+                  </div>
+                );
+              }}
             </ConnectKitButton.Custom>
           </div>
         </Right>
       </InsideContainer>
-      <ToastContainer
-        autoClose={1000}
-        hideProgressBar={true}
-      />
+      <ToastContainer autoClose={1000} hideProgressBar={true} />
     </Container>
-  )
+  );
 }
 
-export default Header
+export default Header;
 
 const Container = styled.div`
-    position: fixed;
-    width: 100%;
-    z-index: 10;
-    height: 5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center; 
-    background-color: white;
-`
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  height: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+`;
 
 const InsideContainer = styled.div`
   width: 80%;
   height: 100%;
   display: flex;
   align-items: center;
-
-`
+`;
 const Left = styled.div`
   height: 100%;
   width: 15rem;
@@ -194,7 +190,7 @@ const Left = styled.div`
     font-size: 25px;
     font-weight: 600;
   }
-`
+`;
 
 const Middle = styled.div`
   height: 100%;
@@ -248,8 +244,7 @@ const Middle = styled.div`
       opacity: 0.7;
     }
   }
-
-`
+`;
 
 const Right = styled.div`
   height: 100%;
@@ -286,7 +281,6 @@ const Right = styled.div`
         opacity: 0.9;
       }
     }
-   
   }
 
   .button {
@@ -296,30 +290,28 @@ const Right = styled.div`
     flex: 1;
 
     .login {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #0152b5da;
-    width: 100px;
-    height: 2.4rem;
-    cursor: pointer;
-    position: relative;
-    font-size: 17px;
-    font-weight: 500;
-    color: #0152b5e5;
-    border-radius: 20px;
-    transition: background-color 0.25s , color 0.25s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid #0152b5da;
+      width: 100px;
+      height: 2.4rem;
+      cursor: pointer;
+      position: relative;
+      font-size: 17px;
+      font-weight: 500;
+      color: #0152b5e5;
+      border-radius: 20px;
+      transition: background-color 0.25s, color 0.25s;
 
-    &:hover {
-      background-color: #0152b5da;
-      color: white;
-    }
+      &:hover {
+        background-color: #0152b5da;
+        color: white;
+      }
 
-    &:active {
-      opacity: 0.9;
+      &:active {
+        opacity: 0.9;
+      }
     }
   }
-  }
-
-  
-`
+`;

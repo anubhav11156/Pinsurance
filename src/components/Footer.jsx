@@ -128,34 +128,34 @@ function Footer() {
           github='https://github.com/LucidJoy'
         />
         <FooterCard
-          name='Cheshta Bhasin'
-          state='Haryana, India'
-          twitter='https://twitter.com/BhasinCheshta'
-          linkedIn='https://www.linkedin.com/in/cheshta-bhasin-880218205/'
-          github='https://github.com/Cheshta2381'
+          name='Jyotirmoy Karmakar'
+          state='Assam, India'
+          twitter='https://twitter.com/LucidJoyy'
+          linkedIn='https://www.linkedin.com/in/lucidjoy/'
+          github='https://github.com/LucidJoy'
         />
         <FooterCard
-          name='Radhika Thapar'
-          state='Haryana, India'
-          twitter='https://twitter.com/Radhika12170615'
-          linkedIn='https://www.linkedin.com/in/radhika-thapar-912308243/'
-          github='https://github.com/radhikathapar18'
+          name='Jyotirmoy Karmakar'
+          state='Assam, India'
+          twitter='https://twitter.com/LucidJoyy'
+          linkedIn='https://www.linkedin.com/in/lucidjoy/'
+          github='https://github.com/LucidJoy'
         />
         <FooterCard
-          name='Anubhav Kumar '
-          state='Bihar, India'
-          twitter='https://twitter.com/meta_anubhav'
-          linkedIn='https://www.linkedin.com/in/anubhav-kumar-8749871b8/'
-          github='https://github.com/anubhav11156'
+          name='Jyotirmoy Karmakar'
+          state='Assam, India'
+          twitter='https://twitter.com/LucidJoyy'
+          linkedIn='https://www.linkedin.com/in/lucidjoy/'
+          github='https://github.com/LucidJoy'
         />
       </div>
 
       <div className='mint-div'>
         <div className='heading'>
-          <p>Import & mint Fake USDC for testing this dapp.</p>
+          <p>Import & Mint fake USDC for testing this dapp.</p>
         </div>
         <div className='mint-button' onClick={copyAddress}>
-          <p>Click to copy fake USDC contract address. </p>
+          <p>Click to copy fake USDC contract address.</p>
         </div>
         <div className='input-div'>
           <input
