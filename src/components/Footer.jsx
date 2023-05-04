@@ -1,14 +1,14 @@
-import { React, useState } from 'react'
-import styled from 'styled-components'
-import { ethers } from 'ethers';
+import { React, useState } from "react";
+import styled from "styled-components";
+import { ethers } from "ethers";
 import { mockUsdcContractAddress, mockUsdcAbi } from "../config";
 import ClipLoader from "react-spinners/ClipLoader";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import copy from 'copy-to-clipboard';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import copy from "copy-to-clipboard";
+import FooterCard from "./FooterCard";
 
 function Footer() {
-
   const [isMinting, setIsMinting] = useState(false);
   const [address, setAddress] = useState();
 
@@ -17,164 +17,165 @@ function Footer() {
   const ownerAddress = "0x22b6Dd4D6d818e2Ebce3D2E009A249F8FbF4e965";
   const value = "5000"; // testing for 1 usdc
 
-  const copyAddress =  () => {
-    copy('0xF8E9F063228eb47137101eb863BF3976466AA31F');
-  }
+  const copyAddress = () => {
+    copy("0xF8E9F063228eb47137101eb863BF3976466AA31F");
+  };
 
   const mintFake = async () => {
     setIsMinting(true);
-    const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
+    const provider = new ethers.providers.JsonRpcProvider(
+      "https://endpoints.omniatech.io/v1/fantom/testnet/public"
+    );
     const wallet = new ethers.Wallet(ownerPrivateKey);
     const signer = wallet.connect(provider);
     const usdcContract = new ethers.Contract(
       mockUsdcContractAddress,
       mockUsdcAbi.abi,
       signer
-    )
+    );
 
     try {
       const amount = ethers.utils.parseEther(value);
-      const approveTx = await usdcContract.approve(
-        ownerAddress,
-        amount
-      )
+      const approveTx = await usdcContract.approve(ownerAddress, amount);
 
-      await approveTx.wait()
+      await approveTx
+        .wait()
         .then(() => {
           transferUsdc();
-        }).catch((e) => {
+        })
+        .catch((e) => {
           setIsMinting(false);
           toast.error("Transaction failed!", {
-            position: toast.POSITION.TOP_CENTER
+            position: toast.POSITION.TOP_CENTER,
           });
-        })
+        });
     } catch (error) {
       setIsMinting(false);
       toast.error("Transaction failed!", {
-        position: toast.POSITION.TOP_CENTER
+        position: toast.POSITION.TOP_CENTER,
       });
     }
-  }
+  };
 
   const transferUsdc = async () => {
-    const provider = new ethers.providers.JsonRpcProvider('https://endpoints.omniatech.io/v1/fantom/testnet/public');
+    const provider = new ethers.providers.JsonRpcProvider(
+      "https://endpoints.omniatech.io/v1/fantom/testnet/public"
+    );
     const wallet = new ethers.Wallet(ownerPrivateKey);
     const signer = wallet.connect(provider);
     const usdcContract = new ethers.Contract(
       mockUsdcContractAddress,
       mockUsdcAbi.abi,
       signer
-    )
+    );
 
     try {
       const amount = ethers.utils.parseEther(value);
-      const tx = await usdcContract.transferFrom(
-        ownerAddress,
-        address,
-        amount
-      )
+      const tx = await usdcContract.transferFrom(ownerAddress, address, amount);
 
-      await tx.wait()
+      await tx
+        .wait()
         .then(() => {
           toast.success("Fake USDC received.", {
-            position: toast.POSITION.TOP_CENTER
+            position: toast.POSITION.TOP_CENTER,
           });
           setIsMinting(false);
-        }).catch((e) => {
+        })
+        .catch((e) => {
           console.log(e);
           setIsMinting(false);
-        })
-
-
+        });
     } catch (error) {
       setIsMinting(false);
       toast.error("Transaction failed!", {
-        position: toast.POSITION.TOP_CENTER
+        position: toast.POSITION.TOP_CENTER,
       });
     }
-
-  }
+  };
 
   return (
     <Container>
-      <div className="pinsurance">
-        <div className="text-container">
-          <p className="my-pinsurance">Pinsurance</p>
+      <div className='pinsurance'>
+        <div className='text-container'>
+          <p className='my-pinsurance'>Pinsurance</p>
         </div>
       </div>
-      <a href="https://github.com/anubhav11156/Pinsurance" className="source-code-div" target="_blank">
+      <a
+        href='https://github.com/anubhav11156/Pinsurance'
+        className='source-code-div'
+        target='_blank'
+      >
         <div>
-          <img src="/images/github-logo.png" />
+          <img src='/images/github-logo.png' />
         </div>
         <p>Source Code</p>
       </a>
-      <div className="contributor-1">
-        <div className="main-container">
-          <div className="image-div">
-            <div className="profile-pic-div">
-              <img src="/images/profile.jpeg" />
-            </div>
-          </div>
-          <div className="name-div">
-            <p>Anubhav Kumar</p>
-            <p>Bihar, India</p>
-            <p>3rd year college student</p>
-          </div>
-          <div className="social-handle-div">
-            <div className="handles">
-              <a href="https://discordapp.com/users/769844243236913155" target="_blank">
-                <img src="/images/discord-logo.png" />
-              </a>
-            </div>
-            <div className="handles">
-              <a href="https://www.behance.net/thermal_ice" target="_blank">
-                <img src="/images/behance-logo.png" />
-              </a>
-            </div>
-            <div className="handles">
-              <a href="https://github.com/anubhav11156" target="_blank">
-                <img src="/images/github-logo.png" />
-              </a>
-            </div>
-            <div className="handles">
-              <a href="https://www.linkedin.com/in/anubhav-kumar-8749871b8/" target="_blank">
-                <img src="/images/linkedin-logo.png" />
-              </a>
-            </div>
-            <div className="handles">
-              <a href="https://twitter.com/meta_anubhav" target="_blank">
-                <img src="/images/twitter.png" />
-              </a>
-            </div>
-          </div>
-        </div>
+
+      <div
+        className='contributor-1'
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gridGap: "10px",
+          padding: "30px",
+        }}
+      >
+        <FooterCard
+          name='Jyotirmoy Karmakar'
+          state='Assam, India'
+          twitter='https://twitter.com/LucidJoyy'
+          linkedIn='https://www.linkedin.com/in/lucidjoy/'
+          github='https://github.com/LucidJoy'
+        />
+        <FooterCard
+          name='Cheshta Bhasin'
+          state='Haryana, India'
+          twitter='https://twitter.com/BhasinCheshta'
+          linkedIn='https://www.linkedin.com/in/cheshta-bhasin-880218205/'
+          github='https://github.com/Cheshta2381'
+        />
+        <FooterCard
+          name='Radhika Thapar'
+          state='Haryana, India'
+          twitter='https://twitter.com/Radhika12170615'
+          linkedIn='https://www.linkedin.com/in/radhika-thapar-912308243/'
+          github='https://github.com/radhikathapar18'
+        />
+        <FooterCard
+          name='Anubhav Kumar '
+          state='Bihar, India'
+          twitter='https://twitter.com/meta_anubhav'
+          linkedIn='https://www.linkedin.com/in/anubhav-kumar-8749871b8/'
+          github='https://github.com/anubhav11156'
+        />
       </div>
+
       <div className='mint-div'>
         <div className='heading'>
           <p>Import & mint Fake USDC for testing this dapp.</p>
         </div>
         <div className='mint-button' onClick={copyAddress}>
-            <p>Click to copy fake USDC contract address. </p>
+          <p>Click to copy fake USDC contract address. </p>
         </div>
         <div className='input-div'>
-          <input type="text" placeholder='Address' onChange={(e) => {
-            setAddress(e.target.value);
-          }} />
+          <input
+            type='text'
+            placeholder='Address'
+            onChange={(e) => {
+              setAddress(e.target.value);
+            }}
+          />
         </div>
         <div className='mint-button' onClick={mintFake}>
-          {!isMinting &&
-            <p>Mint 5000 USDC </p>
-          }
-          {isMinting &&
-            <ClipLoader color="#ffffff" size={13} />
-          }
+          {!isMinting && <p>Mint 5000 USDC </p>}
+          {isMinting && <ClipLoader color='#ffffff' size={13} />}
         </div>
       </div>
     </Container>
-  )
+  );
 }
 
-export default Footer
+export default Footer;
 
 const Container = styled.div`
   position: relative;
@@ -185,11 +186,11 @@ const Container = styled.div`
   margin-top: 30px;
   border-top: 1px solid rgba(130, 71, 230, 0.4);
 
-  background-color: rgba(10,10,13,255);
+  background-color: rgba(10, 10, 13, 255);
 
   .pinsurance {
     padding-left: 20px;
-    flex:1;
+    flex: 1;
     display: flex;
     justify-content: start;
     align-items: end;
@@ -212,208 +213,202 @@ const Container = styled.div`
   }
 
   .contributor-1 {
-   flex:1;
-   height: 100%;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-
-   .main-container {
-     margin-left: 20px;
-     border: 1px solid white;
-     height: 70%;
-     width: 300px;
-     display: flex;
-     flex-direction: column;
-     align-items: center;
-     justify-content: center;
-     background: rgba( 255, 255, 255, 0.1 );
-
-     backdrop-filter: blur( 4px );
-     -webkit-backdrop-filter: blur( 4px );
-     border-radius: 2px;
-     border: 2px solid rgba( 255, 255, 255, 0.5 );
-
-     .image-div {
-       height: 180px;
-       width: 100%;
-       display: flex;
-       justify-content: center;
-
-       .profile-pic-div {
-         margin-top: 55px;
-         height: 110px;
-         width: 110px;
-         border-radius: 70px;
-         overflow: hidden;
-         display: flex;
-         justify-content: center;
-         align-items: center;
-         border: 2px solid #3adfae;
-        
-         img {
-           width: 110px;
-         }
-
-       }
-     }
-
-     .name-div {
-       margin-top: 10px;
-       height: 100px;
-       width: 100%;
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-       margin-bottom: 0px;
-       p {
-         margin: 0;
-         margin-top: 3px;
-         display:block;
-         font-size: 16px;
-         color: rgba(255, 255, 255, 0.5);
-         letter-spacing: 1px;
-       }
-     }
-
-     .social-handle-div {
-       flex: 1;
-       width: 100%;
-       display: flex;
-       margin-left: 19px;
-       justify-content: center;
-      
-
-       .handles {
-         margin-top: 40px;
-         margin-right: 20px;
-         width: 30px;
-         height: 30px;
-         img {
-           width: 100%;
-         }
-         transition: all 0.25s;
-       }
-       .handles:hover {
-         scale: 1.15;
-       }
-       }
-   }
-
- }
-
- .source-code-div {
-   text-decoration: none;
-   color: white;
-   width: 160px;
-   height: 40px;
-   display: flex;
-   justify-content: center;
-   align-items: center;
-   border: none;
-   border-radius: 4px;
-   cursor: pointer;
-   transition: color 0.15s;
-
-   &:hover  {
-     color: #3adfae;
-   }
-
-   div {
-     margin-left: -5px;
-     display: flex;
-     justify-content: center;
-     align-items: center;
-     height: 100%;
-     width: 35px;
-
-     img {
-       width: 28px;
-     }
-   }
-
-   p {
-     font-size: 16px;
-     margin-left: 5px;
-   }
- }
-
- .mint-div {
-  position: absolute;
-  margin-top: 3.5rem;
-  top: 2rem;
-  left: 2rem;
-  width: 30rem;
-  height: 16rem;
-  background: rgba( 255, 255, 255, 0.1 );
-  backdrop-filter: blur( 4px );
-  -webkit-backdrop-filter: blur( 4px );
-  border-radius: 2px;
-  border: 2px solid rgba( 255, 255, 255, 0.5 );
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  .heading {
-    flex:1;
-    width: 90%;
-    display: flex;
-    justify-content: start;
-    align-items: center;
-
-    p {
-      margin:0;
-      font-size: 16px;
-      color: rgba(255, 255, 255, 0.5);
-      letter-spacing: 1px;
-    }
-  }
-
-  .input-div {
     flex: 1;
-    width: 90%;
-
-    input {
-      width: 95%;
-      height: 2rem;
-      border-radius: 5px;
-      outline: none;
-      border: 2px solid rgba( 255, 255, 255, 0.5 );
-      padding-left: 10px;
-
-      font-size: 15px;
-
-    }
-  }
-
-  .mint-button {
-    height: 3rem;
-    width: 90%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: black;
-    border-radius: 5px;
-    margin-bottom: 1rem;
+
+    .main-container {
+      margin-left: 20px;
+      border: 1px solid white;
+      height: 70%;
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border-radius: 2px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+
+      .image-div {
+        height: 180px;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+
+        .profile-pic-div {
+          margin-top: 55px;
+          height: 110px;
+          width: 110px;
+          border-radius: 70px;
+          overflow: hidden;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border: 2px solid #3adfae;
+
+          img {
+            width: 110px;
+          }
+        }
+      }
+
+      .name-div {
+        margin-top: 10px;
+        height: 100px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 0px;
+        p {
+          margin: 0;
+          margin-top: 3px;
+          display: block;
+          font-size: 16px;
+          color: rgba(255, 255, 255, 0.5);
+          letter-spacing: 1px;
+        }
+      }
+
+      .social-handle-div {
+        flex: 1;
+        width: 100%;
+        display: flex;
+        margin-left: 19px;
+        justify-content: center;
+
+        .handles {
+          margin-top: 40px;
+          margin-right: 20px;
+          width: 30px;
+          height: 30px;
+          img {
+            width: 100%;
+          }
+          transition: all 0.25s;
+        }
+        .handles:hover {
+          scale: 1.15;
+        }
+      }
+    }
+  }
+
+  .source-code-div {
+    text-decoration: none;
+    color: white;
+    width: 160px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
     transition: color 0.15s;
-
-    color: #ffffffe0;
-
 
     &:hover {
       color: #3adfae;
     }
 
-    &:active {
-      color: #3adfaee2;
+    div {
+      margin-left: -5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      width: 35px;
+
+      img {
+        width: 28px;
+      }
     }
 
     p {
-      margin: 0;
+      font-size: 16px;
+      margin-left: 5px;
     }
   }
 
- }
-`
+  .mint-div {
+    position: absolute;
+    margin-top: 3.5rem;
+    top: 2rem;
+    left: 2rem;
+    width: 30rem;
+    height: 16rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-radius: 2px;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .heading {
+      flex: 1;
+      width: 90%;
+      display: flex;
+      justify-content: start;
+      align-items: center;
+
+      p {
+        margin: 0;
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.5);
+        letter-spacing: 1px;
+      }
+    }
+
+    .input-div {
+      flex: 1;
+      width: 90%;
+
+      input {
+        width: 95%;
+        height: 2rem;
+        border-radius: 5px;
+        outline: none;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        padding-left: 10px;
+
+        font-size: 15px;
+      }
+    }
+
+    .mint-button {
+      height: 3rem;
+      width: 90%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: color 0.15s;
+
+      color: #ffffffe0;
+
+      &:hover {
+        color: #3adfae;
+      }
+
+      &:active {
+        color: #3adfaee2;
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+`;
