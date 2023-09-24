@@ -12,7 +12,7 @@ Any pool member can make a Claim Request from thier pool, for this they have to 
 
 ![working](https://github.com/anubhav11156/Pinsurance/assets/86551390/44cd10e7-e1bc-4768-b338-7feb36d00ae7)
 
-[Video Explanation](https://youtu.be/N8b7mintQho)
+[Video Explanation](https://www.youtube.com/watch?v=Rt2CugRg6c0)
 
 [Devpost Project Page](https://devpost.com/software/pinsurance)
 
